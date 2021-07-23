@@ -4,7 +4,7 @@
  "docstatus": 0,
  "doctype": "Page",
  "idx": 0,
- "modified": "2021-07-23 15:55:42.233708",
+ "modified": "2020-11-25 11:07:54.056208",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "warehouse-capacity-summary",
@@ -16,9 +16,6 @@
   },
   {
    "role": "Stock Manager"
-  },
-  {
-   "role": "Company Stock Manager"
   }
  ],
  "script": null,

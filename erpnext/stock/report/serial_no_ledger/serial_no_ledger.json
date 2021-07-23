@@ -10,7 +10,7 @@
  "idx": 0,
  "is_standard": "Yes",
  "json": "{}",
- "modified": "2021-07-23 15:55:41.902188",
+ "modified": "2021-04-20 13:33:19.015829",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Serial No Ledger",
@@ -28,12 +28,6 @@
   },
   {
    "role": "Sales User"
-  },
-  {
-   "role": "Company Sales User"
-  },
-  {
-   "role": "Company Sales User"
   }
  ]
 }

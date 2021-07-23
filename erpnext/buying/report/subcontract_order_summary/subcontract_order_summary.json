@@ -9,7 +9,7 @@
  "filters": [],
  "idx": 0,
  "is_standard": "Yes",
- "modified": "2021-07-23 15:55:33.814670",
+ "modified": "2021-05-31 14:43:32.417694",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Subcontract Order Summary",
@@ -27,9 +27,6 @@
   },
   {
    "role": "Purchase User"
-  },
-  {
-   "role": "Company Purchase Manager"
   }
  ]
 }

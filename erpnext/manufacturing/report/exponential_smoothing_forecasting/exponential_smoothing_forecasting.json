@@ -1,16 +1,14 @@
 {
  "add_total_row": 0,
- "columns": [],
  "creation": "2020-05-15 05:18:55.838030",
  "disable_prepared_report": 0,
  "disabled": 0,
  "docstatus": 0,
  "doctype": "Report",
- "filters": [],
  "idx": 0,
  "is_standard": "Yes",
  "letter_head": "",
- "modified": "2021-07-23 15:55:43.649324",
+ "modified": "2020-05-15 05:18:55.838030",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Exponential Smoothing Forecasting",
@@ -37,18 +35,6 @@
   },
   {
    "role": "Sales User"
-  },
-  {
-   "role": "Company Sales User"
-  },
-  {
-   "role": "Company Sales Manager"
-  },
-  {
-   "role": "Company Sales User"
-  },
-  {
-   "role": "Company Stock Manager"
   }
  ]
 }
