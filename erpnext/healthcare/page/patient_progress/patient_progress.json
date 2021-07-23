@@ -4,7 +4,7 @@
  "docstatus": 0,
  "doctype": "Page",
  "idx": 0,
- "modified": "2020-07-23 21:45:45.540055",
+ "modified": "2021-07-23 15:56:16.875065",
  "modified_by": "Administrator",
  "module": "Healthcare",
  "name": "patient-progress",
@@ -13,13 +13,7 @@
  "restrict_to_domain": "Healthcare",
  "roles": [
   {
-   "role": "Healthcare Administrator"
-  },
-  {
-   "role": "Physician"
-  },
-  {
-   "role": "Patient"
+   "role": "Company System Manager"
   },
   {
    "role": "System Manager"

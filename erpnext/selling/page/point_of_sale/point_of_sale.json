@@ -4,7 +4,7 @@
  "docstatus": 0,
  "doctype": "Page",
  "idx": 0,
- "modified": "2020-06-01 15:41:06.348380",
+ "modified": "2021-07-23 15:55:38.099675",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "point-of-sale",
@@ -23,6 +23,18 @@
   },
   {
    "role": "Sales Manager"
+  },
+  {
+   "role": "Company Sales User"
+  },
+  {
+   "role": "Company Sales User"
+  },
+  {
+   "role": "Company Sales Manager"
+  },
+  {
+   "role": "Company Sales User"
   }
  ],
  "script": null,

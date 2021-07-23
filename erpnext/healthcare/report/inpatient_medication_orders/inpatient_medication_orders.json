@@ -10,7 +10,7 @@
  "idx": 0,
  "is_standard": "Yes",
  "json": "{}",
- "modified": "2020-11-23 19:40:20.227591",
+ "modified": "2021-07-23 15:56:18.199994",
  "modified_by": "Administrator",
  "module": "Healthcare",
  "name": "Inpatient Medication Orders",
@@ -24,13 +24,7 @@
    "role": "System Manager"
   },
   {
-   "role": "Healthcare Administrator"
-  },
-  {
-   "role": "Nursing User"
-  },
-  {
-   "role": "Physician"
+   "role": "Company System Manager"
   }
  ]
 }

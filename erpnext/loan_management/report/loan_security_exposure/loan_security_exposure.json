@@ -9,7 +9,7 @@
  "filters": [],
  "idx": 0,
  "is_standard": "Yes",
- "modified": "2021-01-16 08:08:01.694583",
+ "modified": "2021-07-23 15:56:17.815685",
  "modified_by": "Administrator",
  "module": "Loan Management",
  "name": "Loan Security Exposure",
@@ -24,6 +24,9 @@
   },
   {
    "role": "Loan Manager"
+  },
+  {
+   "role": "Company System Manager"
   }
  ]
 }

@@ -10,7 +10,7 @@
  "idx": 0,
  "is_standard": "Yes",
  "json": "{}",
- "modified": "2021-01-11 11:11:03.594242",
+ "modified": "2021-07-23 15:56:18.025875",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Cost of Poor Quality Report",
@@ -28,6 +28,9 @@
   },
   {
    "role": "Manufacturing Manager"
+  },
+  {
+   "role": "Company System Manager"
   }
  ]
 }
