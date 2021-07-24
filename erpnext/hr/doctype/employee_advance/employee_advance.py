@@ -14,7 +14,7 @@ class EmployeeAdvanceOverPayment(frappe.ValidationError):
 
 class EmployeeAdvance(Document):
 	def onload(self):
-		self.get("__onload").make_payment_via_journal_entry = frappe.db.get_single_value('Accounts Settings',
+		self.get("__onload").make_payment_via_journal_entry = frappe.company_get_single_value('Accounts Settings',
 			'make_payment_via_journal_entry')
 
 	def validate(self):

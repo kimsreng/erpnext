@@ -19,7 +19,7 @@ def boot_session(bootinfo):
 			'territory')
 		bootinfo.sysdefaults.customer_group = frappe.db.get_single_value('Selling Settings',
 			'customer_group')
-		bootinfo.sysdefaults.allow_stale = cint(frappe.db.get_single_value('Accounts Settings',
+		bootinfo.sysdefaults.allow_stale = cint(frappe.company_get_single_value('Accounts Settings',
 			'allow_stale'))
 		bootinfo.sysdefaults.quotation_valid_till = cint(frappe.db.get_single_value('Selling Settings',
 			'default_valid_till'))

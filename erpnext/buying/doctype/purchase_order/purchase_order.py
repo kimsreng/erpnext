@@ -489,7 +489,7 @@ def get_mapped_purchase_invoice(source_name, target_doc=None, ignore_permissions
 		},
 	}
 
-	if frappe.get_single("Accounts Settings").automatically_fetch_payment_terms == 1:
+	if frappe.company_get_single("Accounts Settings").automatically_fetch_payment_terms == 1:
 		fields["Payment Schedule"] = {
 			"doctype": "Payment Schedule",
 			"add_if_empty": True

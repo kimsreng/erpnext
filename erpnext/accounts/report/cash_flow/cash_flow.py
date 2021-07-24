@@ -12,7 +12,7 @@ from six import iteritems
 
 
 def execute(filters=None):
-	if cint(frappe.db.get_single_value('Accounts Settings', 'use_custom_cash_flow')):
+	if cint(frappe.company_get_single_value('Accounts Settings', 'use_custom_cash_flow')):
 		from erpnext.accounts.report.cash_flow.custom_cash_flow import execute as execute_custom
 		return execute_custom(filters=filters)
 

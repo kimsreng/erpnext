@@ -362,7 +362,7 @@ def validate_due_date(posting_date, due_date, party_type, party, company=None, b
 			return
 
 		if default_due_date != posting_date and getdate(due_date) > getdate(default_due_date):
-			is_credit_controller = frappe.db.get_single_value("Accounts Settings", "credit_controller") in frappe.get_roles()
+			is_credit_controller = frappe.company_get_single_value("Accounts Settings", "credit_controller") in frappe.get_roles()
 			if is_credit_controller:
 				msgprint(_("Note: Due / Reference Date exceeds allowed customer credit days by {0} day(s)")
 					.format(date_diff(due_date, default_due_date)))
@@ -372,7 +372,7 @@ def validate_due_date(posting_date, due_date, party_type, party, company=None, b
 
 @frappe.whitelist()
 def get_address_tax_category(tax_category=None, billing_address=None, shipping_address=None):
-	addr_tax_category_from = frappe.db.get_single_value("Accounts Settings", "determine_address_tax_category_from")
+	addr_tax_category_from = frappe.company_get_single_value("Accounts Settings", "determine_address_tax_category_from")
 	if addr_tax_category_from == "Shipping Address":
 		if shipping_address:
 			tax_category = frappe.db.get_value("Address", shipping_address, "tax_category") or tax_category
@@ -452,7 +452,7 @@ def validate_party_frozen_disabled(party_type, party_name):
 			if party.disabled:
 				frappe.throw(_("{0} {1} is disabled").format(party_type, party_name), PartyDisabled)
 			elif party.get("is_frozen"):
-				frozen_accounts_modifier = frappe.db.get_single_value( 'Accounts Settings', 'frozen_accounts_modifier')
+				frozen_accounts_modifier = frappe.company_get_single_value('Accounts Settings', 'frozen_accounts_modifier')
 				if not frozen_accounts_modifier in frappe.get_roles():
 					frappe.throw(_("{0} {1} is frozen").format(party_type, party_name), PartyFrozen)
 

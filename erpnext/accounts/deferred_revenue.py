@@ -280,9 +280,9 @@ def book_deferred_income_or_expense(doc, deferred_process, posting_date=None):
 		if getdate(end_date) < getdate(posting_date) and not last_gl_entry:
 			_book_deferred_revenue_or_expense(item, via_journal_entry, submit_journal_entry, book_deferred_entries_based_on)
 
-	via_journal_entry = cint(frappe.db.get_singles_value('Accounts Settings', 'book_deferred_entries_via_journal_entry'))
-	submit_journal_entry = cint(frappe.db.get_singles_value('Accounts Settings', 'submit_journal_entries'))
-	book_deferred_entries_based_on = frappe.db.get_singles_value('Accounts Settings', 'book_deferred_entries_based_on')
+	via_journal_entry = cint(frappe.company_get_single_value('Accounts Settings', 'book_deferred_entries_via_journal_entry'))
+	submit_journal_entry = cint(frappe.company_get_single_value('Accounts Settings', 'submit_journal_entries'))
+	book_deferred_entries_based_on = frappe.company_get_single_value('Accounts Settings', 'book_deferred_entries_based_on')
 
 	for item in doc.get('items'):
 		if item.get(enable_check):
@@ -295,7 +295,7 @@ def process_deferred_accounting(posting_date=None):
 	if not posting_date:
 		posting_date = today()
 
-	if not cint(frappe.db.get_singles_value('Accounts Settings', 'automatically_process_deferred_accounting_entry')):
+	if not cint(frappe.company_get_single_value('Accounts Settings', 'automatically_process_deferred_accounting_entry')):
 		return
 
 	start_date = add_months(today(), -1)

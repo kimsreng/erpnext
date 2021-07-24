@@ -275,9 +275,9 @@ def check_freezing_date(posting_date, adv_adj=False):
 		except authorized person
 	"""
 	if not adv_adj:
-		acc_frozen_upto = frappe.db.get_value('Accounts Settings', None, 'acc_frozen_upto')
+		acc_frozen_upto = frappe.company_get_single_value('Accounts Settings', 'acc_frozen_upto')
 		if acc_frozen_upto:
-			frozen_accounts_modifier = frappe.db.get_value( 'Accounts Settings', None,'frozen_accounts_modifier')
+			frozen_accounts_modifier = frappe.company_get_single_value('Accounts Settings','frozen_accounts_modifier')
 			if getdate(posting_date) <= getdate(acc_frozen_upto) \
 					and not frozen_accounts_modifier in frappe.get_roles():
 				frappe.throw(_("You are not authorized to add or update entries before {0}").format(formatdate(acc_frozen_upto)))
