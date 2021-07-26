@@ -112,7 +112,7 @@ class OpeningInvoiceCreationTool(Document):
 		if party_type == "Customer":
 			party_doc.customer_name = party
 		else:
-			supplier_group = frappe.db.get_single_value("Buying Settings", "supplier_group")
+			supplier_group = frappe.company_get_single_value("Buying Settings", "supplier_group")
 			if not supplier_group:
 				frappe.throw(_("Please Set Supplier Group in Buying Settings."))
 

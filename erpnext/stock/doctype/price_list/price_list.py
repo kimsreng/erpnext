@@ -24,8 +24,8 @@ class PriceList(Document):
 				frappe.company_set_value("Selling Settings",  "selling_price_list", self.name)
 
 		elif cint(self.buying):
-			if not frappe.db.get_value("Buying Settings", None, "buying_price_list"):
-				frappe.set_value("Buying Settings", "Buying Settings", "buying_price_list", self.name)
+			if not frappe.company_get_single_value("Buying Settings", "buying_price_list"):
+				frappe.company_set_value("Buying Settings", "buying_price_list", self.name)
 
 	def update_item_price(self):
 		frappe.db.sql("""update `tabItem Price` set currency=%s,

@@ -91,7 +91,7 @@ class PurchaseOrder(BuyingController):
 		})
 
 
-		if cint(frappe.db.get_single_value('Buying Settings', 'maintain_same_rate')):
+		if cint(frappe.company_get_single_value('Buying Settings', 'maintain_same_rate')):
 			self.validate_rate_with_reference_doc([["Supplier Quotation", "supplier_quotation", "supplier_quotation_item"]])
 
 	def set_tax_withholding(self):

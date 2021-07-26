@@ -605,10 +605,10 @@ class StockEntry(StockController):
 	def validate_purchase_order(self):
 		"""Throw exception if more raw material is transferred against Purchase Order than in
 		the raw materials supplied table"""
-		backflush_raw_materials_based_on = frappe.db.get_single_value("Buying Settings",
+		backflush_raw_materials_based_on = frappe.company_get_single_value("Buying Settings",
 			"backflush_raw_materials_of_subcontract_based_on")
 
-		qty_allowance = flt(frappe.db.get_single_value("Buying Settings",
+		qty_allowance = flt(frappe.company_get_single_value("Buying Settings",
 			"over_transfer_allowance"))
 
 		if not (self.purpose == "Send to Subcontractor" and self.purchase_order): return

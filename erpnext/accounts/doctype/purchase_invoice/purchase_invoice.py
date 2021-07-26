@@ -197,7 +197,7 @@ class PurchaseInvoice(BuyingController):
 			}
 		})
 
-		if cint(frappe.db.get_single_value('Buying Settings', 'maintain_same_rate')) and not self.is_return:
+		if cint(frappe.company_get_single_value('Buying Settings', 'maintain_same_rate')) and not self.is_return:
 			self.validate_rate_with_reference_doc([
 				["Purchase Order", "purchase_order", "po_detail"],
 				["Purchase Receipt", "purchase_receipt", "pr_detail"]
@@ -295,7 +295,7 @@ class PurchaseInvoice(BuyingController):
 		self.against_expense_account = ",".join(against_accounts)
 
 	def po_required(self):
-		if frappe.db.get_value("Buying Settings", None, "po_required") == 'Yes':
+		if frappe.company_get_single_value("Buying Settings", "po_required") == 'Yes':
 
 			if frappe.get_value('Supplier', self.supplier, 'allow_purchase_invoice_creation_without_purchase_order'):
 				return
@@ -310,7 +310,7 @@ class PurchaseInvoice(BuyingController):
 
 	def pr_required(self):
 		stock_items = self.get_stock_items()
-		if frappe.db.get_value("Buying Settings", None, "pr_required") == 'Yes':
+		if frappe.company_get_single_value("Buying Settings", "pr_required") == 'Yes':
 
 			if frappe.get_value('Supplier', self.supplier, 'allow_purchase_invoice_creation_without_purchase_receipt'):
 				return

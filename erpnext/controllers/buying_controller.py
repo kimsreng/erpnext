@@ -60,7 +60,7 @@ class BuyingController(StockController, Subcontracting):
 
 	def onload(self):
 		super(BuyingController, self).onload()
-		self.set_onload("backflush_based_on", frappe.db.get_single_value('Buying Settings',
+		self.set_onload("backflush_based_on", frappe.company_get_single_value('Buying Settings',
 			'backflush_raw_materials_of_subcontract_based_on'))
 
 	def set_missing_values(self, for_validate=False):
