@@ -123,7 +123,7 @@ class TransactionBase(StatusUpdater):
 			action = frappe.db.get_single_value("Buying Settings", "maintain_same_rate_action")
 			settings_doc = "Buying Settings"
 		else:
-			action = frappe.db.get_single_value("Selling Settings", "maintain_same_rate_action")
+			action = frappe.company_get_single_value("Selling Settings", "maintain_same_rate_action")
 			settings_doc = "Selling Settings"
 
 		for ref_dt, ref_dn_field, ref_link_field in ref_details:

@@ -153,7 +153,7 @@ class Item(WebsiteGenerator):
 	def add_price(self, price_list=None):
 		'''Add a new price'''
 		if not price_list:
-			price_list = (frappe.db.get_single_value('Selling Settings', 'selling_price_list')
+			price_list = (frappe.company_get_single_value('Selling Settings', 'selling_price_list')
 						or frappe.db.get_value('Price List', _('Standard Selling')))
 		if price_list:
 			item_price = frappe.get_doc({

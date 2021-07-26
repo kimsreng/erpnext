@@ -15,13 +15,13 @@ def boot_session(bootinfo):
 		update_page_info(bootinfo)
 
 		load_country_and_currency(bootinfo)
-		bootinfo.sysdefaults.territory = frappe.db.get_single_value('Selling Settings',
+		bootinfo.sysdefaults.territory = frappe.company_get_single_value('Selling Settings',
 			'territory')
-		bootinfo.sysdefaults.customer_group = frappe.db.get_single_value('Selling Settings',
+		bootinfo.sysdefaults.customer_group = frappe.company_get_single_value('Selling Settings',
 			'customer_group')
 		bootinfo.sysdefaults.allow_stale = cint(frappe.company_get_single_value('Accounts Settings',
 			'allow_stale'))
-		bootinfo.sysdefaults.quotation_valid_till = cint(frappe.db.get_single_value('Selling Settings',
+		bootinfo.sysdefaults.quotation_valid_till = cint(frappe.company_get_single_value('Selling Settings',
 			'default_valid_till'))
 
 		# if no company, show a dialog box to create a new company

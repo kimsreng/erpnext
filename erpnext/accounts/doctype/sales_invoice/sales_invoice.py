@@ -231,7 +231,7 @@ class SalesInvoice(SellingController):
 
 		self.update_time_sheet(self.name)
 
-		if frappe.db.get_single_value('Selling Settings', 'sales_update_frequency') == "Each Transaction":
+		if frappe.company_get_single_value('Selling Settings', 'sales_update_frequency') == "Each Transaction":
 			update_company_current_month_sales(self.company)
 			self.update_project()
 		update_linked_doc(self.doctype, self.name, self.inter_company_invoice_reference)
@@ -321,7 +321,7 @@ class SalesInvoice(SellingController):
 
 		frappe.db.set(self, 'status', 'Cancelled')
 
-		if frappe.db.get_single_value('Selling Settings', 'sales_update_frequency') == "Each Transaction":
+		if frappe.company_get_single_value('Selling Settings', 'sales_update_frequency') == "Each Transaction":
 			update_company_current_month_sales(self.company)
 			self.update_project()
 		if not self.is_return and not self.is_consolidated and self.loyalty_program:
@@ -603,7 +603,7 @@ class SalesInvoice(SellingController):
 			},
 		})
 
-		if cint(frappe.db.get_single_value('Selling Settings', 'maintain_same_sales_rate')) and not self.is_return:
+		if cint(frappe.company_get_single_value('Selling Settings', 'maintain_same_sales_rate')) and not self.is_return:
 			self.validate_rate_with_reference_doc([
 				["Sales Order", "sales_order", "so_detail"],
 				["Delivery Note", "delivery_note", "dn_detail"]
@@ -639,7 +639,7 @@ class SalesInvoice(SellingController):
 
 		prev_doc_field_map = {'Sales Order': ['so_required', 'is_pos'],'Delivery Note': ['dn_required', 'update_stock']}
 		for key, value in iteritems(prev_doc_field_map):
-			if frappe.db.get_single_value('Selling Settings', value[0]) == 'Yes':
+			if frappe.company_get_single_value('Selling Settings', value[0]) == 'Yes':
 
 				if frappe.get_value('Customer', self.customer, value[0]):
 					continue

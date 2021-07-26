@@ -58,11 +58,11 @@ class Patient(Document):
 
 	def set_missing_customer_details(self):
 		if not self.customer_group:
-			self.customer_group = frappe.db.get_single_value('Selling Settings', 'customer_group') or get_root_of('Customer Group')
+			self.customer_group = frappe.company_get_single_value('Selling Settings', 'customer_group') or get_root_of('Customer Group')
 		if not self.territory:
-			self.territory = frappe.db.get_single_value('Selling Settings', 'territory') or get_root_of('Territory')
+			self.territory = frappe.company_get_single_valuee('Selling Settings', 'territory') or get_root_of('Territory')
 		if not self.default_price_list:
-			self.default_price_list = frappe.db.get_single_value('Selling Settings', 'selling_price_list')
+			self.default_price_list = frappe.company_get_single_value('Selling Settings', 'selling_price_list')
 
 		if not self.customer_group or not self.territory or not self.default_price_list:
 			frappe.msgprint(_('Please set defaults for Customer Group, Territory and Selling Price List in Selling Settings'), alert=True)
@@ -129,8 +129,8 @@ def create_customer(doc):
 	customer = frappe.get_doc({
 		'doctype': 'Customer',
 		'customer_name': doc.patient_name,
-		'customer_group': doc.customer_group or frappe.db.get_single_value('Selling Settings', 'customer_group'),
-		'territory' : doc.territory or frappe.db.get_single_value('Selling Settings', 'territory'),
+		'customer_group': doc.customer_group or frappe.company_get_single_value('Selling Settings', 'customer_group'),
+		'territory' : doc.territory or frappe.company_get_single_value('Selling Settings', 'territory'),
 		'customer_type': 'Individual',
 		'default_currency': doc.default_currency,
 		'default_price_list': doc.default_price_list,

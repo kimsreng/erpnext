@@ -233,9 +233,9 @@ def is_party_name_visible(filters):
 
 	if filters.get('party_type') in ['Customer', 'Supplier']:
 		if filters.get("party_type") == "Customer":
-			party_naming_by = frappe.db.get_single_value("Selling Settings", "cust_master_name")
+			party_naming_by = frappe.company_get_single_value("Selling Settings", "cust_master_name")
 		else:
-			party_naming_by = frappe.db.get_single_value("Buying Settings", "supp_master_name")
+			party_naming_by = frappe.company_get_single_value("Buying Settings", "supp_master_name")
 
 		if party_naming_by == "Naming Series":
 			show_party_name = True
