@@ -206,7 +206,7 @@ class StatusUpdater(Document):
 			get_allowance_for(item['item_code'], self.item_allowance,
 				self.global_qty_allowance, self.global_amount_allowance, qty_or_amount)
 
-		role_allowed_to_over_deliver_receive = frappe.db.get_single_value('Stock Settings', 'role_allowed_to_over_deliver_receive')
+		role_allowed_to_over_deliver_receive = frappe.company_get_single_value('Stock Settings', 'role_allowed_to_over_deliver_receive')
 		role_allowed_to_over_bill = frappe.company_get_single_value('Accounts Settings', 'role_allowed_to_over_bill')
 		role = role_allowed_to_over_deliver_receive if qty_or_amount == 'qty' else role_allowed_to_over_bill
 
@@ -398,7 +398,7 @@ def get_allowance_for(item_code, item_allowance=None, global_qty_allowance=None,
 
 	if qty_or_amount == "qty" and not qty_allowance:
 		if global_qty_allowance == None:
-			global_qty_allowance = flt(frappe.db.get_single_value('Stock Settings', 'over_delivery_receipt_allowance'))
+			global_qty_allowance = flt(frappe.company_get_single_value('Stock Settings', 'over_delivery_receipt_allowance'))
 		qty_allowance = global_qty_allowance
 	elif qty_or_amount == "amount" and not over_billing_allowance:
 		if global_amount_allowance == None:

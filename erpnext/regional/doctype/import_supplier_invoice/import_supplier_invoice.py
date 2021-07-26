@@ -20,7 +20,7 @@ from frappe.utils.file_manager import save_file
 
 class ImportSupplierInvoice(Document):
 	def validate(self):
-		if not frappe.db.get_value("Stock Settings", fieldname="stock_uom"):
+		if not frappe.company_get_single_value("Stock Settings", "stock_uom"):
 			frappe.throw(_("Please set default UOM in Stock Settings"))
 
 	def autoname(self):
@@ -38,7 +38,7 @@ class ImportSupplierInvoice(Document):
 
 		self.file_count = 0
 		self.purchase_invoices_count = 0
-		self.default_uom = frappe.db.get_value("Stock Settings", fieldname="stock_uom")
+		self.default_uom = frappe.company_get_single_value("Stock Settings", "stock_uom")
 
 		with zipfile.ZipFile(zip_file.get_full_path()) as zf:
 			for file_name in zf.namelist():

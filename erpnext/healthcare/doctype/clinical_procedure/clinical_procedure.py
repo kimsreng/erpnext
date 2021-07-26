@@ -106,7 +106,7 @@ class ClinicalProcedure(Document):
 		return 'insufficient stock'
 
 	def set_actual_qty(self):
-		allow_negative_stock = frappe.db.get_single_value('Stock Settings', 'allow_negative_stock')
+		allow_negative_stock = frappe.company_get_single_value('Stock Settings', 'allow_negative_stock')
 
 		allow_start = True
 		for d in self.get('items'):
@@ -221,7 +221,7 @@ def make_procedure(source_name, target_doc=None):
 			if source.service_unit:
 				warehouse = frappe.db.get_value('Healthcare Service Unit', source.service_unit, 'warehouse')
 			if not warehouse:
-				warehouse = frappe.db.get_value('Stock Settings', None, 'default_warehouse')
+				warehouse = frappe.company_get_single_value('Stock Settings', None, 'default_warehouse')
 			if warehouse:
 				target.warehouse = warehouse
 

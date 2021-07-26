@@ -404,7 +404,7 @@ def get_item_warehouse(item, args, overwrite_warehouse, defaults={}):
 		warehouse = args.get('warehouse')
 
 	if not warehouse:
-		default_warehouse = frappe.db.get_single_value("Stock Settings", "default_warehouse")
+		default_warehouse = frappe.company_get_single_value("Stock Settings", "default_warehouse")
 		if frappe.db.get_value("Warehouse", default_warehouse, "company") == args.company:
 			return default_warehouse
 
@@ -675,7 +675,7 @@ def get_price_list_rate(args, item_doc, out):
 def insert_item_price(args):
 	"""Insert Item Price if Price List and Price List Rate are specified and currency is the same"""
 	if frappe.db.get_value("Price List", args.price_list, "currency", cache=True) == args.currency \
-		and cint(frappe.db.get_single_value("Stock Settings", "auto_insert_price_list_rate_if_missing")):
+		and cint(frappe.company_get_single_value("Stock Settings", "auto_insert_price_list_rate_if_missing")):
 		if frappe.has_permission("Item Price", "write"):
 			price_list_rate = (args.rate / args.get('conversion_factor')
 				if args.get("conversion_factor") else args.rate)
@@ -916,7 +916,7 @@ def get_pos_profile(company, pos_profile=None, user=None):
 	return pos_profile and pos_profile[0] or None
 
 def get_serial_nos_by_fifo(args, sales_order=None):
-	if frappe.db.get_single_value("Stock Settings", "automatically_set_serial_nos_based_on_fifo"):
+	if frappe.company_get_single_value("Stock Settings", "automatically_set_serial_nos_based_on_fifo"):
 		return "\n".join(frappe.db.sql_list("""select name from `tabSerial No`
 			where item_code=%(item_code)s and warehouse=%(warehouse)s and
 			sales_order=IF(%(sales_order)s IS NULL, sales_order, %(sales_order)s)
@@ -930,7 +930,7 @@ def get_serial_nos_by_fifo(args, sales_order=None):
 			}))
 
 def get_serial_no_batchwise(args, sales_order=None):
-	if frappe.db.get_single_value("Stock Settings", "automatically_set_serial_nos_based_on_fifo"):
+	if frappe.company_get_single_value("Stock Settings", "automatically_set_serial_nos_based_on_fifo"):
 		return "\n".join(frappe.db.sql_list("""select name from `tabSerial No`
 			where item_code=%(item_code)s and warehouse=%(warehouse)s and
 			sales_order=IF(%(sales_order)s IS NULL, sales_order, %(sales_order)s)

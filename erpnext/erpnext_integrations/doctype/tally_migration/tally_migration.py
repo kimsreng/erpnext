@@ -91,7 +91,7 @@ class TallyMigration(Document):
 
 	def set_account_defaults(self):
 		self.default_cost_center, self.default_round_off_account = frappe.db.get_value("Company", self.erpnext_company, ["cost_center", "round_off_account"])
-		self.default_warehouse = frappe.db.get_value("Stock Settings", "Stock Settings", "default_warehouse")
+		self.default_warehouse = frappe.company_get_single_value("Stock Settings", "Stock Settings", "default_warehouse")
 
 	def _process_master_data(self):
 		def get_company_name(collection):

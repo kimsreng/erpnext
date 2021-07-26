@@ -139,7 +139,7 @@ class Item(WebsiteGenerator):
 
 	def validate_description(self):
 		'''Clean HTML description if set'''
-		if cint(frappe.db.get_single_value('Stock Settings', 'clean_description_html')):
+		if cint(frappe.company_get_single_value('Stock Settings', 'clean_description_html')):
 			self.description = clean_html(self.description)
 
 	def validate_customer_provided_part(self):
@@ -181,7 +181,7 @@ class Item(WebsiteGenerator):
 		# default warehouse, or Stores
 		for default in self.item_defaults or [frappe._dict({'company': frappe.defaults.get_defaults().company})]:
 			default_warehouse = (default.default_warehouse
-					or frappe.db.get_single_value('Stock Settings', 'default_warehouse'))
+					or frappe.company_get_single_value('Stock Settings', 'default_warehouse'))
 			if default_warehouse:
 				warehouse_company = frappe.db.get_value("Warehouse", default_warehouse, "company")
 
@@ -301,7 +301,7 @@ class Item(WebsiteGenerator):
 				frappe.throw(_('"Is Fixed Asset" cannot be unchecked, as Asset record exists against the item'))
 
 	def validate_retain_sample(self):
-		if self.retain_sample and not frappe.db.get_single_value('Stock Settings', 'sample_retention_warehouse'):
+		if self.retain_sample and not frappe.company_get_single_value('Stock Settings', 'sample_retention_warehouse'):
 			frappe.throw(_("Please select Sample Retention Warehouse in Stock Settings first"))
 		if self.retain_sample and not self.has_batch_no:
 			frappe.throw(_("{0} Retain Sample is based on batch, please check Has Batch No to retain sample of item").format(
@@ -690,8 +690,8 @@ class Item(WebsiteGenerator):
 	def recalculate_bin_qty(self, new_name):
 		from erpnext.stock.stock_balance import repost_stock
 		frappe.db.auto_commit_on_many_writes = 1
-		existing_allow_negative_stock = frappe.db.get_value("Stock Settings", None, "allow_negative_stock")
-		frappe.db.set_value("Stock Settings", None, "allow_negative_stock", 1)
+		existing_allow_negative_stock = frappe.company_get_single_value("Stock Settings", "allow_negative_stock")
+		frappe.company_set_value("Stock Settings", "allow_negative_stock", 1)
 
 		repost_stock_for_warehouses = frappe.db.sql_list("""select distinct warehouse
 			from tabBin where item_code=%s""", new_name)
@@ -702,7 +702,7 @@ class Item(WebsiteGenerator):
 		for warehouse in repost_stock_for_warehouses:
 			repost_stock(new_name, warehouse)
 
-		frappe.db.set_value("Stock Settings", None, "allow_negative_stock", existing_allow_negative_stock)
+		frappe.company_set_value("Stock Settings", "allow_negative_stock", existing_allow_negative_stock)
 		frappe.db.auto_commit_on_many_writes = 0
 
 	@frappe.whitelist()
@@ -966,7 +966,7 @@ class Item(WebsiteGenerator):
 
 		values = frappe.db.get_value("Item", self.name, fields, as_dict=True)
 		if not values.get('valuation_method') and self.get('valuation_method'):
-			values['valuation_method'] = frappe.db.get_single_value("Stock Settings", "valuation_method") or "FIFO"
+			values['valuation_method'] = frappe.company_get_single_value("Stock Settings", "valuation_method") or "FIFO"
 
 		if values:
 			for field in fields:
@@ -999,7 +999,7 @@ class Item(WebsiteGenerator):
 
 	def validate_auto_reorder_enabled_in_stock_settings(self):
 		if self.reorder_levels:
-			enabled = frappe.db.get_single_value('Stock Settings', 'auto_indent')
+			enabled = frappe.company_get_single_value('Stock Settings', 'auto_indent')
 			if not enabled:
 				frappe.msgprint(msg=_("You have to enable auto re-order in Stock Settings to maintain re-order levels."), title=_("Enable Auto Re-Order"), indicator="orange")
 

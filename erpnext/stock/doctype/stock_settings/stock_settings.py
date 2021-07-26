@@ -44,7 +44,7 @@ class StockSettings(Document):
 					.format(frappe.bold(self.meta.get_field(field).label)), title =_("Incorrect Warehouse"))
 
 	def cant_change_valuation_method(self):
-		db_valuation_method = frappe.db.get_single_value("Stock Settings", "valuation_method")
+		db_valuation_method = frappe.company_get_single_value("Stock Settings", "valuation_method")
 
 		if db_valuation_method and db_valuation_method != self.valuation_method:
 			# check if there are any stock ledger entries against items
