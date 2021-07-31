@@ -795,7 +795,7 @@ class Item(WebsiteGenerator):
 
 	def update_variants(self):
 		if self.flags.dont_update_variants or \
-						frappe.db.get_single_value('Item Variant Settings', 'do_not_update_variants'):
+						frappe.company_get_single_value('Item Variant Settings', 'do_not_update_variants'):
 			return
 		if self.has_variants:
 			variants = frappe.db.get_all("Item", fields=["item_code"], filters={"variant_of": self.name})

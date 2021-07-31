@@ -94,7 +94,7 @@ def validate_is_incremental(numeric_attribute, attribute, value, item):
 			InvalidItemAttributeValueError, title=_('Invalid Attribute'))
 
 def validate_item_attribute_value(attributes_list, attribute, attribute_value, item, from_variant=True):
-	allow_rename_attribute_value = frappe.db.get_single_value('Item Variant Settings', 'allow_rename_attribute_value')
+	allow_rename_attribute_value = frappe.company_get_single_value('Item Variant Settings', 'allow_rename_attribute_value')
 	if allow_rename_attribute_value:
 		pass
 	elif attribute_value not in attributes_list:
