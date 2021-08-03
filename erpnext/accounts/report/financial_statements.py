@@ -13,6 +13,7 @@ import math
 import frappe, erpnext
 from erpnext.accounts.report.utils import get_currency, convert_to_presentation_currency
 from erpnext.accounts.utils import get_fiscal_year
+from erpnext.setup.doctype.company.company import remove_abbr_from_text
 from frappe import _
 from frappe.utils import (flt, getdate, get_first_day, add_months, add_days, formatdate, cstr, cint)
 
@@ -25,6 +26,10 @@ def get_period_list(from_fiscal_year, to_fiscal_year, period_start_date, period_
 		Periodicity can be (Yearly, Quarterly, Monthly)"""
 
 	if filter_based_on == 'Fiscal Year':
+		company = frappe.get_company(frappe.session.user)
+		if company:
+			from_fiscal_year = remove_abbr_from_text(from_fiscal_year, company)
+			to_fiscal_year = remove_abbr_from_text(to_fiscal_year, company)
 		fiscal_year = get_fiscal_year_data(from_fiscal_year, to_fiscal_year)
 		validate_fiscal_year(fiscal_year, from_fiscal_year, to_fiscal_year)
 		year_start_date = getdate(fiscal_year.year_start_date)
@@ -102,9 +107,15 @@ def get_period_list(from_fiscal_year, to_fiscal_year, period_start_date, period_
 
 
 def get_fiscal_year_data(from_fiscal_year, to_fiscal_year):
+	company_con = frappe.get_company_condition()
+	company = frappe.get_company(frappe.session.user)
+	if company:
+		from_fiscal_year = remove_abbr_from_text(from_fiscal_year, company)
+		to_fiscal_year = remove_abbr_from_text(to_fiscal_year, company)
+
 	fiscal_year = frappe.db.sql("""select min(year_start_date) as year_start_date,
 		max(year_end_date) as year_end_date from `tabFiscal Year` where
-		name between %(from_fiscal_year)s and %(to_fiscal_year)s""",
+		year between %(from_fiscal_year)s and %(to_fiscal_year)s{0}""".format(company_con),
 		{'from_fiscal_year': from_fiscal_year, 'to_fiscal_year': to_fiscal_year}, as_dict=1)
 
 	return fiscal_year[0] if fiscal_year else {}

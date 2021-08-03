@@ -440,6 +440,14 @@ def get_name_with_abbr(name, company):
 
 	return " - ".join(parts)
 
+def get_abbr_extension(company):
+	company_abbr = frappe.get_cached_value('Company',  company,  "abbr")
+	return " - {0}".format(company_abbr)
+
+def remove_abbr_from_text(text, company):
+	text = text.replace(get_abbr_extension(company), "")
+	return text
+
 def install_country_fixtures(company, country):
 	path = frappe.get_app_path('erpnext', 'regional', frappe.scrub(country))
 	if os.path.exists(path.encode("utf-8")):
