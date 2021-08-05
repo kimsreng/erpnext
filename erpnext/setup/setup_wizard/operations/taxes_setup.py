@@ -198,21 +198,17 @@ def get_or_create_account(company_name, account):
 	Check if account already exists. If not, create it.
 	Return a tax account or None.
 	"""
+	from erpnext.accounts.utils import get_autoname_with_number
+
 	default_root_type = 'Liability'
 	root_type = account.get('root_type', default_root_type)
-
-	existing_accounts = frappe.get_list('Account',
-		filters={
-			'company': company_name,
-			'root_type': root_type
-		},
-		or_filters={
-			'account_name': account.get('account_name'),
-			'account_number': account.get('account_number')
-		})
-
-	if existing_accounts:
-		return frappe.get_doc('Account', existing_accounts[0].name)
+	account_name = get_autoname_with_number(account.get('account_number'), account.get('account_name'), None, company_name)
+	
+	try:
+		doc = frappe.get_doc("Account", account_name)
+		return doc
+	except:
+		pass
 
 	tax_group = get_or_create_tax_group(company_name, root_type)
 
