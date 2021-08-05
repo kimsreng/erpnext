@@ -52,7 +52,7 @@ frappe.ui.form.on('Stock Entry', {
 			}
 		});
 
-		frappe.db.get_value('Stock Settings', {name: 'Stock Settings'}, 'sample_retention_warehouse', (r) => {
+		frappe.db.get_company_single_value('Stock Settings', 'sample_retention_warehouse', (r) => {
 			if (r.sample_retention_warehouse) {
 				var filters = [
 							["Warehouse", 'company', '=', frm.doc.company],
@@ -101,7 +101,7 @@ frappe.ui.form.on('Stock Entry', {
 		frm.add_fetch("bom_no", "inspection_required", "inspection_required");
 		erpnext.accounts.dimensions.setup_dimension_filters(frm, frm.doctype);
 
-		frappe.db.get_single_value('Stock Settings', 'disable_serial_no_and_batch_selector')
+		frappe.db.get_company_single_value('Stock Settings', 'disable_serial_no_and_batch_selector')
 		.then((value) => {
 			if (value) {
 				frappe.flags.hide_serial_batch_dialog = true;
