@@ -40,6 +40,7 @@ def search_by_term(search_term, warehouse, price_list):
 
 @frappe.whitelist()
 def get_items(start, page_length, price_list, item_group, pos_profile, search_term=""):
+	from frappe.desk.reportview import build_match_conditions
 	warehouse, hide_unavailable_items = frappe.db.get_value(
 		'POS Profile', pos_profile, ['warehouse', 'hide_unavailable_items'])
 
@@ -55,6 +56,9 @@ def get_items(start, page_length, price_list, item_group, pos_profile, search_te
 
 	condition = get_conditions(search_term)
 	condition += get_item_group_condition(pos_profile)
+
+	permission_conditions = build_match_conditions('Item')
+	permission_conditions = "and {0}".format(permission_conditions) if permission_conditions else ""
 
 	lft, rgt = frappe.db.get_value('Item Group', item_group, ['lft', 'rgt'])
 
@@ -78,6 +82,7 @@ def get_items(start, page_length, price_list, item_group, pos_profile, search_te
 			AND item.has_variants = 0
 			AND item.is_sales_item = 1
 			AND item.is_fixed_asset = 0
+			{permission_conditions}
 			AND item.item_group in (SELECT name FROM `tabItem Group` WHERE lft >= {lft} AND rgt <= {rgt})
 			AND {condition}
 			{bin_join_condition}
@@ -86,6 +91,7 @@ def get_items(start, page_length, price_list, item_group, pos_profile, search_te
 		LIMIT
 			{start}, {page_length}"""
 		.format(
+			permission_conditions=permission_conditions,
 			start=start,
 			page_length=page_length,
 			lft=lft,
@@ -124,6 +130,7 @@ def get_items(start, page_length, price_list, item_group, pos_profile, search_te
 
 @frappe.whitelist()
 def search_for_serial_or_batch_or_barcode_number(search_value):
+	#TODO: filters allowed Items for user permission
 	# search barcode no
 	barcode_data = frappe.db.get_value('Item Barcode', {'barcode': search_value}, ['barcode', 'parent as item_code'], as_dict=True)
 	if barcode_data:
