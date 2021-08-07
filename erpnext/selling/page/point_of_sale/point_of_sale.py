@@ -3,6 +3,7 @@
 
 from __future__ import unicode_literals
 import frappe, json
+from frappe.desk.reportview import get_match_cond
 from frappe.utils.nestedset import get_root_of
 from frappe.utils import cint
 from erpnext.accounts.doctype.pos_profile.pos_profile import get_item_groups
@@ -57,8 +58,6 @@ def get_items(start, page_length, price_list, item_group, pos_profile, search_te
 	condition = get_conditions(search_term)
 	condition += get_item_group_condition(pos_profile)
 
-	permission_conditions = build_match_conditions('Item')
-	permission_conditions = "and {0}".format(permission_conditions) if permission_conditions else ""
 
 	lft, rgt = frappe.db.get_value('Item Group', item_group, ['lft', 'rgt'])
 
@@ -91,7 +90,7 @@ def get_items(start, page_length, price_list, item_group, pos_profile, search_te
 		LIMIT
 			{start}, {page_length}"""
 		.format(
-			permission_conditions=permission_conditions,
+			permission_conditions=get_match_cond("Item"),
 			start=start,
 			page_length=page_length,
 			lft=lft,
