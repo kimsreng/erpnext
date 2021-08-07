@@ -61,7 +61,7 @@ def get_all_customers(date_range, company, field, limit = None):
 		if date_range:
 			date_range = frappe.parse_json(date_range)
 			filters.append(['posting_date', '>=', 'between', [date_range[0], date_range[1]]])
-		return frappe.db.get_all('Sales Invoice',
+		return frappe.db.get_list('Sales Invoice',
 			fields = ['customer as name', 'sum(outstanding_amount) as value'],
 			filters = filters,
 			group_by = 'customer',
@@ -90,7 +90,7 @@ def get_all_customers(date_range, company, field, limit = None):
 def get_all_items(date_range, company, field, limit = None):
 	if field in ("available_stock_qty", "available_stock_value"):
 		select_field = "sum(actual_qty)" if field=="available_stock_qty" else "sum(stock_value)"
-		return frappe.db.get_all('Bin',
+		return frappe.db.get_list('Bin',
 			fields = ['item_code as name', '{0} as value'.format(select_field)],
 			group_by = 'item_code',
 			order_by = 'value desc',
@@ -130,7 +130,7 @@ def get_all_suppliers(date_range, company, field, limit = None):
 		if date_range:
 			date_range = frappe.parse_json(date_range)
 			filters.append(['posting_date', 'between', [date_range[0], date_range[1]]])
-		return frappe.db.get_all('Purchase Invoice',
+		return frappe.db.get_list('Purchase Invoice',
 			fields = ['supplier as name', 'sum(outstanding_amount) as value'],
 			filters = filters,
 			group_by = 'supplier',
