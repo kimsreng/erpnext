@@ -65,7 +65,7 @@ def get_exchange_rate(from_currency, to_currency, transaction_date=None, args=No
 
 	if not transaction_date:
 		transaction_date = nowdate()
-	currency_settings = frappe.get_doc("Accounts Settings").as_dict()
+	currency_settings = frappe.company_get_single("Accounts Settings").as_dict()
 	allow_stale_rates = currency_settings.get("allow_stale")
 
 	filters = [
@@ -85,7 +85,7 @@ def get_exchange_rate(from_currency, to_currency, transaction_date=None, args=No
 		filters.append(["date", ">", get_datetime_str(checkpoint_date)])
 
 	# cksgb 19/09/2016: get last entry in Currency Exchange with from_currency and to_currency.
-	entries = frappe.get_all(
+	entries = frappe.get_list(
 		"Currency Exchange", fields=["exchange_rate"], filters=filters, order_by="date desc",
 		limit=1)
 	if entries:
