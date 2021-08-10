@@ -42,7 +42,7 @@ erpnext.PointOfSale.Payment = class {
 	}
 
 	make_invoice_fields_control() {
-		frappe.db.get_company_doc("POS Settings").then((doc) => {
+		frappe.db.get_company_single_doc("POS Settings").then((doc) => {
 			const fields = doc.invoice_fields;
 			if (!fields.length) return;
 
@@ -161,6 +161,10 @@ erpnext.PointOfSale.Payment = class {
 
 		frappe.ui.form.on('POS Invoice', 'contact_mobile', (frm) => {
 			const contact = frm.doc.contact_mobile;
+			const request_for_payment_field = this.request_for_payment_field;
+			if(!request_for_payment_field){
+				return;
+			}
 			const request_button = $(this.request_for_payment_field.$input[0]);
 			if (contact) {
 				request_button.removeClass('btn-default').addClass('btn-primary');
