@@ -499,7 +499,7 @@ erpnext.PointOfSale.ItemCart = class {
 	}
 
 	render_taxes(taxes) {
-		if (taxes.length) {
+		if (taxes && taxes.length) {
 			const currency = this.events.get_frm().doc.currency;
 			const taxes_html = taxes.map(t => {
 				const description = /[0-9]+/.test(t.description) ? t.description : `${t.description} @ ${t.rate}%`;
