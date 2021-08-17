@@ -444,8 +444,16 @@ def get_abbr_extension(company):
 	company_abbr = frappe.get_cached_value('Company',  company,  "abbr")
 	return " - {0}".format(company_abbr)
 
+def get_abbr_prefix(company):
+	company_abbr = frappe.get_cached_value('Company',  company,  "abbr")
+	return "{0}-".format(company_abbr)
+
 def remove_abbr_from_text(text, company):
 	text = text.replace(get_abbr_extension(company), "")
+	return text
+
+def remove_abbr_from_code(text, company):
+	text = text.replace(get_abbr_prefix(company), "")
 	return text
 
 def install_country_fixtures(company, country):
