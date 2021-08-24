@@ -16,6 +16,7 @@
  "hide_custom": 1,
  "icon": "sell",
  "idx": 0,
+ "is_default": 0,
  "is_standard": 1,
  "label": "Selling",
  "links": [
@@ -111,6 +112,7 @@
    "link_to": "Item",
    "link_type": "DocType",
    "onboard": 1,
+   "translation_context": "Product",
    "type": "Link"
   },
   {
@@ -515,7 +517,7 @@
    "type": "Link"
   }
  ],
- "modified": "2020-12-01 13:38:35.971277",
+ "modified": "2021-08-24 11:05:14.539950",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Selling",
@@ -525,16 +527,17 @@
  "pin_to_top": 0,
  "shortcuts": [
   {
-   "color": "Grey",
+   "color": "#29CD42",
    "format": "{} Available",
    "label": "Item",
    "link_to": "Item",
    "stats_filter": "{\n    \"disabled\":0\n}",
+   "translation_context": "Product",
    "type": "DocType"
   },
   {
    "color": "Yellow",
-   "format": "{}  To Deliver",
+   "format": "{} To Deliver",
    "label": "Sales Order",
    "link_to": "Sales Order",
    "stats_filter": "{\n    \"company\": [\"like\", '%' + frappe.defaults.get_global_default(\"company\") + '%'],\n    \"status\":[\"in\", [\"To Deliver\", \"To Deliver and Bill\"]]\n}",
@@ -559,5 +562,5 @@
    "type": "Dashboard"
   }
  ],
- "shortcuts_label": "Quick Access"
+ "shortcuts_label": "Your Shortcuts"
 }

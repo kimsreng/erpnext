@@ -14,6 +14,7 @@
  "hide_custom": 0,
  "icon": "crm",
  "idx": 0,
+ "is_default": 0,
  "is_standard": 1,
  "label": "CRM",
  "links": [
@@ -32,6 +33,7 @@
    "link_to": "Lead",
    "link_type": "DocType",
    "onboard": 1,
+   "translation_context": "CRM-Lead",
    "type": "Link"
   },
   {
@@ -42,6 +44,7 @@
    "link_to": "Opportunity",
    "link_type": "DocType",
    "onboard": 1,
+   "translation_context": "CRM",
    "type": "Link"
   },
   {
@@ -102,6 +105,7 @@
    "link_to": "Appointment",
    "link_type": "DocType",
    "onboard": 0,
+   "translation_context": "CRM",
    "type": "Link"
   },
   {
@@ -363,7 +367,7 @@
    "type": "Link"
   }
  ],
- "modified": "2020-12-01 13:38:36.871352",
+ "modified": "2021-08-24 08:21:12.385849",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "CRM",
@@ -378,6 +382,7 @@
    "label": "Lead",
    "link_to": "Lead",
    "stats_filter": "{\"status\":\"Open\"}",
+   "translation_context": "CRM-Lead",
    "type": "DocType"
   },
   {
@@ -386,6 +391,7 @@
    "label": "Opportunity",
    "link_to": "Opportunity",
    "stats_filter": "{\"_assign\": [\"like\", '%' + frappe.session.user + '%']}",
+   "translation_context": "CRM",
    "type": "DocType"
   },
   {

@@ -17,6 +17,7 @@
  "hide_custom": 0,
  "icon": "buying",
  "idx": 0,
+ "is_default": 0,
  "is_standard": 1,
  "label": "Buying",
  "links": [
@@ -92,6 +93,7 @@
    "link_to": "Item",
    "link_type": "DocType",
    "onboard": 1,
+   "translation_context": "Product",
    "type": "Link"
   },
   {
@@ -467,7 +469,7 @@
    "type": "Link"
   }
  ],
- "modified": "2020-12-01 13:38:38.615167",
+ "modified": "2021-08-21 17:04:04.058507",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Buying",
@@ -482,6 +484,7 @@
    "label": "Item",
    "link_to": "Item",
    "stats_filter": "{\n    \"disabled\": 0\n}",
+   "translation_context": "Product",
    "type": "DocType"
   },
   {
@@ -494,7 +497,7 @@
   },
   {
    "color": "Yellow",
-   "format": "{}  To Receive",
+   "format": "{} To Receive",
    "label": "Purchase Order",
    "link_to": "Purchase Order",
    "stats_filter": "{\n    \"company\": [\"like\", '%' + frappe.defaults.get_global_default(\"company\") + '%'],\n    \"status\":[\"in\", [\"To Receive\", \"To Receive and Bill\"]]\n}",
