@@ -45,7 +45,7 @@ class TwitterSettings(Document):
 			})
 
 			frappe.local.response["type"] = "redirect"
-			frappe.local.response["location"] = get_url_to_form("Twitter Settings","Twitter Settings")
+			frappe.local.response["location"] = twitter_get_url_to_form("Twitter Settings","Twitter Settings")
 		except TweepError as e:
 			frappe.msgprint(_("Error! Failed to get access token."))
 			frappe.throw(_('Invalid Consumer Key or Consumer Secret Key'))
@@ -91,12 +91,18 @@ class TwitterSettings(Document):
 				frappe.db.commit()
 			frappe.throw(content["message"],title="Twitter Error {0} {1}".format(e.response.status_code, e.response.reason))
 
+def twitter_get_url_to_form():
+	company = frappe.get_company()
+	if company:
+		return get_url_to_form("Company Twitter Settings",company)
+	return get_url_to_form("Twitter Settings","Twitter Settings")
+
 @frappe.whitelist(allow_guest=True)
 def callback(oauth_token = None, oauth_verifier = None):
 	if oauth_token and oauth_verifier:
-		twitter_settings = frappe.get_single("Twitter Settings")
+		twitter_settings = frappe.company_get_single("Twitter Settings")
 		twitter_settings.get_access_token(oauth_token,oauth_verifier)
 		frappe.db.commit()
 	else:
 		frappe.local.response["type"] = "redirect"
-		frappe.local.response["location"] = get_url_to_form("Twitter Settings","Twitter Settings")
+		frappe.local.response["location"] = twitter_get_url_to_form("Twitter Settings","Twitter Settings")

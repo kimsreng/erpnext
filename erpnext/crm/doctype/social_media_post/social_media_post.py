@@ -24,7 +24,7 @@ class SocialMediaPost(Document):
 	def post(self):
 		try:
 			if self.twitter and not self.twitter_post_id:
-				twitter = frappe.get_doc("Twitter Settings")
+				twitter = frappe.company_get_single("Twitter Settings")
 				twitter_post = twitter.post(self.text, self.image)
 				self.db_set("twitter_post_id", twitter_post.id)
 			if self.linkedin and not self.linkedin_post_id:
