@@ -55,7 +55,7 @@ class LinkedInSettings(Document):
 			"session_status": "Active"
 		})
 		frappe.local.response["type"] = "redirect"
-		frappe.local.response["location"] = get_url_to_form("LinkedIn Settings","LinkedIn Settings")
+		frappe.local.response["location"] = linkedin_get_url_to_form("LinkedIn Settings","LinkedIn Settings")
 
 	def post(self, text, media=None):
 		if not media:
@@ -155,6 +155,12 @@ class LinkedInSettings(Document):
 
 		return response
 
+def linkedin_get_url_to_form():
+	company = frappe.get_company()
+	if company:
+		return get_url_to_form("Company LinkedIn Settings",company)
+	return get_url_to_form("LinkedIn Settings","LinkedIn Settings")
+
 @frappe.whitelist(allow_guest=True)
 def callback(code=None, error=None, error_description=None):
 	if not error:
@@ -164,4 +170,4 @@ def callback(code=None, error=None, error_description=None):
 		frappe.db.commit()
 	else:
 		frappe.local.response["type"] = "redirect"
-		frappe.local.response["location"] = get_url_to_form("LinkedIn Settings","LinkedIn Settings")
+		frappe.local.response["location"] = linkedin_get_url_to_form("LinkedIn Settings","LinkedIn Settings")
