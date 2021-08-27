@@ -6,180 +6,180 @@ from frappe import _
 
 def get():
 	return {
-	    _("Application of Funds (Assets)"): {
-	        _("Current Assets"): {
-	            _("Accounts Receivable"): {
-	                _("Debtors"): {
+	    "Application of Funds (Assets)": {
+	        "Current Assets": {
+	            "Accounts Receivable": {
+	                "Debtors": {
 	                    "account_type": "Receivable"
 	                }
 	            },
-	            _("Bank Accounts"): {
+	            "Bank Accounts": {
 	                "account_type": "Bank",
 					"is_group": 1
 	            },
-	            _("Cash In Hand"): {
-	                _("Cash"): {
+	            "Cash In Hand": {
+	                "Cash": {
 	                    "account_type": "Cash"
 	                },
 	                "account_type": "Cash"
 	            },
-	            _("Loans and Advances (Assets)"): {
-                    	_("Employee Advances"): {
+	            "Loans and Advances (Assets)": {
+                    	"Employee Advances": {
                     	},
 	            },
-	            _("Securities and Deposits"): {
-	                _("Earnest Money"): {}
+	            "Securities and Deposits": {
+	                "Earnest Money": {}
 	            },
-	            _("Stock Assets"): {
-	                _("Stock In Hand"): {
+	            "Stock Assets": {
+	                "Stock In Hand": {
 	                    "account_type": "Stock"
 	                },
 	                "account_type": "Stock",
 	            },
-	            _("Tax Assets"): {
+	            "Tax Assets": {
 					"is_group": 1
 				}
 	        },
-	        _("Fixed Assets"): {
-	            _("Capital Equipments"): {
+	        "Fixed Assets": {
+	            "Capital Equipments": {
 	                "account_type": "Fixed Asset"
 	            },
-	            _("Electronic Equipments"): {
+	            "Electronic Equipments": {
 	                "account_type": "Fixed Asset"
 	            },
-	            _("Furnitures and Fixtures"): {
+	            "Furnitures and Fixtures": {
 	                "account_type": "Fixed Asset"
 	            },
-	            _("Office Equipments"): {
+	            "Office Equipments": {
 	                "account_type": "Fixed Asset"
 	            },
-	            _("Plants and Machineries"): {
+	            "Plants and Machineries": {
 	                "account_type": "Fixed Asset"
 	            },
-				_("Buildings"): {
+				"Buildings": {
 					"account_type": "Fixed Asset"
 				},
-				_("Softwares"): {
+				"Softwares": {
 					"account_type": "Fixed Asset"
 				},
-	            _("Accumulated Depreciation"): {
+	            "Accumulated Depreciation": {
 	            	"account_type": "Accumulated Depreciation"
 	            },
-                _("CWIP Account"): {
+                "CWIP Account": {
                     "account_type": "Capital Work in Progress",
                 }
 	        },
-	        _("Investments"): {
+	        "Investments": {
 	        	"is_group": 1
 	        },
-	        _("Temporary Accounts"): {
-	            _("Temporary Opening"): {
+	        "Temporary Accounts": {
+	            "Temporary Opening": {
 	            	"account_type": "Temporary"
 	            }
 	        },
 			"root_type": "Asset"
 	    },
-	    _("Expenses"): {
-	        _("Direct Expenses"): {
-	            _("Stock Expenses"): {
-	                _("Cost of Goods Sold"): {
+	    "Expenses": {
+	        "Direct Expenses": {
+	            "Stock Expenses": {
+	                "Cost of Goods Sold": {
 	                    "account_type": "Cost of Goods Sold"
 	                },
-                    _("Expenses Included In Asset Valuation"): {
+                    "Expenses Included In Asset Valuation": {
                         "account_type": "Expenses Included In Asset Valuation"
                     },
-	                _("Expenses Included In Valuation"): {
+	                "Expenses Included In Valuation": {
 	                    "account_type": "Expenses Included In Valuation"
 	                },
-	                _("Stock Adjustment"): {
+	                "Stock Adjustment": {
 	                    "account_type": "Stock Adjustment"
 	                }
 	            },
 	        },
-	        _("Indirect Expenses"): {
-	            _("Administrative Expenses"): {},
-	            _("Commission on Sales"): {},
-	            _("Depreciation"): {
+	        "Indirect Expenses": {
+	            "Administrative Expenses": {},
+	            "Commission on Sales": {},
+	            "Depreciation": {
 	                "account_type": "Depreciation"
 	            },
-	            _("Entertainment Expenses"): {},
-	            _("Freight and Forwarding Charges"): {
+	            "Entertainment Expenses": {},
+	            "Freight and Forwarding Charges": {
 	                "account_type": "Chargeable"
 	            },
-	            _("Legal Expenses"): {},
-	            _("Marketing Expenses"): {
+	            "Legal Expenses": {},
+	            "Marketing Expenses": {
 	                "account_type": "Chargeable"
 	            },
-	            _("Miscellaneous Expenses"): {
+	            "Miscellaneous Expenses": {
 	                "account_type": "Chargeable"
 	            },
-	            _("Office Maintenance Expenses"): {},
-	            _("Office Rent"): {},
-	            _("Postal Expenses"): {},
-	            _("Print and Stationery"): {},
-	            _("Round Off"): {
+	            "Office Maintenance Expenses": {},
+	            "Office Rent": {},
+	            "Postal Expenses": {},
+	            "Print and Stationery": {},
+	            "Round Off": {
 	                "account_type": "Round Off"
 	            },
-	            _("Salary"): {},
-	            _("Sales Expenses"): {},
-	            _("Telephone Expenses"): {},
-	            _("Travel Expenses"): {},
-	            _("Utility Expenses"): {},
-				_("Write Off"): {},
-				_("Exchange Gain/Loss"): {},
-				_("Gain/Loss on Asset Disposal"): {}
+	            "Salary": {},
+	            "Sales Expenses": {},
+	            "Telephone Expenses": {},
+	            "Travel Expenses": {},
+	            "Utility Expenses": {},
+				"Write Off": {},
+				"Exchange Gain/Loss": {},
+				"Gain/Loss on Asset Disposal": {}
 	        },
 			"root_type": "Expense"
 	    },
-	    _("Income"): {
-	        _("Direct Income"): {
-	            _("Sales"): {},
-	            _("Service"): {}
+	    "Income": {
+	        "Direct Income": {
+	            "Sales": {},
+	            "Service": {}
 	        },
-	        _("Indirect Income"): {
+	        "Indirect Income": {
 				"is_group": 1
 	        },
 	        "root_type": "Income"
 	    },
-	    _("Source of Funds (Liabilities)"): {
-	        _("Current Liabilities"): {
-			    _("Accounts Payable"): {
-			        _("Creditors"): {
+	    "Source of Funds (Liabilities)": {
+	        "Current Liabilities": {
+			    "Accounts Payable": {
+			        "Creditors": {
 			            "account_type": "Payable"
 			        },
-			        _("Payroll Payable"): {},
+			        "Payroll Payable": {},
 			    },
-			    _("Stock Liabilities"): {
-				    _("Stock Received But Not Billed"): {
+			    "Stock Liabilities": {
+				    "Stock Received But Not Billed": {
 				        "account_type": "Stock Received But Not Billed"
 				    },
-                    _("Asset Received But Not Billed"): {
+                    "Asset Received But Not Billed": {
                         "account_type": "Asset Received But Not Billed"
                     }
 			    },
-				_("Duties and Taxes"): {
+				"Duties and Taxes": {
 					"account_type": "Tax",
 					"is_group": 1
 				},
-				_("Loans (Liabilities)"): {
-					_("Secured Loans"): {},
-					_("Unsecured Loans"): {},
-					_("Bank Overdraft Account"): {},
+				"Loans (Liabilities)": {
+					"Secured Loans": {},
+					"Unsecured Loans": {},
+					"Bank Overdraft Account": {},
 				},
 	        },
 			"root_type": "Liability"
 	    },
-		_("Equity"): {
-	        _("Capital Stock"): {
+		"Equity": {
+	        "Capital Stock": {
 	            "account_type": "Equity"
 	        },
-	        _("Dividends Paid"): {
+	        "Dividends Paid": {
 	            "account_type": "Equity"
 	        },
-	        _("Opening Balance Equity"): {
+	        "Opening Balance Equity": {
 	            "account_type": "Equity"
 	        },
-	        _("Retained Earnings"): {
+	        "Retained Earnings": {
 	            "account_type": "Equity"
 	        },
 			"root_type": "Equity"

@@ -136,11 +136,11 @@ class Company(NestedSet):
 
 	def create_default_warehouses(self):
 		for wh_detail in [
-			{"warehouse_name": _("All Warehouses"), "is_group": 1},
-			{"warehouse_name": _("Stores"), "is_group": 0},
-			{"warehouse_name": _("Work In Progress"), "is_group": 0},
-			{"warehouse_name": _("Finished Goods"), "is_group": 0},
-			{"warehouse_name": _("Goods In Transit"), "is_group": 0, "warehouse_type": "Transit"}]:
+			{"warehouse_name": "All Warehouses", "is_group": 1},
+			{"warehouse_name": "Stores", "is_group": 0},
+			{"warehouse_name": "Work In Progress", "is_group": 0},
+			{"warehouse_name": "Finished Goods", "is_group": 0},
+			{"warehouse_name": "Goods In Transit", "is_group": 0, "warehouse_type": "Transit"}]:
 
 			if not frappe.db.exists("Warehouse", "{0} - {1}".format(wh_detail["warehouse_name"], self.abbr)):
 				warehouse = frappe.get_doc({
@@ -148,7 +148,7 @@ class Company(NestedSet):
 					"warehouse_name": wh_detail["warehouse_name"],
 					"is_group": wh_detail["is_group"],
 					"company": self.name,
-					"parent_warehouse": "{0} - {1}".format(_("All Warehouses"), self.abbr) \
+					"parent_warehouse": "{0} - {1}".format("All Warehouses", self.abbr) \
 						if not wh_detail["is_group"] else "",
 					"warehouse_type" : wh_detail["warehouse_type"] if "warehouse_type" in wh_detail else None
 				})
@@ -307,7 +307,7 @@ class Company(NestedSet):
 				'parent_cost_center':None
 			},
 			{
-				'cost_center_name':_('Main'),
+				'cost_center_name': 'Main',
 				'company':self.name,
 				'is_group':0,
 				'parent_cost_center':self.name + ' - ' + self.abbr
@@ -322,9 +322,9 @@ class Company(NestedSet):
 				cc_doc.flags.ignore_mandatory = True
 			cc_doc.insert()
 
-		frappe.db.set(self, "cost_center", _("Main") + " - " + self.abbr)
-		frappe.db.set(self, "round_off_cost_center", _("Main") + " - " + self.abbr)
-		frappe.db.set(self, "depreciation_cost_center", _("Main") + " - " + self.abbr)
+		frappe.db.set(self, "cost_center", "Main" + " - " + self.abbr)
+		frappe.db.set(self, "round_off_cost_center", "Main" + " - " + self.abbr)
+		frappe.db.set(self, "depreciation_cost_center", "Main" + " - " + self.abbr)
 
 	def after_rename(self, olddn, newdn, merge=False):
 		frappe.db.set(self, "company_name", newdn)
