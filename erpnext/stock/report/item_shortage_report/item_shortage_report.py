@@ -23,7 +23,7 @@ def get_conditions(filters):
 	if filters.get("warehouse"):
 		conditions += "AND warehouse in %(warehouse)s"
 	if filters.get("company"):
-		conditions += "AND company = %(company)s"
+		conditions += "AND bin.company = %(company)s"
 
 	return conditions
 
