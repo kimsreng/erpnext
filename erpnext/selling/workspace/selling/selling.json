@@ -7,7 +7,7 @@
   }
  ],
  "charts_label": "Selling ",
- "creation": "2020-01-28 11:49:12.092882",
+ "creation": "2021-08-28 22:39:24.046969",
  "developer_mode_only": 0,
  "disable_user_customization": 0,
  "docstatus": 0,
@@ -517,7 +517,7 @@
    "type": "Link"
   }
  ],
- "modified": "2021-08-24 11:05:14.539950",
+ "modified": "2021-08-29 15:25:39.857903",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Selling",
@@ -562,5 +562,5 @@
    "type": "Dashboard"
   }
  ],
- "shortcuts_label": "Your Shortcuts"
+ "shortcuts_label": ""
 }
