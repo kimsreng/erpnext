@@ -24,7 +24,7 @@ erpnext.PointOfSale.ItemSelector = class {
 		this.wrapper.append(
 			`<section class="items-selector">
 				<div class="filter-section">
-					<div class="label">All Items</div>
+					<div class="label">${__("All Items", null, "Product")}</div>
 					<div class="search-field"></div>
 					<div class="item-group-field"></div>
 				</div>
@@ -153,7 +153,7 @@ erpnext.PointOfSale.ItemSelector = class {
 				label: __('Item Group'),
 				fieldtype: 'Link',
 				options: 'Item Group',
-				placeholder: __('Select item group'),
+				placeholder: __('Select item group', null, "Product"),
 				onchange: function() {
 					me.item_group = this.value;
 					!me.item_group && (me.item_group = me.parent_item_group);

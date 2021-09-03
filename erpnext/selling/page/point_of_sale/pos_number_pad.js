@@ -17,7 +17,8 @@ erpnext.PointOfSale.NumberPad = class {
 
 	prepare_dom() {
 		const { cols, keys, css_classes, fieldnames } = this;
-
+		//__("Remove", null, "POS");
+		//__("Rate", null, "POS");
 		function get_keys() {
 			return keys.reduce((a, row, i) => {
 				return a + row.reduce((a2, number, j) => {
@@ -25,7 +26,7 @@ erpnext.PointOfSale.NumberPad = class {
 					const fieldname = fieldnames && fieldnames[number] ?
 						fieldnames[number] : typeof number === 'string' ? frappe.scrub(number) : number;
 
-					return a2 + `<div class="numpad-btn ${class_to_append}" data-button-value="${fieldname}">${number}</div>`;
+					return a2 + `<div class="numpad-btn ${class_to_append}" data-button-value="${fieldname}">${__(number, null, "POS")}</div>`;
 				}, '');
 			}, '');
 		}

@@ -28,7 +28,7 @@ erpnext.PointOfSale.ItemDetails = class {
 	init_child_components() {
 		this.$component.html(
 			`<div class="item-details-header">
-				<div class="label">Item Details</div>
+				<div class="label">${__("Item Details")}</div>
 				<div class="close-btn">
 					<svg width="32" height="32" viewBox="0 0 14 14" fill="none">
 						<path d="M4.93764 4.93759L7.00003 6.99998M9.06243 9.06238L7.00003 6.99998M7.00003 6.99998L4.93764 9.06238L9.06243 4.93759" stroke="#8D99A6"/>
@@ -202,7 +202,7 @@ erpnext.PointOfSale.ItemDetails = class {
 				);
 			}
 			this.$form_container.append(
-				`<div class="btn btn-sm btn-secondary auto-fetch-btn">Auto Fetch Serial Numbers</div>`
+				`<div class="btn btn-sm btn-secondary auto-fetch-btn">${__("Auto Fetch Serial Numbers")}</div>`
 			);
 			this.$form_container.find('.serial_no-control').find('textarea').css('height', '6rem');
 		}
