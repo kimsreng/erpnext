@@ -11,7 +11,7 @@ frappe.ui.form.on("Journal Entry", {
 	},
 
 	refresh: function(frm) {
-		erpnext.toggle_naming_series();
+		// erpnext.toggle_naming_series();
 
 		if(frm.doc.docstatus > 0) {
 			frm.add_custom_button(__('Ledger'), function() {
