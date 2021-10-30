@@ -5,9 +5,10 @@ from __future__ import unicode_literals
 import frappe, json
 from frappe.desk.reportview import get_match_cond
 from frappe.utils.nestedset import get_root_of
-from frappe.utils import cint
-from erpnext.accounts.doctype.pos_profile.pos_profile import get_item_groups
+
 from erpnext.accounts.doctype.pos_invoice.pos_invoice import get_stock_availability
+from erpnext.accounts.doctype.pos_profile.pos_profile import get_item_groups
+
 
 def search_by_term(search_term, warehouse, price_list):
 	result = search_for_serial_or_batch_or_barcode_number(search_term) or {}
@@ -152,7 +153,7 @@ def filter_service_items(items):
 		if not item['is_stock_item']:
 			if not frappe.db.exists('Product Bundle', item['item_code']):
 				items.remove(item)
-	
+
 	return items
 
 def get_conditions(search_term):
@@ -215,7 +216,6 @@ def check_opening_entry(user):
 
 @frappe.whitelist()
 def create_opening_voucher(pos_profile, company, balance_details):
-	import json
 	balance_details = json.loads(balance_details)
 
 	new_pos_opening = frappe.get_doc({

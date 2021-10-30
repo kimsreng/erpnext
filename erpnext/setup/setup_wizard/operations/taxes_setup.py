@@ -3,8 +3,8 @@
 
 from __future__ import unicode_literals
 
-import os
 import json
+import os
 
 import frappe
 from frappe import _
@@ -145,7 +145,7 @@ def make_taxes_and_charges_template(company_name, doctype, template):
 
 	doc = frappe.get_doc(template)
 
-	# Data in country wise json is already pre validated, hence validations can be ignored 
+	# Data in country wise json is already pre validated, hence validations can be ignored
 	# Ingone validations to make doctypes faster
 	doc.flags.ignore_links = True
 	doc.flags.ignore_validate = True
@@ -177,7 +177,7 @@ def make_item_tax_template(company_name, template):
 
 	doc = frappe.get_doc(template)
 
-	# Data in country wise json is already pre validated, hence validations can be ignored 
+	# Data in country wise json is already pre validated, hence validations can be ignored
 	# Ingone validations to make doctypes faster
 	doc.flags.ignore_links = True
 	doc.flags.ignore_validate = True
@@ -203,13 +203,19 @@ def get_or_create_account(company_name, account):
 
 	default_root_type = 'Liability'
 	root_type = account.get('root_type', default_root_type)
-	account_name = get_autoname_with_number(account.get('account_number'), account.get('account_name'), None, company_name)
-	
-	try:
-		doc = frappe.get_doc("Account", account_name)
-		return doc
-	except:
-		pass
+
+	existing_accounts = frappe.get_all('Account',
+		filters={
+			'company': company_name,
+			'root_type': root_type
+		},
+		or_filters={
+			'account_name': account.get('account_name'),
+			'account_number': account.get('account_number')
+		})
+
+	if existing_accounts:
+		return frappe.get_doc('Account', existing_accounts[0].name)
 
 	tax_group = get_or_create_tax_group(company_name, root_type)
 
@@ -253,7 +259,7 @@ def get_or_create_tax_group(company_name, root_type):
 
 	# Create a new group account named 'Duties and Taxes' or 'Tax Assets' just
 	# below the root account
-	root_account = frappe.get_list('Account', {
+	root_account = frappe.get_all('Account', {
 		'is_group': 1,
 		'root_type': root_type,
 		'company': company_name,
