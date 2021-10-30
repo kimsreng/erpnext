@@ -91,7 +91,7 @@ class PurchaseOrder(BuyingController):
 		})
 
 
-		if cint(frappe.company_get_single_value('Buying Settings', 'maintain_same_rate')):
+		if cint(frappe.get_single_value('Buying Settings', 'maintain_same_rate')):
 			self.validate_rate_with_reference_doc([["Supplier Quotation", "supplier_quotation", "supplier_quotation_item"]])
 
 	def set_tax_withholding(self):
@@ -491,7 +491,7 @@ def get_mapped_purchase_invoice(source_name, target_doc=None, ignore_permissions
 		},
 	}
 
-	if frappe.company_get_single("Accounts Settings").automatically_fetch_payment_terms == 1:
+	if frappe.get_single("Accounts Settings").automatically_fetch_payment_terms == 1:
 		fields["Payment Schedule"] = {
 			"doctype": "Payment Schedule",
 			"add_if_empty": True

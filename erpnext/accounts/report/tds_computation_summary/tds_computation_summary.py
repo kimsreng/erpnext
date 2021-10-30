@@ -9,7 +9,7 @@ from erpnext.accounts.doctype.tax_withholding_category.tax_withholding_category 
 def execute(filters=None):
 	validate_filters(filters)
 
-	filters.naming_series = frappe.company_get_single_value('Buying Settings', 'supp_master_name')
+	filters.naming_series = frappe.get_single_value('Buying Settings', 'supp_master_name')
 
 	columns = get_columns(filters)
 	res = get_result(filters)

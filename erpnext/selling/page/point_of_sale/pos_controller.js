@@ -115,7 +115,7 @@ erpnext.PointOfSale.Controller = class {
 		this.item_stock_map = {};
 		this.settings = {};
 
-		frappe.db.get_company_single_doc('Stock Settings', 'allow_negative_stock').then(({ message }) => {
+		frappe.db.get_agent_single_doc('Stock Settings', 'allow_negative_stock').then(({ message }) => {
 			this.allow_negative_stock = flt(message) || false;
 		});
 

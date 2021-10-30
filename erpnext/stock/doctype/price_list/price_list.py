@@ -20,12 +20,12 @@ class PriceList(Document):
 
 	def set_default_if_missing(self):
 		if cint(self.selling):
-			if not frappe.company_get_single_value("Selling Settings", "selling_price_list"):
-				frappe.company_set_value("Selling Settings",  "selling_price_list", self.name)
+			if not frappe.get_single_value("Selling Settings", "selling_price_list"):
+				frappe.set_single_value("Selling Settings",  "selling_price_list", self.name)
 
 		elif cint(self.buying):
-			if not frappe.company_get_single_value("Buying Settings", "buying_price_list"):
-				frappe.company_set_value("Buying Settings", "buying_price_list", self.name)
+			if not frappe.get_single_value("Buying Settings", "buying_price_list"):
+				frappe.set_single_value("Buying Settings", "buying_price_list", self.name)
 
 	def update_item_price(self):
 		frappe.db.sql("""update `tabItem Price` set currency=%s,

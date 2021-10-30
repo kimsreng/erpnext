@@ -107,7 +107,7 @@ class StockLedgerEntry(Document):
 		self.stock_uom = item_det.stock_uom
 
 	def check_stock_frozen_date(self):
-		stock_settings = frappe.company_get_single('Stock Settings')
+		stock_settings = frappe.get_single('Stock Settings')
 
 		if stock_settings.stock_frozen_upto:
 			if (getdate(self.posting_date) <= getdate(stock_settings.stock_frozen_upto)
@@ -145,7 +145,7 @@ class StockLedgerEntry(Document):
 		is_group_warehouse(self.warehouse)
 
 	def validate_with_last_transaction_posting_time(self):
-		authorized_role = frappe.company_get_single_value("Stock Settings", "role_allowed_to_create_edit_back_dated_transactions")
+		authorized_role = frappe.get_single_value("Stock Settings", "role_allowed_to_create_edit_back_dated_transactions")
 		if authorized_role:
 			authorized_users = get_users(authorized_role)
 			if authorized_users and frappe.session.user not in authorized_users:

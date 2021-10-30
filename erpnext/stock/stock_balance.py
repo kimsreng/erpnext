@@ -15,8 +15,8 @@ def repost(only_actual=False, allow_negative_stock=False, allow_zero_rate=False,
 	frappe.db.auto_commit_on_many_writes = 1
 
 	if allow_negative_stock:
-		existing_allow_negative_stock = frappe.company_get_single_value("Stock Settings", "allow_negative_stock")
-		frappe.company_set_value("Stock Settings", "allow_negative_stock", 1)
+		existing_allow_negative_stock = frappe.get_single_value("Stock Settings", "allow_negative_stock")
+		frappe.set_single_value("Stock Settings", "allow_negative_stock", 1)
 
 	item_warehouses = frappe.db.sql("""
 		select distinct item_code, warehouse
@@ -33,7 +33,7 @@ def repost(only_actual=False, allow_negative_stock=False, allow_zero_rate=False,
 			frappe.db.rollback()
 
 	if allow_negative_stock:
-		frappe.company_set_value("Stock Settings", "allow_negative_stock", existing_allow_negative_stock)
+		frappe.set_single_value("Stock Settings", "allow_negative_stock", existing_allow_negative_stock)
 	frappe.db.auto_commit_on_many_writes = 0
 
 def repost_stock(item_code, warehouse, allow_zero_rate=False,

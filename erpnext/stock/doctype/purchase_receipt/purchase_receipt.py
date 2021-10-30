@@ -147,11 +147,11 @@ class PurchaseReceipt(BuyingController):
 			}
 		})
 
-		if cint(frappe.company_get_single_value('Buying Settings', 'maintain_same_rate')) and not self.is_return:
+		if cint(frappe.get_single_value('Buying Settings', 'maintain_same_rate')) and not self.is_return:
 			self.validate_rate_with_reference_doc([["Purchase Order", "purchase_order", "purchase_order_item"]])
 
 	def po_required(self):
-		if frappe.company_get_single_value("Buying Settings", "po_required") == 'Yes':
+		if frappe.get_single_value("Buying Settings", "po_required") == 'Yes':
 			for d in self.get('items'):
 				if not d.purchase_order:
 					frappe.throw(_("Purchase Order number required for Item {0}").format(d.item_code))
@@ -701,14 +701,14 @@ def make_purchase_invoice(source_name, target_doc=None):
 
 	def update_item(source_doc, target_doc, source_parent):
 		target_doc.qty, returned_qty = get_pending_qty(source_doc)
-		if frappe.company_get_single_value("Buying Settings", "bill_for_rejected_quantity_in_purchase_invoice"):
+		if frappe.get_single_value("Buying Settings", "bill_for_rejected_quantity_in_purchase_invoice"):
 			target_doc.rejected_qty = 0
 		target_doc.stock_qty = flt(target_doc.qty) * flt(target_doc.conversion_factor, target_doc.precision("conversion_factor"))
 		returned_qty_map[source_doc.name] = returned_qty
 
 	def get_pending_qty(item_row):
 		qty = item_row.qty
-		if frappe.company_get_single_value("Buying Settings", "bill_for_rejected_quantity_in_purchase_invoice"):
+		if frappe.get_single_value("Buying Settings", "bill_for_rejected_quantity_in_purchase_invoice"):
 			qty = item_row.received_qty
 		pending_qty = qty - invoiced_qty_map.get(item_row.name, 0)
 		returned_qty = flt(returned_qty_map.get(item_row.name, 0))

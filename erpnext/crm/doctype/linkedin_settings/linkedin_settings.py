@@ -156,9 +156,9 @@ class LinkedInSettings(Document):
 		return response
 
 def linkedin_get_url_to_form():
-	company = frappe.get_company()
-	if company:
-		return get_url_to_form("Company LinkedIn Settings",company)
+	agent = frappe.get_agent()
+	if agent:
+		return get_url_to_form("Agent LinkedIn Settings", agent)
 	return get_url_to_form("LinkedIn Settings","LinkedIn Settings")
 
 @frappe.whitelist(allow_guest=True)

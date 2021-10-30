@@ -112,7 +112,7 @@ class DeliveryNote(SellingController):
 
 	def so_required(self):
 		"""check in manage account if sales order required or not"""
-		if frappe.company_get_single_value("Selling Settings", 'so_required') == 'Yes':
+		if frappe.get_single_value("Selling Settings", 'so_required') == 'Yes':
 			for d in self.get('items'):
 				if not d.against_sales_order:
 					frappe.throw(_("Sales Order required for Item {0}").format(d.item_code))
@@ -164,7 +164,7 @@ class DeliveryNote(SellingController):
 			},
 		})
 
-		if cint(frappe.company_get_single_value('Selling Settings', 'maintain_same_sales_rate')) \
+		if cint(frappe.get_single_value('Selling Settings', 'maintain_same_sales_rate')) \
 				and not self.is_return:
 			self.validate_rate_with_reference_doc([["Sales Order", "against_sales_order", "so_detail"],
 				["Sales Invoice", "against_sales_invoice", "si_detail"]])

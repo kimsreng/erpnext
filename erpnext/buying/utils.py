@@ -72,7 +72,7 @@ def validate_for_items(doc):
 		items.append(cstr(d.item_code))
 
 	if items and len(items) != len(set(items)) and \
-		not cint(frappe.company_get_single_value("Buying Settings", "allow_multiple_items") or 0):
+		not cint(frappe.get_single_value("Buying Settings", "allow_multiple_items") or 0):
 		frappe.throw(_("Same item cannot be entered multiple times."))
 
 def check_on_hold_or_closed_status(doctype, docname):

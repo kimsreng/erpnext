@@ -43,7 +43,7 @@ def get_plan_rate(plan, quantity=1, customer=None, start_date=None, end_date=Non
 		cost = plan.cost * no_of_months
 
 		# Adjust cost if start or end date is not month start or end
-		prorate = frappe.company_get_single_value('Subscription Settings', 'prorate')
+		prorate = frappe.get_single_value('Subscription Settings', 'prorate')
 
 		if prorate:
 			prorate_factor = flt(date_diff(start_date, get_first_day(start_date)) / date_diff(

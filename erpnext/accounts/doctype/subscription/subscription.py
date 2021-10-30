@@ -156,7 +156,7 @@ class Subscription(Document):
 		Used when the `Subscription` needs to decide what to do after the current generated
 		invoice is past it's due date and grace period.
 		"""
-		subscription_settings = frappe.company_get_single('Subscription Settings')
+		subscription_settings = frappe.get_single('Subscription Settings')
 		if self.status == 'Past Due Date' and self.is_past_grace_period():
 			self.status = 'Cancelled' if cint(subscription_settings.cancel_after_grace) else 'Unpaid'
 
@@ -169,7 +169,7 @@ class Subscription(Document):
 		elif self.status == 'Active' and self.end_date and getdate() > getdate(self.end_date):
 			self.status = 'Completed'
 		elif self.is_past_grace_period():
-			subscription_settings = frappe.company_get_single('Subscription Settings')
+			subscription_settings = frappe.get_single('Subscription Settings')
 			self.status = 'Cancelled' if cint(subscription_settings.cancel_after_grace) else 'Unpaid'
 		elif self.current_invoice_is_past_due() and not self.is_past_grace_period():
 			self.status = 'Past Due Date'
@@ -203,7 +203,7 @@ class Subscription(Document):
 		"""
 		current_invoice = self.get_current_invoice()
 		if self.current_invoice_is_past_due(current_invoice):
-			subscription_settings = frappe.company_get_single('Subscription Settings')
+			subscription_settings = frappe.get_single('Subscription Settings')
 			grace_period = cint(subscription_settings.grace_period)
 
 			return getdate() > add_days(current_invoice.due_date, grace_period)
@@ -488,7 +488,7 @@ class Subscription(Document):
 			self.update_subscription_period(add_days(self.current_invoice_end, 1))
 
 		if not self.is_current_invoice_generated() and (self.is_postpaid_to_invoice() or self.is_prepaid_to_invoice()):
-			prorate = frappe.company_get_single_value('Subscription Settings', 'prorate')
+			prorate = frappe.get_single_value('Subscription Settings', 'prorate')
 			self.generate_invoice(prorate)
 
 		if self.cancel_at_period_end and getdate() > getdate(self.current_invoice_end):
@@ -529,7 +529,7 @@ class Subscription(Document):
 			# Generate invoices periodically even if current invoice are unpaid
 			if self.generate_new_invoices_past_due_date and not self.is_current_invoice_generated() and (self.is_postpaid_to_invoice()
 				or self.is_prepaid_to_invoice()):
-				prorate = frappe.company_get_single_value('Subscription Settings', 'prorate')
+				prorate = frappe.get_single_value('Subscription Settings', 'prorate')
 				self.generate_invoice(prorate)
 
 	@staticmethod
@@ -562,7 +562,7 @@ class Subscription(Document):
 		"""
 		if self.status != 'Cancelled':
 			to_generate_invoice = True if self.status == 'Active' and not self.generate_invoice_at_period_start else False
-			to_prorate = frappe.company_get_single_value('Subscription Settings', 'prorate')
+			to_prorate = frappe.get_single_value('Subscription Settings', 'prorate')
 			self.status = 'Cancelled'
 			self.cancelation_date = nowdate()
 			if to_generate_invoice:

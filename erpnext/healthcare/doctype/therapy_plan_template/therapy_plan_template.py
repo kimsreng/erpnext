@@ -37,7 +37,7 @@ class TherapyPlanTemplate(Document):
 		self.total_amount = total_amount
 
 	def create_item_from_template(self):
-		uom = frappe.db.exists('UOM', 'Nos') or frappe.company_get_single_value('Stock Settings', 'stock_uom')
+		uom = frappe.db.exists('UOM', 'Nos') or frappe.get_single_value('Stock Settings', 'stock_uom')
 
 		item = frappe.get_doc({
 			'doctype': 'Item',

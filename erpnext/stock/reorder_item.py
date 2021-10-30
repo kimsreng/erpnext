@@ -14,7 +14,7 @@ def reorder_item():
 	if not (frappe.db.a_row_exists("Company") and frappe.db.a_row_exists("Fiscal Year")):
 		return
 
-	if cint(frappe.company_get_single_value('Stock Settings', 'auto_indent')):
+	if cint(frappe.get_single_value('Stock Settings', 'auto_indent')):
 		return _reorder_item()
 
 def _reorder_item():
@@ -171,7 +171,7 @@ def create_material_request(material_requests):
 
 	if mr_list:
 		if getattr(frappe.local, "reorder_email_notify", None) is None:
-			frappe.local.reorder_email_notify = cint(frappe.company_get_single_value('Stock Settings', 'reorder_email_notify'))
+			frappe.local.reorder_email_notify = cint(frappe.get_single_value('Stock Settings', 'reorder_email_notify'))
 
 		if(frappe.local.reorder_email_notify):
 			send_email_notification(mr_list)

@@ -30,7 +30,7 @@ class Subcontracting():
 		self.__get_backflush_based_on()
 
 	def __get_backflush_based_on(self):
-		self.backflush_based_on = frappe.company_get_single_value("Buying Settings",
+		self.backflush_based_on = frappe.get_single_value("Buying Settings",
 			"backflush_raw_materials_of_subcontract_based_on")
 
 	def __get_purchase_orders(self):

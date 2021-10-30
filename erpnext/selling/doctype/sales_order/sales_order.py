@@ -69,7 +69,7 @@ class SalesOrder(SellingController):
 			so = frappe.db.sql("select name from `tabSales Order` \
 				where ifnull(po_no, '') = %s and name != %s and docstatus < 2\
 				and customer = %s", (self.po_no, self.name, self.customer))
-			if so and so[0][0] and not cint(frappe.company_get_single_value("Selling Settings",
+			if so and so[0][0] and not cint(frappe.get_single_value("Selling Settings",
 				"allow_against_multiple_purchase_orders")):
 				frappe.msgprint(_("Warning: Sales Order {0} already exists against Customer's Purchase Order {1}").format(so[0][0], self.po_no))
 
@@ -202,7 +202,7 @@ class SalesOrder(SellingController):
 			update_coupon_code_count(self.coupon_code,'cancelled')
 
 	def update_project(self):
-		if frappe.company_get_single_value('Selling Settings', 'sales_update_frequency') != "Each Transaction":
+		if frappe.get_single_value('Selling Settings', 'sales_update_frequency') != "Each Transaction":
 			return
 
 		if self.project:

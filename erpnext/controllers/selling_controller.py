@@ -177,7 +177,7 @@ class SellingController(StockController):
 						.format(get_link_to_form("Selling Settings", "Selling Settings")))
 			frappe.throw(msg, title=_("Invalid Selling Price"))
 
-		if not frappe.company_get_single_value("Selling Settings", "validate_selling_price"):
+		if not frappe.get_single_value("Selling Settings", "validate_selling_price"):
 			return
 		if hasattr(self, "is_return") and self.is_return:
 			return
@@ -457,7 +457,7 @@ class SellingController(StockController):
 
 	def validate_for_duplicate_items(self):
 		check_list, chk_dupl_itm = [], []
-		if cint(frappe.company_get_single_value("Selling Settings", "allow_multiple_items")):
+		if cint(frappe.get_single_value("Selling Settings", "allow_multiple_items")):
 			return
 		if self.doctype == "Sales Invoice" and self.is_consolidated:
 			return

@@ -100,8 +100,8 @@ class Warehouse(NestedSet):
 	def recalculate_bin_qty(self, new_name):
 		from erpnext.stock.stock_balance import repost_stock
 		frappe.db.auto_commit_on_many_writes = 1
-		existing_allow_negative_stock = frappe.company_get_single_value("Stock Settings", "allow_negative_stock")
-		frappe.company_set_value("Stock Settings", "allow_negative_stock", 1)
+		existing_allow_negative_stock = frappe.get_single_value("Stock Settings", "allow_negative_stock")
+		frappe.set_single_value("Stock Settings", "allow_negative_stock", 1)
 
 		repost_stock_for_items = frappe.db.sql_list("""select distinct item_code
 			from tabBin where warehouse=%s""", new_name)
@@ -112,7 +112,7 @@ class Warehouse(NestedSet):
 		for item_code in repost_stock_for_items:
 			repost_stock(item_code, new_name)
 
-		frappe.company_set_value("Stock Settings", "allow_negative_stock", existing_allow_negative_stock)
+		frappe.set_single_value("Stock Settings", "allow_negative_stock", existing_allow_negative_stock)
 		frappe.db.auto_commit_on_many_writes = 0
 
 	def convert_to_group_or_ledger(self):

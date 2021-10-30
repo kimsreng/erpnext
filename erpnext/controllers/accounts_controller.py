@@ -55,7 +55,7 @@ class AccountsController(TransactionBase):
 
 	def onload(self):
 		self.set_onload("make_payment_via_journal_entry",
-			frappe.company_get_single_value('Accounts Settings', 'make_payment_via_journal_entry'))
+			frappe.get_single_value('Accounts Settings', 'make_payment_via_journal_entry'))
 
 		if self.is_new():
 			relevant_docs = ("Quotation", "Purchase Order", "Sales Order",
@@ -145,7 +145,7 @@ class AccountsController(TransactionBase):
 
 	def on_trash(self):
 		# delete sl and gl entries on deletion of transaction
-		if frappe.company_get_single_value('Accounts Settings', 'delete_linked_ledger_entries'):
+		if frappe.get_single_value('Accounts Settings', 'delete_linked_ledger_entries'):
 			frappe.db.sql("delete from `tabGL Entry` where voucher_type=%s and voucher_no=%s", (self.doctype, self.name))
 			frappe.db.sql("delete from `tabStock Ledger Entry` where voucher_type=%s and voucher_no=%s", (self.doctype, self.name))
 
@@ -629,7 +629,7 @@ class AccountsController(TransactionBase):
 		return res
 
 	def is_inclusive_tax(self):
-		is_inclusive = cint(frappe.company_get_single_value("Accounts Settings", "show_inclusive_tax_in_print"))
+		is_inclusive = cint(frappe.get_single_value("Accounts Settings", "show_inclusive_tax_in_print"))
 
 		if is_inclusive:
 			is_inclusive = 0
@@ -775,11 +775,11 @@ class AccountsController(TransactionBase):
 
 		if self.doctype in ["Sales Invoice", "Purchase Invoice"]:
 			self.update_allocated_advance_taxes_on_cancel()
-			if frappe.company_get_single_value('Accounts Settings', 'unlink_payment_on_cancellation_of_invoice'):
+			if frappe.get_single_value('Accounts Settings', 'unlink_payment_on_cancellation_of_invoice'):
 				unlink_ref_doc_from_payment_entries(self)
 
 		elif self.doctype in ["Sales Order", "Purchase Order"]:
-			if frappe.company_get_single_value('Accounts Settings', 'unlink_advance_payment_on_cancelation_of_order'):
+			if frappe.get_single_value('Accounts Settings', 'unlink_advance_payment_on_cancelation_of_order'):
 				unlink_ref_doc_from_payment_entries(self)
 
 	def get_tax_map(self):
@@ -980,12 +980,12 @@ class AccountsController(TransactionBase):
 						total_billed_amt = abs(total_billed_amt)
 						max_allowed_amt = abs(max_allowed_amt)
 
-					role_allowed_to_over_bill = frappe.company_get_single_value('Accounts Settings', 'role_allowed_to_over_bill')
+					role_allowed_to_over_bill = frappe.get_single_value('Accounts Settings', 'role_allowed_to_over_bill')
 
 					if total_billed_amt - max_allowed_amt > 0.01 and role_allowed_to_over_bill not in frappe.get_roles():
 						if self.doctype != "Purchase Invoice":
 							self.throw_overbill_exception(item, max_allowed_amt)
-						elif not cint(frappe.company_get_single_value("Buying Settings", "bill_for_rejected_quantity_in_purchase_invoice")):
+						elif not cint(frappe.get_single_value("Buying Settings", "bill_for_rejected_quantity_in_purchase_invoice")):
 							self.throw_overbill_exception(item, max_allowed_amt)
 
 	def throw_overbill_exception(self, item, max_allowed_amt):
@@ -1678,7 +1678,7 @@ def set_child_tax_template_and_map(item, child_item, parent_doc):
 		child_item.item_tax_rate = get_item_tax_map(parent_doc.get('company'), child_item.item_tax_template, as_json=True)
 
 def add_taxes_from_tax_template(child_item, parent_doc):
-	add_taxes_from_item_tax_template = frappe.company_get_single_value("Accounts Settings", "add_taxes_from_item_tax_template")
+	add_taxes_from_item_tax_template = frappe.get_single_value("Accounts Settings", "add_taxes_from_item_tax_template")
 
 	if child_item.get("item_tax_rate") and add_taxes_from_item_tax_template:
 		tax_map = json.loads(child_item.get("item_tax_rate"))

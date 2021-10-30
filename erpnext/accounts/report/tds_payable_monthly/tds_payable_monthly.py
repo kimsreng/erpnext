@@ -59,7 +59,7 @@ def set_filters(filters):
 				invoices.append(d)
 
 	filters["invoices"] = invoices if invoices else filters["invoices"]
-	filters.naming_series = frappe.company_get_single_value('Buying Settings', 'supp_master_name')
+	filters.naming_series = frappe.get_single_value('Buying Settings', 'supp_master_name')
 
 	#print(filters.get('invoices'))
 

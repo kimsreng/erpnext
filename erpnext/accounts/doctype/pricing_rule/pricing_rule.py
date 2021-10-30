@@ -195,7 +195,7 @@ def apply_pricing_rule(args, doc=None):
 	item_list = args.get("items")
 	args.pop("items")
 
-	set_serial_nos_based_on_fifo = frappe.company_get_single_value("Stock Settings",
+	set_serial_nos_based_on_fifo = frappe.get_single_value("Stock Settings",
 		"automatically_set_serial_nos_based_on_fifo")
 
 	for item in item_list:

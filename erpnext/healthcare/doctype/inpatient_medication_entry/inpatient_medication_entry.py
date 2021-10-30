@@ -75,7 +75,7 @@ class InpatientMedicationEntry(Document):
 		self.update_medication_orders(on_cancel=True)
 
 	def process_stock(self):
-		allow_negative_stock = frappe.company_get_single_value('Stock Settings', 'allow_negative_stock')
+		allow_negative_stock = frappe.get_single_value('Stock Settings', 'allow_negative_stock')
 		if not allow_negative_stock:
 			self.check_stock_qty()
 

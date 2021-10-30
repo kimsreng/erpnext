@@ -228,7 +228,7 @@ class update_entries_after(object):
 		self.allow_zero_rate = allow_zero_rate
 		self.via_landed_cost_voucher = via_landed_cost_voucher
 		self.allow_negative_stock = allow_negative_stock \
-			or cint(frappe.company_get_single_value("Stock Settings", "allow_negative_stock"))
+			or cint(frappe.get_single_value("Stock Settings", "allow_negative_stock"))
 
 		self.args = frappe._dict(args)
 		self.item_code = args.get("item_code")
@@ -1039,7 +1039,7 @@ def get_datetime_limit_condition(detail):
 
 def validate_negative_qty_in_future_sle(args, allow_negative_stock=None):
 	allow_negative_stock = allow_negative_stock \
-		or cint(frappe.company_get_single_value("Stock Settings", "allow_negative_stock"))
+		or cint(frappe.get_single_value("Stock Settings", "allow_negative_stock"))
 
 	if (args.actual_qty < 0 or args.voucher_type == "Stock Reconciliation") and not allow_negative_stock:
 		sle = get_future_sle_with_negative_qty(args)

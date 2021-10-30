@@ -65,7 +65,7 @@ def get_exchange_rate(from_currency, to_currency, transaction_date=None, args=No
 
 	if not transaction_date:
 		transaction_date = nowdate()
-	currency_settings = frappe.company_get_single("Accounts Settings").as_dict()
+	currency_settings = frappe.get_single("Accounts Settings").as_dict()
 	allow_stale_rates = currency_settings.get("allow_stale")
 
 	filters = [

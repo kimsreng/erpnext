@@ -130,7 +130,7 @@ class POSInvoice(SalesInvoice):
 		if self.is_return:
 			return
 
-		allow_negative_stock = frappe.company_get_single_value('Stock Settings', 'allow_negative_stock')
+		allow_negative_stock = frappe.get_single_value('Stock Settings', 'allow_negative_stock')
 		for d in self.get('items'):
 			if d.serial_no:
 				self.validate_pos_reserved_serial_nos(d)

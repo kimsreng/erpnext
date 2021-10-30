@@ -112,7 +112,7 @@ class OpeningInvoiceCreationTool(Document):
 		if party_type == "Customer":
 			party_doc.customer_name = party
 		else:
-			supplier_group = frappe.company_get_single_value("Buying Settings", "supplier_group")
+			supplier_group = frappe.get_single_value("Buying Settings", "supplier_group")
 			if not supplier_group:
 				frappe.throw(_("Please Set Supplier Group in Buying Settings."))
 
@@ -129,7 +129,7 @@ class OpeningInvoiceCreationTool(Document):
 				frappe.throw(_("Please set the Default Cost Center in {0} company.").format(frappe.bold(self.company)))
 
 			income_expense_account_field = "income_account" if row.party_type == "Customer" else "expense_account"
-			default_uom = frappe.company_get_single_value("Stock Settings", "stock_uom") or _("Nos")
+			default_uom = frappe.get_single_value("Stock Settings", "stock_uom") or _("Nos")
 			rate = flt(row.outstanding_amount) / flt(row.qty)
 
 			return frappe._dict({

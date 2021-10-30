@@ -405,7 +405,7 @@ class StockEntry(StockController):
 				)
 
 	def set_actual_qty(self):
-		allow_negative_stock = cint(frappe.company_get_single_value("Stock Settings", "allow_negative_stock"))
+		allow_negative_stock = cint(frappe.get_single_value("Stock Settings", "allow_negative_stock"))
 
 		for d in self.get('items'):
 			previous_sle = get_previous_sle({
@@ -606,10 +606,10 @@ class StockEntry(StockController):
 	def validate_purchase_order(self):
 		"""Throw exception if more raw material is transferred against Purchase Order than in
 		the raw materials supplied table"""
-		backflush_raw_materials_based_on = frappe.company_get_single_value("Buying Settings",
+		backflush_raw_materials_based_on = frappe.get_single_value("Buying Settings",
 			"backflush_raw_materials_of_subcontract_based_on")
 
-		qty_allowance = flt(frappe.company_get_single_value("Buying Settings",
+		qty_allowance = flt(frappe.get_single_value("Buying Settings",
 			"over_transfer_allowance"))
 
 		if not (self.purpose == "Send to Subcontractor" and self.purchase_order): return
@@ -1611,7 +1611,7 @@ class StockEntry(StockController):
 def move_sample_to_retention_warehouse(company, items):
 	if isinstance(items, string_types):
 		items = json.loads(items)
-	retention_warehouse = frappe.company_get_single_value('Stock Settings', 'sample_retention_warehouse')
+	retention_warehouse = frappe.get_single_value('Stock Settings', 'sample_retention_warehouse')
 	stock_entry = frappe.new_doc("Stock Entry")
 	stock_entry.company = company
 	stock_entry.purpose = "Material Transfer"
@@ -1816,7 +1816,7 @@ def get_warehouse_details(args):
 def validate_sample_quantity(item_code, sample_quantity, qty, batch_no = None):
 	if cint(qty) < cint(sample_quantity):
 		frappe.throw(_("Sample quantity {0} cannot be more than received quantity {1}").format(sample_quantity, qty))
-	retention_warehouse = frappe.company_get_single_value('Stock Settings', 'sample_retention_warehouse')
+	retention_warehouse = frappe.get_single_value('Stock Settings', 'sample_retention_warehouse')
 	retainted_qty = 0
 	if batch_no:
 		retainted_qty = get_batch_qty(batch_no, retention_warehouse, item_code)

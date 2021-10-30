@@ -6,7 +6,7 @@ import frappe
 
 def execute():
 	frappe.reload_doc('buying', 'doctype', 'buying_settings')
-	frappe.company_set_value('Buying Settings', None, 'backflush_raw_materials_of_subcontract_based_on', 'BOM')
+	frappe.set_single_value('Buying Settings', 'backflush_raw_materials_of_subcontract_based_on', 'BOM')
 
 	frappe.reload_doc('stock', 'doctype', 'stock_entry_detail')
 	frappe.db.sql(""" update `tabStock Entry Detail` as sed,

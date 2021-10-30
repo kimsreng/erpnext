@@ -8,7 +8,7 @@ import frappe
 from frappe import _, throw
 from frappe.model.document import Document
 from frappe.utils import get_datetime_str, formatdate, nowdate, cint
-from erpnext.setup.doctype.company.company import get_name_with_abbr
+from frappe.core.doctype.agent.agent import get_name_with_abbr
 
 class CurrencyExchange(Document):
 	def autoname(self):
@@ -26,9 +26,9 @@ class CurrencyExchange(Document):
 		self.name = '{0}-{1}-{2}{3}'.format(formatdate(get_datetime_str(self.date), "yyyy-MM-dd"),
 			self.from_currency, self.to_currency, ("-" + purpose) if purpose else "")
 		# append company abbr
-		company = frappe.get_company()
-		if company:
-			self.name = get_name_with_abbr(self.name, company)
+		agent = frappe.get_agent()
+		if agent:
+			self.name = get_name_with_abbr(self.name, agent)
 			
 	def validate(self):
 		self.validate_value("exchange_rate", ">", 0)
