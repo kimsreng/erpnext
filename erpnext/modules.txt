@@ -26,4 +26,3 @@ Communication
 Loan Management
 Payroll
 Telephony
-E-commerce
