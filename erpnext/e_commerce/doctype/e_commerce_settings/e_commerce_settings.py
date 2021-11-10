@@ -7,125 +7,128 @@ from frappe import _
 from frappe.model.document import Document
 from frappe.utils import comma_and, flt, unique
 
-from erpnext.e_commerce.redisearch import (
-	create_website_items_index,
-	get_indexable_web_fields,
-	is_search_module_loaded,
-)
+# from erpnext.e_commerce.redisearch import (
+# 	create_website_items_index,
+# 	get_indexable_web_fields,
+# 	is_search_module_loaded,
+# )
 
 
 class ShoppingCartSetupError(frappe.ValidationError): pass
 
 class ECommerceSettings(Document):
-	def onload(self):
-		self.get("__onload").quotation_series = frappe.get_meta("Quotation").get_options("naming_series")
-		self.is_redisearch_loaded = is_search_module_loaded()
+	pass
+	# def onload(self):
+	# 	self.get("__onload").quotation_series = frappe.get_meta("Quotation").get_options("naming_series")
+	# 	self.is_redisearch_loaded = is_search_module_loaded()
 
-	def validate(self):
-		self.validate_field_filters()
-		self.validate_attribute_filters()
-		self.validate_checkout()
-		self.validate_search_index_fields()
+	# def validate(self):
+	# 	if frappe.flags.in_install_app: return
 
-		if self.enabled:
-			self.validate_price_list_exchange_rate()
+	# 	self.validate_field_filters()
+	# 	self.validate_attribute_filters()
+	# 	self.validate_checkout()
+	# 	self.validate_search_index_fields()
 
-		frappe.clear_document_cache("E Commerce Settings", "E Commerce Settings")
+	# 	if self.enabled:
+	# 		self.validate_price_list_exchange_rate()
 
-	def validate_field_filters(self):
-		if not (self.enable_field_filters and self.filter_fields):
-			return
+	# 	frappe.clear_document_cache("E Commerce Settings", "E Commerce Settings")
 
-		item_meta = frappe.get_meta("Item")
-		valid_fields = [df.fieldname for df in item_meta.fields if df.fieldtype in ["Link", "Table MultiSelect"]]
+	# def validate_field_filters(self):
+	# 	if not (self.enable_field_filters and self.filter_fields):
+	# 		return
 
-		for f in self.filter_fields:
-			if f.fieldname not in valid_fields:
-				frappe.throw(_("Filter Fields Row #{0}: Fieldname <b>{1}</b> must be of type 'Link' or 'Table MultiSelect'").format(f.idx, f.fieldname))
+	# 	item_meta = frappe.get_meta("Item")
+	# 	valid_fields = [df.fieldname for df in item_meta.fields if df.fieldtype in ["Link", "Table MultiSelect"]]
 
-	def validate_attribute_filters(self):
-		if not (self.enable_attribute_filters and self.filter_attributes):
-			return
+	# 	for f in self.filter_fields:
+	# 		if f.fieldname not in valid_fields:
+	# 			frappe.throw(_("Filter Fields Row #{0}: Fieldname <b>{1}</b> must be of type 'Link' or 'Table MultiSelect'").format(f.idx, f.fieldname))
 
-		# if attribute filters are enabled, hide_variants should be disabled
-		self.hide_variants = 0
+	# def validate_attribute_filters(self):
+	# 	if not (self.enable_attribute_filters and self.filter_attributes):
+	# 		return
 
-	def validate_checkout(self):
-		if self.enable_checkout and not self.payment_gateway_account:
-			self.enable_checkout = 0
+	# 	# if attribute filters are enabled, hide_variants should be disabled
+	# 	self.hide_variants = 0
 
-	def validate_search_index_fields(self):
-		if not self.search_index_fields:
-			return
+	# def validate_checkout(self):
+	# 	if self.enable_checkout and not self.payment_gateway_account:
+	# 		self.enable_checkout = 0
 
-		fields = self.search_index_fields.replace(' ', '')
-		fields = unique(fields.strip(',').split(',')) # Remove extra ',' and remove duplicates
+	# def validate_search_index_fields(self):
+	# 	if not self.search_index_fields:
+	# 		return
 
-		# All fields should be indexable
-		allowed_indexable_fields = get_indexable_web_fields()
+	# 	fields = self.search_index_fields.replace(' ', '')
+	# 	fields = unique(fields.strip(',').split(',')) # Remove extra ',' and remove duplicates
 
-		if not (set(fields).issubset(allowed_indexable_fields)):
-			invalid_fields = list(set(fields).difference(allowed_indexable_fields))
-			num_invalid_fields = len(invalid_fields)
-			invalid_fields = comma_and(invalid_fields)
+	# 	# All fields should be indexable
+	# 	allowed_indexable_fields = get_indexable_web_fields()
 
-			if num_invalid_fields > 1:
-				frappe.throw(_("{0} are not valid options for Search Index Field.").format(frappe.bold(invalid_fields)))
-			else:
-				frappe.throw(_("{0} is not a valid option for Search Index Field.").format(frappe.bold(invalid_fields)))
+	# 	if not (set(fields).issubset(allowed_indexable_fields)):
+	# 		invalid_fields = list(set(fields).difference(allowed_indexable_fields))
+	# 		num_invalid_fields = len(invalid_fields)
+	# 		invalid_fields = comma_and(invalid_fields)
 
-		self.search_index_fields = ','.join(fields)
+	# 		if num_invalid_fields > 1:
+	# 			frappe.throw(_("{0} are not valid options for Search Index Field.").format(frappe.bold(invalid_fields)))
+	# 		else:
+	# 			frappe.throw(_("{0} is not a valid option for Search Index Field.").format(frappe.bold(invalid_fields)))
 
-	def validate_price_list_exchange_rate(self):
-		"Check if exchange rate exists for Price List currency (to Company's currency)."
-		from erpnext.setup.utils import get_exchange_rate
+	# 	self.search_index_fields = ','.join(fields)
 
-		if not self.enabled or not self.company or not self.price_list:
-			return # this function is also called from hooks, check values again
+	# def validate_price_list_exchange_rate(self):
+	# 	"Check if exchange rate exists for Price List currency (to Company's currency)."
+	# 	from erpnext.setup.utils import get_exchange_rate
 
-		company_currency = frappe.get_cached_value("Company", self.company, "default_currency")
-		price_list_currency = frappe.db.get_value("Price List", self.price_list, "currency")
+	# 	if not self.enabled or not self.company or not self.price_list:
+	# 		return # this function is also called from hooks, check values again
 
-		if not company_currency:
-			msg = f"Please specify currency in Company {self.company}"
-			frappe.throw(_(msg), title=_("Missing Currency"), exc=ShoppingCartSetupError)
+	# 	company_currency = frappe.get_cached_value("Company", self.company, "default_currency")
+	# 	price_list_currency = frappe.db.get_value("Price List", self.price_list, "currency")
 
-		if not price_list_currency:
-			msg = f"Please specify currency in Price List {frappe.bold(self.price_list)}"
-			frappe.throw(_(msg), title=_("Missing Currency"), exc=ShoppingCartSetupError)
+	# 	if not company_currency:
+	# 		msg = f"Please specify currency in Company {self.company}"
+	# 		frappe.throw(_(msg), title=_("Missing Currency"), exc=ShoppingCartSetupError)
 
-		if price_list_currency != company_currency:
-			from_currency, to_currency = price_list_currency, company_currency
+	# 	if not price_list_currency:
+	# 		msg = f"Please specify currency in Price List {frappe.bold(self.price_list)}"
+	# 		frappe.throw(_(msg), title=_("Missing Currency"), exc=ShoppingCartSetupError)
 
-			# Get exchange rate checks Currency Exchange Records too
-			exchange_rate = get_exchange_rate(from_currency, to_currency, args="for_selling")
+	# 	if price_list_currency != company_currency:
+	# 		from_currency, to_currency = price_list_currency, company_currency
 
-			if not flt(exchange_rate):
-				msg = f"Missing Currency Exchange Rates for {from_currency}-{to_currency}"
-				frappe.throw(_(msg), title=_("Missing"), exc=ShoppingCartSetupError)
+	# 		# Get exchange rate checks Currency Exchange Records too
+	# 		exchange_rate = get_exchange_rate(from_currency, to_currency, args="for_selling")
 
-	def validate_tax_rule(self):
-		if not frappe.db.get_value("Tax Rule", {"use_for_shopping_cart" : 1}, "name"):
-			frappe.throw(frappe._("Set Tax Rule for shopping cart"), ShoppingCartSetupError)
+	# 		if not flt(exchange_rate):
+	# 			msg = f"Missing Currency Exchange Rates for {from_currency}-{to_currency}"
+	# 			frappe.throw(_(msg), title=_("Missing"), exc=ShoppingCartSetupError)
 
-	def get_tax_master(self, billing_territory):
-		tax_master = self.get_name_from_territory(billing_territory, "sales_taxes_and_charges_masters",
-			"sales_taxes_and_charges_master")
-		return tax_master and tax_master[0] or None
+	# def validate_tax_rule(self):
+	# 	if not frappe.db.get_value("Tax Rule", {"use_for_shopping_cart" : 1}, "name"):
+	# 		frappe.throw(frappe._("Set Tax Rule for shopping cart"), ShoppingCartSetupError)
 
-	def get_shipping_rules(self, shipping_territory):
-		return self.get_name_from_territory(shipping_territory, "shipping_rules", "shipping_rule")
+	# def get_tax_master(self, billing_territory):
+	# 	tax_master = self.get_name_from_territory(billing_territory, "sales_taxes_and_charges_masters",
+	# 		"sales_taxes_and_charges_master")
+	# 	return tax_master and tax_master[0] or None
 
-	def on_change(self):
-		old_doc = self.get_doc_before_save()
+	# def get_shipping_rules(self, shipping_territory):
+	# 	return self.get_name_from_territory(shipping_territory, "shipping_rules", "shipping_rule")
 
-		if old_doc:
-			old_fields = old_doc.search_index_fields
-			new_fields = self.search_index_fields
+	# def on_change(self):
+	# 	old_doc = self.get_doc_before_save()
 
-			# if search index fields get changed
-			if not (new_fields == old_fields):
-				create_website_items_index()
+	# 	if old_doc:
+	# 		old_fields = old_doc.search_index_fields
+	# 		new_fields = self.search_index_fields
+
+	# 		# if search index fields get changed
+	# 		if not (new_fields == old_fields):
+	# 			create_website_items_index()
 
 def validate_cart_settings(doc=None, method=None):
 	frappe.get_doc("E Commerce Settings", "E Commerce Settings").run_method("validate")
