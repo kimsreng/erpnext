@@ -41,7 +41,7 @@ def search_by_term(search_term, warehouse, price_list):
 		return {'items': [item_info]}
 
 @frappe.whitelist()
-def get_items(start, page_length, price_list, item_group, pos_profile, search_term=""):
+def get_items(start, page_length, price_list, pos_profile, item_group="", search_term=""):
 	from frappe.desk.reportview import build_match_conditions
 	warehouse, hide_unavailable_items = frappe.db.get_value(
 		'POS Profile', pos_profile, ['warehouse', 'hide_unavailable_items'])
