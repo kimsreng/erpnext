@@ -299,7 +299,7 @@ def set_more_defaults():
 	# Do more setup stuff that can be done here with no dependencies
 	update_selling_defaults()
 	update_buying_defaults()
-	update_hr_defaults()
+	# update_hr_defaults()
 	add_uom_data()
 	update_item_variant_settings()
 
