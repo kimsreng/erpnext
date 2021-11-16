@@ -30,7 +30,7 @@ class EmployeeHoursReport:
 			frappe.throw(_('From Date must come before To Date'))
 
 	def validate_standard_working_hours(self):
-		self.standard_working_hours = frappe.db.get_single_value('HR Settings', 'standard_working_hours')
+		self.standard_working_hours = frappe.get_single_value('HR Settings', 'standard_working_hours')
 		if not self.standard_working_hours:
 			msg = _('The metrics for this report are calculated based on the Standard Working Hours. Please set {0} in {1}.').format(
 				frappe.bold('Standard Working Hours'), frappe.utils.get_link_to_form('HR Settings', 'HR Settings'))

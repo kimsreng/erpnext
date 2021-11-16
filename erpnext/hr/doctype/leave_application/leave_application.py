@@ -61,7 +61,7 @@ class LeaveApplication(Document):
 	def on_update(self):
 		if self.status == "Open" and self.docstatus < 1:
 			# notify leave approver about creation
-			if frappe.db.get_single_value("HR Settings", "send_leave_notification"):
+			if frappe.get_single_value("HR Settings", "send_leave_notification"):
 				self.notify_leave_approver()
 
 		share_doc_with_approver(self, self.leave_approver)
@@ -74,7 +74,7 @@ class LeaveApplication(Document):
 		self.update_attendance()
 
 		# notify leave applier about approval
-		if frappe.db.get_single_value("HR Settings", "send_leave_notification"):
+		if frappe.get_single_value("HR Settings", "send_leave_notification"):
 			self.notify_employee()
 
 		self.create_leave_ledger_entry()
@@ -86,7 +86,7 @@ class LeaveApplication(Document):
 	def on_cancel(self):
 		self.create_leave_ledger_entry(submit=False)
 		# notify leave applier about cancellation
-		if frappe.db.get_single_value("HR Settings", "send_leave_notification"):
+		if frappe.get_single_value("HR Settings", "send_leave_notification"):
 			self.notify_employee()
 		self.cancel_attendance()
 
@@ -106,9 +106,9 @@ class LeaveApplication(Document):
 						frappe.throw(_("{0} applicable after {1} working days").format(self.leave_type, leave_type.applicable_after))
 
 	def validate_dates(self):
-		if frappe.db.get_single_value("HR Settings", "restrict_backdated_leave_application"):
+		if frappe.get_single_value("HR Settings", "restrict_backdated_leave_application"):
 			if self.from_date and getdate(self.from_date) < getdate():
-				allowed_role = frappe.db.get_single_value("HR Settings", "role_allowed_to_create_backdated_leave_application")
+				allowed_role = frappe.get_single_value("HR Settings", "role_allowed_to_create_backdated_leave_application")
 				user = frappe.get_doc("User", frappe.session.user)
 				user_roles = [d.role for d in user.roles]
 				if not allowed_role:
@@ -337,7 +337,7 @@ class LeaveApplication(Document):
 		parent_doc = frappe.get_doc('Leave Application', self.name)
 		args = parent_doc.as_dict()
 
-		template = frappe.db.get_single_value('HR Settings', 'leave_status_notification_template')
+		template = frappe.get_single_value('HR Settings', 'leave_status_notification_template')
 		if not template:
 			frappe.msgprint(_("Please set default template for Leave Status Notification in HR Settings."))
 			return
@@ -358,7 +358,7 @@ class LeaveApplication(Document):
 			parent_doc = frappe.get_doc('Leave Application', self.name)
 			args = parent_doc.as_dict()
 
-			template = frappe.db.get_single_value('HR Settings', 'leave_approval_notification_template')
+			template = frappe.get_single_value('HR Settings', 'leave_approval_notification_template')
 			if not template:
 				frappe.msgprint(_("Please set default template for Leave Approval Notification in HR Settings."))
 				return
@@ -734,7 +734,7 @@ def add_leaves(events, start, end, filter_conditions=None):
 	from frappe.desk.reportview import build_match_conditions
 	conditions = []
 
-	if not cint(frappe.db.get_value("HR Settings", None, "show_leaves_of_all_department_members_in_calendar")):
+	if not cint(frappe.get_single_value("HR Settings", "show_leaves_of_all_department_members_in_calendar")):
 		match_conditions = build_match_conditions("Leave Application")
 
 		if match_conditions:
@@ -816,10 +816,10 @@ def add_holidays(events, start, end, employee, company):
 def get_mandatory_approval(doctype):
 	mandatory = ""
 	if doctype == "Leave Application":
-		mandatory = frappe.db.get_single_value('HR Settings',
+		mandatory = frappe.get_single_value('HR Settings',
 				'leave_approver_mandatory_in_leave_application')
 	else:
-		mandatory = frappe.db.get_single_value('HR Settings',
+		mandatory = frappe.get_single_value('HR Settings',
 				'expense_approver_mandatory_in_expense_claim')
 
 	return mandatory

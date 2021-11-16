@@ -22,7 +22,7 @@ def get_data(filters):
 
 def get_rows(filters):
 	conditions = get_conditions(filters)
-	standard_working_hours = frappe.db.get_single_value("HR Settings", "standard_working_hours")
+	standard_working_hours = frappe.get_single_value("HR Settings", "standard_working_hours")
 	if not standard_working_hours:
 		msg = _("The metrics for this report are calculated based on the Standard Working Hours. Please set {0} in {1}.").format(
 			frappe.bold("Standard Working Hours"), frappe.utils.get_link_to_form("HR Settings", "HR Settings"))

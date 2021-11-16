@@ -25,7 +25,7 @@ class Employee(NestedSet):
 	nsm_parent_field = 'reports_to'
 
 	def autoname(self):
-		naming_method = frappe.db.get_value("HR Settings", None, "emp_created_by")
+		naming_method = frappe.get_single_value("HR Settings", "emp_created_by")
 		if not naming_method:
 			throw(_("Please setup Employee Naming System in Human Resource > HR Settings"))
 		else:
@@ -266,7 +266,7 @@ def get_retirement_date(date_of_birth=None):
 	ret = {}
 	if date_of_birth:
 		try:
-			retirement_age = int(frappe.db.get_single_value("HR Settings", "retirement_age") or 60)
+			retirement_age = int(frappe.get_single_value("HR Settings", "retirement_age") or 60)
 			dt = add_years(getdate(date_of_birth),retirement_age)
 			ret = {'date_of_retirement': dt.strftime('%Y-%m-%d')}
 		except ValueError:

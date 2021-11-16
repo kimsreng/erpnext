@@ -118,13 +118,12 @@ def get_interviewers(interview_round):
 
 
 def send_interview_reminder():
-	reminder_settings = frappe.db.get_value('HR Settings', 'HR Settings',
-		['send_interview_reminder', 'interview_reminder_template'], as_dict=True)
+	reminder_settings = frappe.get_single_value('HR Settings', ['send_interview_reminder', 'interview_reminder_template'])
 
 	if not reminder_settings.send_interview_reminder:
 		return
 
-	remind_before = cstr(frappe.db.get_single_value('HR Settings', 'remind_before')) or '01:00:00'
+	remind_before = cstr(frappe.get_single_value('HR Settings', 'remind_before')) or '01:00:00'
 	remind_before = datetime.datetime.strptime(remind_before, '%H:%M:%S')
 	reminder_date_time = datetime.datetime.now() + datetime.timedelta(
 		hours=remind_before.hour, minutes=remind_before.minute, seconds=remind_before.second)
@@ -156,8 +155,7 @@ def send_interview_reminder():
 
 
 def send_daily_feedback_reminder():
-	reminder_settings = frappe.db.get_value('HR Settings', 'HR Settings',
-		['send_interview_feedback_reminder', 'feedback_reminder_notification_template'], as_dict=True)
+	reminder_settings = frappe.get_single_value('HR Settings', ['send_interview_feedback_reminder', 'feedback_reminder_notification_template'])
 
 	if not reminder_settings.send_interview_feedback_reminder:
 		return
