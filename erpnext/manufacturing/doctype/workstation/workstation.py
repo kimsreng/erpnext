@@ -58,7 +58,7 @@ class Workstation(Document):
 
 	def validate_workstation_holiday(self, schedule_date, skip_holiday_list_check=False):
 		if not skip_holiday_list_check and (not self.holiday_list or
-			cint(frappe.db.get_single_value("Manufacturing Settings", "allow_production_on_holidays"))):
+			cint(frappe.get_single_value("Manufacturing Settings", "allow_production_on_holidays"))):
 			return schedule_date
 
 		if schedule_date in tuple(get_holidays(self.holiday_list)):
@@ -73,10 +73,10 @@ def get_default_holiday_list():
 
 def check_if_within_operating_hours(workstation, operation, from_datetime, to_datetime):
 	if from_datetime and to_datetime:
-		if not cint(frappe.db.get_value("Manufacturing Settings", "None", "allow_production_on_holidays")):
+		if not cint(frappe.get_single_value("Manufacturing Settings", "allow_production_on_holidays")):
 			check_workstation_for_holiday(workstation, from_datetime, to_datetime)
 
-		if not cint(frappe.db.get_value("Manufacturing Settings", None, "allow_overtime")):
+		if not cint(frappe.get_single_value("Manufacturing Settings", "allow_overtime")):
 			is_within_operating_hours(workstation, operation, from_datetime, to_datetime)
 
 def is_within_operating_hours(workstation, operation, from_datetime, to_datetime):

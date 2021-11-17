@@ -126,7 +126,7 @@ def calculate_work_experience(employee, gratuity_rule):
 def calculate_employee_total_workings_days(employee, date_of_joining, relieving_date ):
 	employee_total_workings_days = (get_datetime(relieving_date) - get_datetime(date_of_joining)).days
 
-	payroll_based_on = frappe.db.get_value("Payroll Settings", None, "payroll_based_on") or "Leave"
+	payroll_based_on = frappe.get_single_value("Payroll Settings", "payroll_based_on") or "Leave"
 	if payroll_based_on == "Leave":
 		total_lwp = get_non_working_days(employee, relieving_date, "On Leave")
 		employee_total_workings_days -= total_lwp

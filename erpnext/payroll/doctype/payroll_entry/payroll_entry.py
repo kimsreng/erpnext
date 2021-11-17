@@ -176,7 +176,7 @@ class PayrollEntry(Document):
 			submit_salary_slips_for_employees(self, ss_list, publish_progress=False)
 
 	def email_salary_slip(self, submitted_ss):
-		if frappe.db.get_single_value("Payroll Settings", "email_salary_slip_to_employee"):
+		if frappe.get_single_value("Payroll Settings", "email_salary_slip_to_employee"):
 			for ss in submitted_ss:
 				ss.email_salary_slip()
 

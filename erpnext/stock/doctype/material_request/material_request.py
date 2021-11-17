@@ -516,7 +516,7 @@ def raise_work_orders(material_request):
 	mr= frappe.get_doc("Material Request", material_request)
 	errors =[]
 	work_orders = []
-	default_wip_warehouse = frappe.db.get_single_value("Manufacturing Settings", "default_wip_warehouse")
+	default_wip_warehouse = frappe.get_single_value("Manufacturing Settings", "default_wip_warehouse")
 
 	for d in mr.items:
 		if (d.stock_qty - d.ordered_qty) > 0:

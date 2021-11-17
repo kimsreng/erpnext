@@ -35,7 +35,7 @@ class JobCardCancelError(frappe.ValidationError): pass
 
 class JobCard(Document):
 	def onload(self):
-		excess_transfer = frappe.db.get_single_value("Manufacturing Settings", "job_card_excess_transfer")
+		excess_transfer = frappe.get_single_value("Manufacturing Settings", "job_card_excess_transfer")
 		self.set_onload("job_card_excess_transfer", excess_transfer)
 
 	def validate(self):
@@ -141,7 +141,7 @@ class JobCard(Document):
 	def check_workstation_time(self, row):
 		workstation_doc = frappe.get_cached_doc("Workstation", self.workstation)
 		if (not workstation_doc.working_hours or
-			cint(frappe.db.get_single_value("Manufacturing Settings", "allow_overtime"))):
+			cint(frappe.get_single_value("Manufacturing Settings", "allow_overtime"))):
 			if get_datetime(row.planned_end_time) < get_datetime(row.planned_start_time):
 				row.planned_end_time = add_to_date(row.planned_start_time, minutes=row.time_in_mins)
 				row.remaining_time_in_mins = 0.0
@@ -361,7 +361,7 @@ class JobCard(Document):
 		if not self.work_order:
 			return
 
-		if self.is_corrective_job_card and not cint(frappe.db.get_single_value('Manufacturing Settings',
+		if self.is_corrective_job_card and not cint(frappe.get_single_value('Manufacturing Settings',
 			'add_corrective_operation_cost_in_finished_good_valuation')):
 			return
 

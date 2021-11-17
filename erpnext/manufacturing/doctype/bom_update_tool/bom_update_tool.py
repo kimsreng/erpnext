@@ -93,7 +93,7 @@ def enqueue_update_cost():
 	frappe.msgprint(_("Queued for updating latest price in all Bill of Materials. It may take a few minutes."))
 
 def update_latest_price_in_all_boms():
-	if frappe.db.get_single_value("Manufacturing Settings", "update_bom_costs_automatically"):
+	if frappe.get_single_value("Manufacturing Settings", "update_bom_costs_automatically"):
 		update_cost()
 
 def replace_bom(args):

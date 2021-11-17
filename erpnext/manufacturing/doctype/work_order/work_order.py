@@ -50,7 +50,7 @@ class SerialNoQtyError(frappe.ValidationError):
 
 class WorkOrder(Document):
 	def onload(self):
-		ms = frappe.get_doc("Manufacturing Settings")
+		ms = frappe.get_single("Manufacturing Settings")
 		self.set_onload("material_consumption", ms.material_consumption)
 		self.set_onload("backflush_raw_materials_based_on", ms.backflush_raw_materials_based_on)
 		self.set_onload("overproduction_percentage", ms.overproduction_percentage_for_work_order)
@@ -119,9 +119,9 @@ class WorkOrder(Document):
 
 	def set_default_warehouse(self):
 		if not self.wip_warehouse:
-			self.wip_warehouse = frappe.db.get_single_value("Manufacturing Settings", "default_wip_warehouse")
+			self.wip_warehouse = frappe.get_single_value("Manufacturing Settings", "default_wip_warehouse")
 		if not self.fg_warehouse:
-			self.fg_warehouse = frappe.db.get_single_value("Manufacturing Settings", "default_fg_warehouse")
+			self.fg_warehouse = frappe.get_single_value("Manufacturing Settings", "default_fg_warehouse")
 
 	def validate_warehouse_belongs_to_company(self):
 		warehouses = [self.fg_warehouse, self.wip_warehouse]
@@ -166,7 +166,7 @@ class WorkOrder(Document):
 		# total qty in SO
 		so_qty = flt(so_item_qty) + flt(dnpi_qty)
 
-		allowance_percentage = flt(frappe.db.get_single_value("Manufacturing Settings",
+		allowance_percentage = flt(frappe.get_single_value("Manufacturing Settings",
 			"overproduction_percentage_for_sales_order"))
 
 		if total_qty > so_qty + (allowance_percentage/100 * so_qty):
@@ -213,7 +213,7 @@ class WorkOrder(Document):
 		"""Update **Manufactured Qty** and **Material Transferred for Qty** in Work Order
 			based on Stock Entry"""
 
-		allowance_percentage = flt(frappe.db.get_single_value("Manufacturing Settings",
+		allowance_percentage = flt(frappe.get_single_value("Manufacturing Settings",
 			"overproduction_percentage_for_work_order"))
 
 		for purpose, fieldname in (("Manufacture", "produced_qty"),
@@ -310,7 +310,7 @@ class WorkOrder(Document):
 		if not (self.has_serial_no or self.has_batch_no):
 			return
 
-		if not cint(frappe.db.get_single_value("Manufacturing Settings", "make_serial_no_batch_from_work_order")):
+		if not cint(frappe.get_single_value("Manufacturing Settings", "make_serial_no_batch_from_work_order")):
 			return
 
 		if self.has_batch_no:
@@ -370,7 +370,7 @@ class WorkOrder(Document):
 				.format(self.qty, self.production_item, serial_nos_length), SerialNoQtyError)
 
 	def create_job_card(self):
-		manufacturing_settings_doc = frappe.get_doc("Manufacturing Settings")
+		manufacturing_settings_doc = frappe.get_single("Manufacturing Settings")
 
 		enable_capacity_planning = not cint(manufacturing_settings_doc.disable_capacity_planning)
 		plan_days = cint(manufacturing_settings_doc.capacity_planning_for_days) or 30
@@ -560,7 +560,7 @@ class WorkOrder(Document):
 		return holidays[holiday_list]
 
 	def update_operation_status(self):
-		allowance_percentage = flt(frappe.db.get_single_value("Manufacturing Settings", "overproduction_percentage_for_work_order"))
+		allowance_percentage = flt(frappe.get_single_value("Manufacturing Settings", "overproduction_percentage_for_work_order"))
 		max_allowed_qty_for_wo = flt(self.qty) + (allowance_percentage/100 * flt(self.qty))
 
 		for d in self.get("operations"):
@@ -781,7 +781,7 @@ class WorkOrder(Document):
 		return bom
 
 	def update_batch_produced_qty(self, stock_entry_doc):
-		if not cint(frappe.db.get_single_value("Manufacturing Settings", "make_serial_no_batch_from_work_order")):
+		if not cint(frappe.get_single_value("Manufacturing Settings", "make_serial_no_batch_from_work_order")):
 			return
 
 		for row in stock_entry_doc.items:
@@ -953,7 +953,7 @@ def make_stock_entry(work_order_id, purpose, qty=None):
 
 @frappe.whitelist()
 def get_default_warehouse():
-	doc = frappe.get_cached_doc("Manufacturing Settings")
+	doc = frappe.get_single("Manufacturing Settings")
 
 	return {
 		"wip_warehouse": doc.default_wip_warehouse,

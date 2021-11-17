@@ -83,8 +83,8 @@ class SalarySlip(TransactionBase):
 		self.compute_component_wise_year_to_date()
 		self.add_leave_balances()
 
-		if frappe.db.get_single_value("Payroll Settings", "max_working_hours_against_timesheet"):
-			max_working_hours = frappe.db.get_single_value("Payroll Settings", "max_working_hours_against_timesheet")
+		if frappe.get_single_value("Payroll Settings", "max_working_hours_against_timesheet"):
+			max_working_hours = frappe.get_single_value("Payroll Settings", "max_working_hours_against_timesheet")
 			if self.salary_slip_based_on_timesheet and (self.total_working_hours > int(max_working_hours)):
 				frappe.msgprint(_("Total working hours should not be greater than max working hours {0}").
 								format(max_working_hours), alert=True)
@@ -104,7 +104,7 @@ class SalarySlip(TransactionBase):
 			self.set_status()
 			self.update_status(self.name)
 			self.make_loan_repayment_entry()
-			if (frappe.db.get_single_value("Payroll Settings", "email_salary_slip_to_employee")) and not frappe.flags.via_payroll_entry:
+			if (frappe.get_single_value("Payroll Settings", "email_salary_slip_to_employee")) and not frappe.flags.via_payroll_entry:
 				self.email_salary_slip()
 
 		self.update_payment_status_for_gratuity()
@@ -160,7 +160,7 @@ class SalarySlip(TransactionBase):
 			frappe.throw(_("Cannot create Salary Slip for Employee who has left before Payroll Period"))
 
 	def is_rounding_total_disabled(self):
-		return cint(frappe.db.get_single_value("Payroll Settings", "disable_rounded_total"))
+		return cint(frappe.get_single_value("Payroll Settings", "disable_rounded_total"))
 
 	def check_existing(self):
 		if not self.salary_slip_based_on_timesheet:
@@ -212,7 +212,7 @@ class SalarySlip(TransactionBase):
 				self.salary_slip_based_on_timesheet = self._salary_structure_doc.salary_slip_based_on_timesheet or 0
 				self.set_time_sheet()
 				self.pull_sal_struct()
-				ps = frappe.db.get_value("Payroll Settings", None, ["payroll_based_on","consider_unmarked_attendance_as"], as_dict=1)
+				ps = frappe.get_single_value("Payroll Settings", ["payroll_based_on","consider_unmarked_attendance_as"], as_dict=1)
 				return [ps.payroll_based_on, ps.consider_unmarked_attendance_as]
 
 	def set_time_sheet(self):
@@ -267,8 +267,8 @@ class SalarySlip(TransactionBase):
 		make_salary_slip(self._salary_structure_doc.name, self)
 
 	def get_working_days_details(self, joining_date=None, relieving_date=None, lwp=None, for_preview=0):
-		payroll_based_on = frappe.db.get_value("Payroll Settings", None, "payroll_based_on")
-		include_holidays_in_total_working_days = frappe.db.get_single_value("Payroll Settings", "include_holidays_in_total_working_days")
+		payroll_based_on = frappe.get_single_value("Payroll Settings", "payroll_based_on")
+		include_holidays_in_total_working_days = frappe.get_single_value("Payroll Settings", "include_holidays_in_total_working_days")
 
 		working_days = date_diff(self.end_date, self.start_date) + 1
 		if for_preview:
@@ -311,7 +311,7 @@ class SalarySlip(TransactionBase):
 				self.payment_days -= flt(absent)
 
 			unmarked_days = self.get_unmarked_days()
-			consider_unmarked_attendance_as = frappe.db.get_value("Payroll Settings", None, "consider_unmarked_attendance_as") or "Present"
+			consider_unmarked_attendance_as = frappe.get_single_value("Payroll Settings", "consider_unmarked_attendance_as") or "Present"
 
 			if payroll_based_on == "Attendance" and consider_unmarked_attendance_as =="Absent":
 				self.absent_days += unmarked_days #will be treated as absent
@@ -368,7 +368,7 @@ class SalarySlip(TransactionBase):
 		lwp = 0
 		holidays = "','".join(holidays)
 		daily_wages_fraction_for_half_day = \
-			flt(frappe.db.get_value("Payroll Settings", None, "daily_wages_fraction_for_half_day")) or 0.5
+			flt(frappe.get_single_value("Payroll Settings", "daily_wages_fraction_for_half_day")) or 0.5
 
 		for d in range(working_days):
 			dt = add_days(cstr(getdate(self.start_date)), d)
@@ -412,7 +412,7 @@ class SalarySlip(TransactionBase):
 		absent = 0
 
 		daily_wages_fraction_for_half_day = \
-			flt(frappe.db.get_value("Payroll Settings", None, "daily_wages_fraction_for_half_day")) or 0.5
+			flt(frappe.get_single_value("Payroll Settings", "daily_wages_fraction_for_half_day")) or 0.5
 
 		leave_types = frappe.get_all("Leave Type",
 			or_filters=[["is_ppl", "=", 1], ["is_lwp", "=", 1]],
@@ -1323,7 +1323,7 @@ class SalarySlip(TransactionBase):
 	def add_leave_balances(self):
 		self.set('leave_details', [])
 
-		if frappe.db.get_single_value('Payroll Settings', 'show_leave_balances_in_salary_slip'):
+		if frappe.get_single_value('Payroll Settings', 'show_leave_balances_in_salary_slip'):
 			from erpnext.hr.doctype.leave_application.leave_application import get_leave_details
 			leave_details = get_leave_details(self.employee, self.end_date)
 

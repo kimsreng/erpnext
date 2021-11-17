@@ -377,7 +377,7 @@ class StockEntry(StockController):
 	def check_if_operations_completed(self):
 		"""Check if Time Sheets are completed against before manufacturing to capture operating costs."""
 		prod_order = frappe.get_doc("Work Order", self.work_order)
-		allowance_percentage = flt(frappe.db.get_single_value("Manufacturing Settings",
+		allowance_percentage = flt(frappe.get_single_value("Manufacturing Settings",
 			"overproduction_percentage_for_work_order"))
 
 		for d in prod_order.get("operations"):
@@ -547,7 +547,7 @@ class StockEntry(StockController):
 		scrap_items_cost = sum([flt(d.basic_amount) for d in self.get("items") if d.is_scrap_item])
 
 		# Get raw materials cost from BOM if multiple material consumption entries
-		if frappe.db.get_single_value("Manufacturing Settings", "material_consumption", cache=True):
+		if frappe.get_single_value("Manufacturing Settings", "material_consumption", cache=True):
 			bom_items = self.get_bom_raw_materials(finished_item_qty)
 			outgoing_items_cost = sum([flt(row.qty)*flt(row.rate) for row in bom_items.values()])
 
@@ -746,7 +746,7 @@ class StockEntry(StockController):
 				frappe.throw(_('Finished Good has not set in the stock entry {0}')
 					.format(self.name))
 
-			allowance_percentage = flt(frappe.db.get_single_value("Manufacturing Settings",
+			allowance_percentage = flt(frappe.get_single_value("Manufacturing Settings",
 				"overproduction_percentage_for_work_order"))
 
 			allowed_qty = wo_qty + (allowance_percentage/100 * wo_qty)
@@ -1004,12 +1004,12 @@ class StockEntry(StockController):
 			frappe.throw(_("Posting date and posting time is mandatory"))
 
 		self.set_work_order_details()
-		self.flags.backflush_based_on = frappe.db.get_single_value("Manufacturing Settings",
+		self.flags.backflush_based_on = frappe.get_single_value("Manufacturing Settings",
 			"backflush_raw_materials_based_on")
 
 		if self.bom_no:
 
-			backflush_based_on = frappe.db.get_single_value("Manufacturing Settings",
+			backflush_based_on = frappe.get_single_value("Manufacturing Settings",
 				"backflush_raw_materials_based_on")
 
 			if self.purpose in ["Material Issue", "Material Transfer", "Manufacture", "Repack",
@@ -1029,7 +1029,7 @@ class StockEntry(StockController):
 
 				elif (self.work_order and (self.purpose == "Manufacture" or
 					self.purpose == "Material Consumption for Manufacture") and self.flags.backflush_based_on== "BOM"
-					and frappe.db.get_single_value("Manufacturing Settings", "material_consumption")== 1):
+					and frappe.get_single_value("Manufacturing Settings", "material_consumption")== 1):
 					self.get_unconsumed_raw_materials()
 
 				else:
@@ -1126,7 +1126,7 @@ class StockEntry(StockController):
 			"is_finished_item": 1
 		}
 
-		if self.work_order and self.pro_doc.has_batch_no and cint(frappe.db.get_single_value('Manufacturing Settings',
+		if self.work_order and self.pro_doc.has_batch_no and cint(frappe.get_single_value('Manufacturing Settings',
 			'make_serial_no_batch_from_work_order', cache=True)):
 			self.set_batchwise_finished_goods(args, item)
 		else:
@@ -1397,7 +1397,7 @@ class StockEntry(StockController):
 						if (qty > req_qty):
 							qty = (qty/trans_qty) * flt(self.fg_completed_qty)
 
-						if consumed_qty and frappe.db.get_single_value("Manufacturing Settings",
+						if consumed_qty and frappe.get_single_value("Manufacturing Settings",
 							"material_consumption"):
 							qty -= consumed_qty
 
@@ -1429,7 +1429,7 @@ class StockEntry(StockController):
 		max_qty = flt(self.pro_doc.qty)
 
 		allow_overproduction = False
-		overproduction_percentage = flt(frappe.db.get_single_value("Manufacturing Settings",
+		overproduction_percentage = flt(frappe.get_single_value("Manufacturing Settings",
 			"overproduction_percentage_for_work_order"))
 
 		to_transfer_qty = flt(self.pro_doc.material_transferred_for_manufacturing) + flt(self.fg_completed_qty)
@@ -1691,7 +1691,7 @@ class StockEntry(StockController):
 			if not d.is_process_loss:
 				continue
 
-			scrap_warehouse = frappe.db.get_single_value("Manufacturing Settings", "default_scrap_warehouse")
+			scrap_warehouse = frappe.get_single_value("Manufacturing Settings", "default_scrap_warehouse")
 			if scrap_warehouse is not None:
 				d.t_warehouse = scrap_warehouse
 			d.is_scrap_item = 0
@@ -1858,7 +1858,7 @@ def get_operating_cost_per_unit(work_order=None, bom_no=None):
 		if bom.quantity:
 			operating_cost_per_unit = flt(bom.operating_cost) / flt(bom.quantity)
 
-	if work_order and work_order.produced_qty and cint(frappe.db.get_single_value('Manufacturing Settings',
+	if work_order and work_order.produced_qty and cint(frappe.get_single_value('Manufacturing Settings',
 		'add_corrective_operation_cost_in_finished_good_valuation')):
 		operating_cost_per_unit += flt(work_order.corrective_operation_cost) / flt(work_order.produced_qty)
 
