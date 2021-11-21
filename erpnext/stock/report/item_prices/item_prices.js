@@ -9,8 +9,8 @@ frappe.query_reports["Item Prices"] = {
 			"fieldtype": "Select",
 			"options": "Enabled Items only\nDisabled Items only\nAll Items",
 			"default": "Enabled Items only",
-			"on_change": function(query_report) {
-				query_report.trigger_refresh();
+			"on_change": function() {
+				frappe.query_report.refresh();
 			}
 		}
 	]
