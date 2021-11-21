@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import frappe
 from frappe import _
 from frappe.utils import flt
+from frappe.desk.reportview import get_match_cond
 
 
 def execute(filters=None):
@@ -48,6 +49,10 @@ def get_item_details(conditions):
 	"""returns all items details"""
 
 	item_map = {}
+	if conditions:
+		conditions += get_match_cond("Item")
+	else:
+		conditions = get_match_cond("Item", as_condition=False)
 
 	for i in frappe.db.sql("""select name, item_group, item_name, description,
 		brand, stock_uom from tabItem %s
@@ -60,11 +65,11 @@ def get_price_list():
 	"""Get selling & buying price list of every item"""
 
 	rate = {}
-
+	permissions_cond = get_match_cond("Item Price").replace("tabItem Price", "ip")
 	price_list = frappe.db.sql("""select ip.item_code, ip.buying, ip.selling,
 		concat(ifnull(cu.symbol,ip.currency), " ", round(ip.price_list_rate,2), " - ", ip.price_list) as price
 		from `tabItem Price` ip, `tabPrice List` pl, `tabCurrency` cu
-		where ip.price_list=pl.name and pl.currency=cu.name and pl.enabled=1""", as_dict=1)
+		where ip.price_list=pl.name and pl.currency=cu.name and pl.enabled=1 {cond}""".format(cond=permissions_cond), as_dict=1)
 
 	for j in price_list:
 		if j.price:
@@ -80,29 +85,32 @@ def get_price_list():
 
 def get_last_purchase_rate():
 	item_last_purchase_rate_map = {}
-
+	po_cond = get_match_cond("Purchase Order").replace("`tabPurchase Order`", "po")
+	pr_cond = get_match_cond("Purchase Receipt").replace("`tabPurchase Receipt`", "pr")
+	pi_cond = get_match_cond("Purchase Invoice").replace("`tabPurchase Invoice`", "pi")
+	
 	query = """select * from (
 				(select
 					po_item.item_code,
 					po.transaction_date as posting_date,
 					po_item.base_rate
 				from `tabPurchase Order` po, `tabPurchase Order Item` po_item
-					where po.name = po_item.parent and po.docstatus = 1)
+					where po.name = po_item.parent and po.docstatus = 1{po_cond}) 
 				union
 				(select
 					pr_item.item_code,
 					pr.posting_date,
 					pr_item.base_rate
 				from `tabPurchase Receipt` pr, `tabPurchase Receipt Item` pr_item
-					where pr.name = pr_item.parent and pr.docstatus = 1)
+					where pr.name = pr_item.parent and pr.docstatus = 1{pr_cond}) 
 				union
 				(select
 					pi_item.item_code,
 					pi.posting_date,
 					pi_item.base_rate
 				from `tabPurchase Invoice` pi, `tabPurchase Invoice Item` pi_item
-					where pi.name = pi_item.parent and pi.docstatus = 1 and pi.update_stock = 1)
-				) result order by result.item_code asc, result.posting_date asc"""
+					where pi.name = pi_item.parent and pi.docstatus = 1 and pi.update_stock = 1{pi_cond}) 
+				) result order by result.item_code asc, result.posting_date asc""".format(po_cond=po_cond, pi_cond=pi_cond, pr_cond=pr_cond)
 
 	for d in frappe.db.sql(query, as_dict=1):
 		item_last_purchase_rate_map[d.item_code] = d.base_rate
@@ -113,9 +121,9 @@ def get_item_bom_rate():
 	"""Get BOM rate of an item from BOM"""
 
 	item_bom_map = {}
-
+	cond = get_match_cond("BOM")
 	for b in frappe.db.sql("""select item, (total_cost/quantity) as bom_rate
-		from `tabBOM` where is_active=1 and is_default=1""", as_dict=1):
+		from `tabBOM` where is_active=1 and is_default=1{cond}""".format(cond=cond), as_dict=1):
 			item_bom_map.setdefault(b.item, flt(b.bom_rate))
 
 	return item_bom_map
@@ -124,10 +132,10 @@ def get_valuation_rate():
 	"""Get an average valuation rate of an item from all warehouses"""
 
 	item_val_rate_map = {}
-
+	cond = get_match_cond("Bin")
 	for d in frappe.db.sql("""select item_code,
 		sum(actual_qty*valuation_rate)/sum(actual_qty) as val_rate
-		from tabBin where actual_qty > 0 group by item_code""", as_dict=1):
+		from tabBin where actual_qty > 0 group by item_code{cond}""".format(cond=cond), as_dict=1):
 			item_val_rate_map.setdefault(d.item_code, d.val_rate)
 
 	return item_val_rate_map
