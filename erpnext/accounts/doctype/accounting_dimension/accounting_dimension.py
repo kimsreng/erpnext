@@ -196,7 +196,7 @@ def get_accounting_dimensions(as_list=True):
 def get_checks_for_pl_and_bs_accounts():
 	dimensions = frappe.db.sql("""SELECT p.label, p.disabled, p.fieldname, c.default_dimension, c.company, c.mandatory_for_pl, c.mandatory_for_bs
 		FROM `tabAccounting Dimension`p ,`tabAccounting Dimension Detail` c
-		WHERE p.name = c.parent{}""".format(_get_permission_con().replace("Accounting Dimension", "p")), as_dict=1)
+		WHERE p.name = c.parent{}""".format(_get_permission_con().replace("tabAccounting Dimension", "p")), as_dict=1)
 
 	return dimensions
 
@@ -222,7 +222,7 @@ def get_dimensions(with_cost_center_and_project=False):
 
 	default_dimensions = frappe.db.sql("""SELECT p.fieldname, c.company, c.default_dimension
 		FROM `tabAccounting Dimension Detail` c, `tabAccounting Dimension` p
-		WHERE c.parent = p.name{0}""".format(_get_permission_con().replace("Accounting Dimension", "p")), as_dict=1)
+		WHERE c.parent = p.name{0}""".format(_get_permission_con().replace("tabAccounting Dimension", "p")), as_dict=1)
 
 	if with_cost_center_and_project:
 		dimension_filters.extend([
