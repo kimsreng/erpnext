@@ -185,7 +185,7 @@ def get_doctypes_with_dimensions():
 
 def get_accounting_dimensions(as_list=True):
 	if frappe.flags.accounting_dimensions is None:
-		frappe.flags.accounting_dimensions = frappe.get_all("Accounting Dimension",
+		frappe.flags.accounting_dimensions = frappe.get_list("Accounting Dimension",
 			fields=["label", "fieldname", "disabled", "document_type"])
 
 	if as_list:
@@ -196,7 +196,7 @@ def get_accounting_dimensions(as_list=True):
 def get_checks_for_pl_and_bs_accounts():
 	dimensions = frappe.db.sql("""SELECT p.label, p.disabled, p.fieldname, c.default_dimension, c.company, c.mandatory_for_pl, c.mandatory_for_bs
 		FROM `tabAccounting Dimension`p ,`tabAccounting Dimension Detail` c
-		WHERE p.name = c.parent""", as_dict=1)
+		WHERE p.name = c.parent{}""".format(_get_permission_con().replace("Accounting Dimension", "p")), as_dict=1)
 
 	return dimensions
 
@@ -207,7 +207,7 @@ def get_dimension_with_children(doctype, dimension):
 
 	all_dimensions = []
 	lft, rgt = frappe.db.get_value(doctype, dimension, ["lft", "rgt"])
-	children = frappe.get_all(doctype, filters={"lft": [">=", lft], "rgt": ["<=", rgt]}, order_by="lft")
+	children = frappe.get_list(doctype, filters={"lft": [">=", lft], "rgt": ["<=", rgt]}, order_by="lft")
 	all_dimensions += [c.name for c in children]
 
 	return all_dimensions
@@ -217,12 +217,12 @@ def get_dimensions(with_cost_center_and_project=False):
 	dimension_filters = frappe.db.sql("""
 		SELECT label, fieldname, document_type
 		FROM `tabAccounting Dimension`
-		WHERE disabled = 0
-	""", as_dict=1)
+		WHERE disabled = 0{0}
+	""".format(_get_permission_con()), as_dict=1)
 
 	default_dimensions = frappe.db.sql("""SELECT p.fieldname, c.company, c.default_dimension
 		FROM `tabAccounting Dimension Detail` c, `tabAccounting Dimension` p
-		WHERE c.parent = p.name""", as_dict=1)
+		WHERE c.parent = p.name{0}""".format(_get_permission_con().replace("Accounting Dimension", "p")), as_dict=1)
 
 	if with_cost_center_and_project:
 		dimension_filters.extend([
@@ -242,3 +242,7 @@ def get_dimensions(with_cost_center_and_project=False):
 		default_dimensions_map[dimension.company][dimension.fieldname] = dimension.default_dimension
 
 	return dimension_filters, default_dimensions_map
+
+def _get_permission_con(doctype="Accounting Dimension"):
+	from frappe.desk.reportview import get_match_cond
+	return get_match_cond(doctype)

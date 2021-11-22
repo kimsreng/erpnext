@@ -17,6 +17,7 @@ from frappe import _
 from frappe.utils import add_days, add_months, cint, cstr, flt, formatdate, get_first_day, getdate
 from past.builtins import cmp
 from six import itervalues
+from frappe.desk.reportview import get_match_cond
 
 from erpnext.accounts.doctype.accounting_dimension.accounting_dimension import (
 	get_accounting_dimensions,
@@ -113,7 +114,7 @@ def get_period_list(from_fiscal_year, to_fiscal_year, period_start_date, period_
 
 
 def get_fiscal_year_data(from_fiscal_year, to_fiscal_year):
-	agent_con = frappe.get_agent_condition()
+	cond = get_match_cond("Fiscal Year")
 	agent = frappe.get_agent(frappe.session.user)
 	if agent:
 		from_fiscal_year = remove_abbr_from_text(from_fiscal_year, agent)
@@ -121,7 +122,7 @@ def get_fiscal_year_data(from_fiscal_year, to_fiscal_year):
 
 	fiscal_year = frappe.db.sql("""select min(year_start_date) as year_start_date,
 		max(year_end_date) as year_end_date from `tabFiscal Year` where
-		year between %(from_fiscal_year)s and %(to_fiscal_year)s{0}""".format(agent_con),
+		year between %(from_fiscal_year)s and %(to_fiscal_year)s{0}""".format(cond),
 		{'from_fiscal_year': from_fiscal_year, 'to_fiscal_year': to_fiscal_year}, as_dict=1)
 
 	return fiscal_year[0] if fiscal_year else {}
@@ -172,8 +173,9 @@ def get_data(
 	company_currency = get_appropriate_currency(company, filters)
 
 	gl_entries_by_account = {}
+	permission_cond = get_match_cond("Account")
 	for root in frappe.db.sql("""select lft, rgt from tabAccount
-			where root_type=%s and ifnull(parent_account, '') = ''""", root_type, as_dict=1):
+			where root_type=%s and ifnull(parent_account, '') = ''{0}""".format(permission_cond), root_type, as_dict=1):
 
 		set_gl_entries_by_account(
 			company,
@@ -322,10 +324,11 @@ def add_total_row(out, root_type, balance_must_be, period_list, company_currency
 
 
 def get_accounts(company, root_type):
+	permission_cond = get_match_cond("Account")
 	return frappe.db.sql("""
 		select name, account_number, parent_account, lft, rgt, root_type, report_type, account_name, include_in_gross, account_type, is_group, lft, rgt
 		from `tabAccount`
-		where company=%s and root_type=%s order by lft""", (company, root_type), as_dict=True)
+		where company=%s and root_type=%s{0} order by lft""".format(permission_cond), (company, root_type), as_dict=True)
 
 
 def filter_accounts(accounts, depth=20):
@@ -381,8 +384,9 @@ def set_gl_entries_by_account(
 
 	additional_conditions = get_additional_conditions(from_date, ignore_closing_entries, filters)
 
+	permission_cond = get_match_cond("Account")
 	accounts = frappe.db.sql_list("""select name from `tabAccount`
-		where lft >= %s and rgt <= %s and company = %s""", (root_lft, root_rgt, company))
+		where lft >= %s and rgt <= %s and company = %s{0}""".format(permission_cond), (root_lft, root_rgt, company))
 
 	if accounts:
 		additional_conditions += " and account in ({})"\

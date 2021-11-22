@@ -7,6 +7,7 @@ import frappe
 from frappe import _
 from frappe.utils import cint, cstr
 from six import iteritems
+from frappe.desk.reportview import get_match_cond
 
 from erpnext.accounts.report.financial_statements import (
 	get_columns,
@@ -151,13 +152,14 @@ def get_account_type_based_gl_data(company, start_date, end_date, account_type, 
 		cond = " AND (finance_book in (%s, '') OR finance_book IS NULL)" %(frappe.db.escape(cstr(filters.finance_book)))
 
 
+	permission_cond = get_match_cond("GL Entry")
 	gl_sum = frappe.db.sql_list("""
 		select sum(credit) - sum(debit)
 		from `tabGL Entry`
 		where company=%s and posting_date >= %s and posting_date <= %s
 			and voucher_type != 'Period Closing Voucher'
-			and account in ( SELECT name FROM tabAccount WHERE account_type = %s) {cond}
-	""".format(cond=cond), (company, start_date, end_date, account_type))
+			and account in ( SELECT name FROM tabAccount WHERE account_type = %s) {cond} {permission_cond}
+	""".format(cond=cond, permission_cond=permission_cond), (company, start_date, end_date, account_type))
 
 	return gl_sum[0] if gl_sum and gl_sum[0] else 0
 
