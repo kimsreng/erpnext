@@ -7,6 +7,7 @@ import frappe
 from frappe import _
 
 from erpnext.accounts.report.sales_register.sales_register import get_mode_of_payments
+from frappe.desk.reportview import get_match_cond
 
 
 def execute(filters=None):
@@ -68,6 +69,7 @@ def get_pos_entries(filters, group_by_field):
 			p.docstatus = 1 and
 			{group_by_mop_condition}
 			{conditions}
+			{permission_cond}
 		ORDER BY
 			{order_by}
 		""".format(
@@ -75,7 +77,8 @@ def get_pos_entries(filters, group_by_field):
 			from_sales_invoice_payment=from_sales_invoice_payment,
 			group_by_mop_condition=group_by_mop_condition,
 			conditions=conditions,
-			order_by=order_by
+			order_by=order_by,
+			permission_cond=get_match_cond("POS Invoice", "p")
 		), filters, as_dict=1)
 
 def concat_mode_of_payments(pos_entries):

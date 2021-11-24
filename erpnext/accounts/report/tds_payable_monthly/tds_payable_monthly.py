@@ -68,7 +68,7 @@ def get_result(filters, tds_docs, tds_accounts, tax_category_map):
 
 def get_supplier_pan_map():
 	supplier_map = frappe._dict()
-	suppliers = frappe.db.get_all('Supplier', fields=['name', 'pan', 'supplier_type', 'supplier_name'])
+	suppliers = frappe.get_all_with_user_permissions('Supplier', fields=['name', 'pan', 'supplier_type', 'supplier_name'])
 
 	for d in suppliers:
 		supplier_map[d.name] = d
@@ -80,7 +80,7 @@ def get_gle_map(filters, documents):
 	# {"purchase_invoice": list of dict of all gle created for this invoice}
 	gle_map = {}
 
-	gle = frappe.db.get_all('GL Entry',
+	gle = frappe.get_all_with_user_permissions('GL Entry',
 		{
 			"voucher_no": ["in", documents],
 			"credit": (">", 0)
@@ -182,7 +182,7 @@ def get_tds_docs(filters):
 	journal_entries = []
 	tax_category_map = {}
 
-	tds_accounts = frappe.get_all("Tax Withholding Account", {'company': filters.get('company')},
+	tds_accounts = frappe.get_all_with_user_permissions("Tax Withholding Account", {'company': filters.get('company')},
 		pluck="account")
 
 	query_filters = {
@@ -195,7 +195,7 @@ def get_tds_docs(filters):
 	if filters.get('supplier'):
 		query_filters.update({'against': filters.get('supplier')})
 
-	tds_docs = frappe.get_all("GL Entry", query_filters, ["voucher_no", "voucher_type", "against", "party"])
+	tds_docs = frappe.get_all_with_user_permissions("GL Entry", query_filters, ["voucher_no", "voucher_type", "against", "party"])
 
 	for d in tds_docs:
 		if d.voucher_type == "Purchase Invoice":
@@ -219,11 +219,11 @@ def get_tds_docs(filters):
 	return tds_documents, tds_accounts, tax_category_map
 
 def get_tax_category_map(vouchers, doctype, tax_category_map):
-	tax_category_map.update(frappe._dict(frappe.get_all(doctype,
+	tax_category_map.update(frappe._dict(frappe.get_all_with_user_permissions(doctype,
 		filters = {'name': ('in', vouchers)}, fields=['name', 'tax_withholding_category'], as_list=1)))
 
 def get_tax_rate_map(filters):
-	rate_map = frappe.get_all('Tax Withholding Rate', filters={
+	rate_map = frappe.get_all_with_user_permissions('Tax Withholding Rate', filters={
 		'from_date': ('<=', filters.get('from_date')),
 		'to_date': ('>=', filters.get('to_date'))
 	}, fields=['parent', 'tax_withholding_rate'], as_list=1)

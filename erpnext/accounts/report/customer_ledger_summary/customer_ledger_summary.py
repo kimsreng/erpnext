@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _, scrub
+from frappe.desk.reportview import get_match_cond
 from frappe.utils import getdate, nowdate
 from six import iteritems, itervalues
 
@@ -16,7 +17,7 @@ class PartyLedgerSummaryReport(object):
 		self.filters.to_date = getdate(self.filters.to_date or nowdate())
 
 		if not self.filters.get("company"):
-			self.filters["company"] = frappe.db.get_single_value('Global Defaults', 'default_company')
+			frappe.throw(_("Please choose a company"))
 
 	def run(self, args):
 		if self.filters.from_date > self.filters.to_date:
@@ -176,8 +177,9 @@ class PartyLedgerSummaryReport(object):
 			where
 				gle.docstatus < 2 and gle.is_cancelled = 0 and gle.party_type=%(party_type)s and ifnull(gle.party, '') != ''
 				and gle.posting_date <= %(to_date)s {conditions}
+				{permission_cond}
 			order by gle.posting_date
-		""".format(join=join, join_field=join_field, conditions=conditions), self.filters, as_dict=True)
+		""".format(join=join, join_field=join_field, conditions=conditions, permission_cond = get_match_cond("GL Entry", "gle")), self.filters, as_dict=True)
 
 	def prepare_conditions(self):
 		conditions = [""]
@@ -257,9 +259,10 @@ class PartyLedgerSummaryReport(object):
 				) and (voucher_type, voucher_no) in (
 					select voucher_type, voucher_no from `tabGL Entry` gle
 					where gle.party_type=%(party_type)s and ifnull(party, '') != ''
-					and gle.posting_date between %(from_date)s and %(to_date)s and gle.docstatus < 2 {conditions}
+					and gle.posting_date between %(from_date)s and %(to_date)s and gle.docstatus < 2 {conditions}					
 				)
-		""".format(conditions=conditions, income_or_expense=income_or_expense), self.filters, as_dict=True)
+				{permission_cond}
+		""".format(conditions=conditions, income_or_expense=income_or_expense, permission_cond = get_match_cond("GL Entry")), self.filters, as_dict=True)
 
 		self.party_adjustment_details = {}
 		self.party_adjustment_accounts = set()

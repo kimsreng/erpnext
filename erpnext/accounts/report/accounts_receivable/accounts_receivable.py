@@ -7,6 +7,7 @@ from collections import OrderedDict
 
 import frappe
 from frappe import _, scrub
+from frappe.desk.reportview import get_match_cond
 from frappe.utils import cint, cstr, flt, getdate, nowdate
 
 from erpnext.accounts.doctype.accounting_dimension.accounting_dimension import (
@@ -596,9 +597,9 @@ class ReceivablePayableReport(object):
 				docstatus < 2
 				and is_cancelled = 0
 				and party_type=%s
-				and (party is not null and party != '')
+				and (party is not null and party != '') {permission_cond}
 				{1} {2} {3}"""
-			.format(select_fields, date_condition, conditions, order_by, remarks=remarks), values, as_dict=True)
+			.format(select_fields, date_condition, conditions, order_by, remarks=remarks, permission_cond=get_match_cond("GL Entry")), values, as_dict=True)
 
 	def get_sales_invoices_or_customers_based_on_sales_person(self):
 		if self.filters.get("sales_person"):
@@ -608,9 +609,9 @@ class ReceivablePayableReport(object):
 			records = frappe.db.sql("""
 				select distinct parent, parenttype
 				from `tabSales Team` steam
-				where parenttype in ('Customer', 'Sales Invoice')
+				where parenttype in ('Customer', 'Sales Invoice') {permission_cond}
 					and exists(select name from `tabSales Person` where lft >= %s and rgt <= %s and name = steam.sales_person)
-			""", (lft, rgt), as_dict=1)
+			""".format(permission_cond=get_match_cond("Sales Team", "steam")), (lft, rgt), as_dict=1)
 
 			self.sales_person_records = frappe._dict()
 			for d in records:

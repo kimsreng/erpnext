@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond
 from frappe.utils import add_days, flt, formatdate
 
 
@@ -83,9 +84,9 @@ def get_asset_categories(filters):
 								0
 						   end), 0) as cost_of_scrapped_asset
 		from `tabAsset`
-		where docstatus=1 and company=%(company)s and purchase_date <= %(to_date)s
+		where docstatus=1 and company=%(company)s and purchase_date <= %(to_date)s {permission_cond}
 		group by asset_category
-	""", {"to_date": filters.to_date, "from_date": filters.from_date, "company": filters.company}, as_dict=1)
+	""".format(permission_cond=get_match_cond("Asset")), {"to_date": filters.to_date, "from_date": filters.from_date, "company": filters.company}, as_dict=1)
 
 def get_assets(filters):
 	return frappe.db.sql("""
@@ -112,7 +113,7 @@ def get_assets(filters):
 								   0
 							  end), 0) as depreciation_amount_during_the_period
 			from `tabAsset` a, `tabDepreciation Schedule` ds
-			where a.docstatus=1 and a.company=%(company)s and a.purchase_date <= %(to_date)s and a.name = ds.parent and ifnull(ds.journal_entry, '') != ''
+			where a.docstatus=1 and a.company=%(company)s and a.purchase_date <= %(to_date)s and a.name = ds.parent and ifnull(ds.journal_entry, '') != ''{asset_cond}
 			group by a.asset_category
 			union
 			SELECT a.asset_category,
@@ -128,10 +129,10 @@ def get_assets(filters):
 							  end), 0) as depreciation_eliminated_during_the_period,
 				   0 as depreciation_amount_during_the_period
 			from `tabAsset` a
-			where a.docstatus=1 and a.company=%(company)s and a.purchase_date <= %(to_date)s
+			where a.docstatus=1 and a.company=%(company)s and a.purchase_date <= %(to_date)s {asset_cond}
 			group by a.asset_category) as results
 		group by results.asset_category
-		""", {"to_date": filters.to_date, "from_date": filters.from_date, "company": filters.company}, as_dict=1)
+		""".format(asset_cond=get_match_cond("Asset", "a")), {"to_date": filters.to_date, "from_date": filters.from_date, "company": filters.company}, as_dict=1)
 
 
 def get_columns(filters):

@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond
 from frappe.utils import cstr
 
 
@@ -126,7 +127,7 @@ def get_pos_invoice_data(filters):
 							'docstatus, company, is_pos, name, posting_date, owner, sum(base_total) as "base_total", '
 							'sum(net_total) as "net_total", sum(total_taxes_and_charges) as "total_taxes", '
 							'sum(base_paid_amount) as "paid_amount", sum(outstanding_amount) as "outstanding_amount" '
-							'FROM `tabSales Invoice` '
+							'FROM `tabSales Invoice` where 1=1 {permission_cond}'
 							'GROUP BY name'
 							') a '
 							'ON ('
@@ -134,7 +135,7 @@ def get_pos_invoice_data(filters):
 							'WHERE a.docstatus = 1'
 							' AND {conditions} '
 							'GROUP BY '
-							'owner, posting_date, warehouse'.format(conditions=conditions), filters, as_dict=1
+							'owner, posting_date, warehouse'.format(conditions=conditions, permission_cond=get_match_cond("Sales Invoice")), filters, as_dict=1
 							)
 	return result
 
@@ -149,11 +150,11 @@ def get_sales_invoice_data(filters):
 			sum(a.base_paid_amount) as "paid_amount",
 			sum(a.outstanding_amount) as "outstanding_amount"
 		from `tabSales Invoice` a
-		where a.docstatus = 1
+		where a.docstatus = 1 {permission_cond}
 			and {conditions}
 			group by
 			a.owner, a.posting_date
-	""".format(conditions=conditions), filters, as_dict=1)
+	""".format(conditions=conditions, permission_cond=get_match_cond("Sales Invoice", "a")), filters, as_dict=1)
 
 
 def get_mode_of_payments(filters):
@@ -191,7 +192,8 @@ def get_invoices(filters):
 	conditions = get_conditions(filters)
 	return frappe.db.sql("""select a.name
 		from `tabSales Invoice` a
-		where a.docstatus = 1 and {conditions}""".format(conditions=conditions),
+		where a.docstatus = 1 and {conditions}{permission_cond}
+		""".format(conditions=conditions, permission_cond=get_match_cond("Sales Invoice", "a")),
 		filters, as_dict=1)
 
 

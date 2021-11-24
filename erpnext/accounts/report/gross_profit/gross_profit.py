@@ -291,7 +291,8 @@ class GrossProfitGenerator(object):
 				si.name = si_item.parent
 				and si.docstatus = 1
 				and si.is_return = 1
-		""", as_dict=1)
+				{permission_cond}
+		""".format(permission_cond=get_match_cond("Sales Invoice", "si")), as_dict=1)
 
 		self.returned_invoices = frappe._dict()
 		for inv in returned_invoices:
@@ -488,7 +489,7 @@ class GrossProfitGenerator(object):
 			self.si_list.insert((index+i+1), bundle_item)
 
 	def get_bundle_items(self, product_bundle):
-		return frappe.get_all(
+		return frappe.get_all_with_user_permissions(
 			'Product Bundle Item',
 			filters = {
 				'parent': product_bundle.item_code
@@ -533,10 +534,10 @@ class GrossProfitGenerator(object):
 		res = frappe.db.sql("""select item_code, voucher_type, voucher_no,
 				voucher_detail_no, stock_value, warehouse, actual_qty as qty
 			from `tabStock Ledger Entry`
-			where company=%(company)s and is_cancelled = 0
+			where company=%(company)s and is_cancelled = 0 {permission_cond}
 			order by
 				item_code desc, warehouse desc, posting_date desc,
-				posting_time desc, creation desc""", self.filters, as_dict=True)
+				posting_time desc, creation desc""".format(permission_cond=get_match_cond("Stock Ledger Entry")), self.filters, as_dict=True)
 		self.sle = {}
 		for r in res:
 			if (r.item_code, r.warehouse) not in self.sle:
@@ -554,5 +555,4 @@ class GrossProfitGenerator(object):
 				frappe._dict()).setdefault(d.parent_item, []).append(d)
 
 	def load_non_stock_items(self):
-		self.non_stock_items = frappe.db.sql_list("""select name from tabItem
-			where is_stock_item=0""")
+		self.non_stock_items = frappe.get_all_with_user_permissions("Item", {"is_stock_item": 0}, pluck="name")

@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import frappe
 from frappe import _
 from frappe.utils import getdate, nowdate
+from frappe.desk.reportview import get_match_cond
 
 
 def execute(filters=None):
@@ -79,8 +80,9 @@ def get_entries(filters):
 		FROM
 			`tabJournal Entry Account` jvd, `tabJournal Entry` jv
 		WHERE
-			jvd.parent = jv.name and jv.docstatus=1 and jvd.account = %(account)s {0}
-			order by posting_date DESC, jv.name DESC""".format(conditions), filters, as_list=1)
+			jvd.parent = jv.name and jv.docstatus=1 and jvd.account = %(account)s {0}{permission_cond}
+			order by posting_date DESC, jv.name DESC""".format(conditions, permission_cond=get_match_cond("Journal Entry", "jv")), 
+			filters, as_list=1)
 
 	payment_entries =  frappe.db.sql("""SELECT
 			"Payment Entry", name, posting_date, reference_no, clearance_date, party,
@@ -88,7 +90,8 @@ def get_entries(filters):
 		FROM
 			`tabPayment Entry`
 		WHERE
-			docstatus=1 and (paid_from = %(account)s or paid_to = %(account)s) {0}
-			order by posting_date DESC, name DESC""".format(conditions), filters, as_list=1)
+			docstatus=1 and (paid_from = %(account)s or paid_to = %(account)s) {0} {permission_cond}
+			order by posting_date DESC, name DESC""".format(conditions, permission_cond=get_match_cond("Payment Entry")), 
+			filters, as_list=1)
 
 	return sorted(journal_entries + payment_entries, key=lambda k: k[2] or getdate(nowdate()))

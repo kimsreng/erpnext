@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond
 from frappe.utils import cstr, flt
 from six import itervalues
 
@@ -38,8 +39,8 @@ def get_data(filters, dimension_items_list):
 		from
 			`tabAccount`
 		where
-			company=%s
-			order by lft""", (filters.company), as_dict=True)
+			company=%s {permission_cond}
+			order by lft""".format(permision_cond=get_match_cond("Account")), (filters.company), as_dict=True)
 
 	if not acc:
 		return None

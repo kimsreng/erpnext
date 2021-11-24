@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond
 from frappe.utils import cint, flt
 
 from erpnext.accounts.report.trial_balance.trial_balance import validate_filters
@@ -111,7 +112,8 @@ def get_opening_balances(filters):
 			and ifnull(party_type, '') = %(party_type)s and ifnull(party, '') != ''
 			and (posting_date < %(from_date)s or ifnull(is_opening, 'No') = 'Yes')
 			{account_filter}
-		group by party""".format(account_filter=account_filter), {
+			{permission_cond}
+		group by party""".format(account_filter=account_filter, permission_cond=get_match_cond("GL Entry")), {
 			"company": filters.company,
 			"from_date": filters.from_date,
 			"party_type": filters.party_type
@@ -138,7 +140,8 @@ def get_balances_within_period(filters):
 			and posting_date >= %(from_date)s and posting_date <= %(to_date)s
 			and ifnull(is_opening, 'No') = 'No'
 			{account_filter}
-		group by party""".format(account_filter=account_filter), {
+			{permission_cond}
+		group by party""".format(account_filter=account_filter, permission_cond=get_match_cond("GL Entry")), {
 			"company": filters.company,
 			"from_date": filters.from_date,
 			"to_date": filters.to_date,

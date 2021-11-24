@@ -7,6 +7,7 @@ from collections import OrderedDict
 
 import frappe
 from frappe import _, _dict
+from frappe.desk.reportview import get_match_cond
 from frappe.utils import cstr, flt, getdate
 from six import iteritems
 
@@ -30,7 +31,7 @@ def execute(filters=None):
 		not filters.get('account'):
 		frappe.throw(_("Select an account to print in account currency"))
 
-	for acc in frappe.db.sql("""select name, is_group from tabAccount""", as_dict=1):
+	for acc in frappe.get_all_with_user_permissions("Account", fields="name,is_group"):
 		account_details.setdefault(acc.name, acc)
 
 	if filters.get('party'):
@@ -209,12 +210,13 @@ def get_gl_entries(filters, accounting_dimensions):
 			against_voucher_type, against_voucher, account_currency,
 			remarks, against, is_opening, creation {select_fields}
 		from `tabGL Entry`
-		where company=%(company)s {conditions}
+		where company=%(company)s {conditions} {permission_cond}
 		{distributed_cost_center_query}
 		{order_by_statement}
 		""".format(
-			dimension_fields=dimension_fields, select_fields=select_fields, conditions=get_conditions(filters), distributed_cost_center_query=distributed_cost_center_query,
-			order_by_statement=order_by_statement
+			dimension_fields=dimension_fields, select_fields=select_fields, conditions=get_conditions(filters), 
+			distributed_cost_center_query=distributed_cost_center_query,
+			order_by_statement=order_by_statement, permission_cond=get_match_cond("GL Entry")
 		),
 		filters, as_dict=1)
 

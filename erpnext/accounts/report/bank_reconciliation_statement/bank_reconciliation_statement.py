@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import frappe
 from frappe import _
 from frappe.utils import flt, getdate, nowdate
+from frappe.desk.reportview import get_match_cond
 
 
 def execute(filters=None):
@@ -129,7 +130,7 @@ def get_entries(filters):
 		where jvd.parent = jv.name and jv.docstatus=1
 			and jvd.account = %(account)s and jv.posting_date <= %(report_date)s
 			and ifnull(jv.clearance_date, '4000-01-01') > %(report_date)s
-			and ifnull(jv.is_opening, 'No') = 'No'""", filters, as_dict=1)
+			and ifnull(jv.is_opening, 'No') = 'No'{permission_cond}""".format(permission_cond=get_match_cond("Journal Entry", "jv")), filters, as_dict=1)
 
 	payment_entries = frappe.db.sql("""
 		select
@@ -143,8 +144,8 @@ def get_entries(filters):
 		where
 			(paid_from=%(account)s or paid_to=%(account)s) and docstatus=1
 			and posting_date <= %(report_date)s
-			and ifnull(clearance_date, '4000-01-01') > %(report_date)s
-	""", filters, as_dict=1)
+			and ifnull(clearance_date, '4000-01-01') > %(report_date)s {permission_cond}
+	""".format(permission_cond=get_match_cond("Payment Entry")), filters, as_dict=1)
 
 	pos_entries = []
 	if filters.include_pos_transactions:
@@ -157,10 +158,10 @@ def get_entries(filters):
 			where
 				sip.account=%(account)s and si.docstatus=1 and sip.parent = si.name
 				and account.name = sip.account and si.posting_date <= %(report_date)s and
-				ifnull(sip.clearance_date, '4000-01-01') > %(report_date)s
+				ifnull(sip.clearance_date, '4000-01-01') > %(report_date)s {permission_cond}
 			order by
 				si.posting_date ASC, si.name DESC
-		""", filters, as_dict=1)
+		""".format(permission_cond=get_match_cond("Sales Invoice", "si")), filters, as_dict=1)
 
 	return sorted(list(payment_entries)+list(journal_entries+list(pos_entries)),
 			key=lambda k: k['posting_date'] or getdate(nowdate()))
@@ -171,7 +172,7 @@ def get_amounts_not_reflected_in_system(filters):
 		from `tabJournal Entry Account` jvd, `tabJournal Entry` jv
 		where jvd.parent = jv.name and jv.docstatus=1 and jvd.account=%(account)s
 		and jv.posting_date > %(report_date)s and jv.clearance_date <= %(report_date)s
-		and ifnull(jv.is_opening, 'No') = 'No' """, filters)
+		and ifnull(jv.is_opening, 'No') = 'No' {permission_cond}""".format(permission_cond=get_match_cond("Journal Entry", "jv")), filters)
 
 	je_amount = flt(je_amount[0][0]) if je_amount else 0.0
 
@@ -179,7 +180,7 @@ def get_amounts_not_reflected_in_system(filters):
 		select sum(if(paid_from=%(account)s, paid_amount, received_amount))
 		from `tabPayment Entry`
 		where (paid_from=%(account)s or paid_to=%(account)s) and docstatus=1
-		and posting_date > %(report_date)s and clearance_date <= %(report_date)s""", filters)
+		and posting_date > %(report_date)s and clearance_date <= %(report_date)s {permission_cond}""".format(permission_cond=get_match_cond("Payment Entry")), filters)
 
 	pe_amount = flt(pe_amount[0][0]) if pe_amount else 0.0
 

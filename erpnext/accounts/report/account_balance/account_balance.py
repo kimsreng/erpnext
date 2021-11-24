@@ -62,7 +62,7 @@ def get_data(filters):
 
 	data = []
 	conditions = get_conditions(filters)
-	accounts = frappe.db.get_all("Account", fields=["name", "account_currency"],
+	accounts = frappe.db.get_all_with_user_permissions("Account", fields=["name", "account_currency"],
 		filters=conditions, order_by='name')
 
 	for d in accounts:

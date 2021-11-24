@@ -384,9 +384,9 @@ def set_gl_entries_by_account(
 
 	additional_conditions = get_additional_conditions(from_date, ignore_closing_entries, filters)
 
-	permission_cond = get_match_cond("Account")
+	acc_permission_cond = get_match_cond("Account")
 	accounts = frappe.db.sql_list("""select name from `tabAccount`
-		where lft >= %s and rgt <= %s and company = %s{0}""".format(permission_cond), (root_lft, root_rgt, company))
+		where lft >= %s and rgt <= %s and company = %s{0}""".format(acc_permission_cond), (root_lft, root_rgt, company))
 
 	if accounts:
 		additional_conditions += " and account in ({})"\
@@ -408,7 +408,7 @@ def set_gl_entries_by_account(
 				gl_filters.update({
 					key: value
 				})
-
+		gl_permission_cond = get_match_cond("GL Entry")
 		distributed_cost_center_query = ""
 		if filters and filters.get('cost_center'):
 			distributed_cost_center_query = """
@@ -422,7 +422,7 @@ def set_gl_entries_by_account(
 				debit_in_account_currency*(DCC_allocation.percentage_allocation/100) as debit_in_account_currency,
 				credit_in_account_currency*(DCC_allocation.percentage_allocation/100) as credit_in_account_currency,
 				account_currency
-			FROM `tabGL Entry`,
+			FROM `tabGL Entry` WHERE 1=1{permission_cond},
 			(
 				SELECT parent, sum(percentage_allocation) as percentage_allocation
 				FROM `tabDistributed Cost Center`
@@ -435,15 +435,20 @@ def set_gl_entries_by_account(
 			AND posting_date <= %(to_date)s
 			AND is_cancelled = 0
 			AND cost_center = DCC_allocation.parent
-			""".format(additional_conditions=additional_conditions.replace("and cost_center in %(cost_center)s ", ''))
+			""".format(
+				additional_conditions=additional_conditions.replace("and cost_center in %(cost_center)s ", ''), 
+				permission_cond=gl_permission_cond
+				)
+
 
 		gl_entries = frappe.db.sql("""select posting_date, account, debit, credit, is_opening, fiscal_year, debit_in_account_currency, credit_in_account_currency, account_currency from `tabGL Entry`
-			where company=%(company)s
+			where company=%(company)s{permission_cond}
 			{additional_conditions}
 			and posting_date <= %(to_date)s
 			and is_cancelled = 0
 			{distributed_cost_center_query}
 			order by account, posting_date""".format(
+				permission_cond=gl_permission_cond,
 				additional_conditions=additional_conditions,
 				distributed_cost_center_query=distributed_cost_center_query), gl_filters, as_dict=True) #nosec
 

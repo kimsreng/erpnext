@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond
 from frappe.model.meta import get_field_precision
 from frappe.utils import cstr, flt
 from frappe.utils.xlsxutils import handle_html
@@ -398,9 +399,9 @@ def get_items(filters, additional_query_columns):
 			`tabSales Invoice`.customer_name, `tabSales Invoice`.customer_group, `tabSales Invoice Item`.so_detail,
 			`tabSales Invoice`.update_stock, `tabSales Invoice Item`.uom, `tabSales Invoice Item`.qty {0}
 		from `tabSales Invoice`, `tabSales Invoice Item`
-		where `tabSales Invoice`.name = `tabSales Invoice Item`.parent
+		where `tabSales Invoice`.name = `tabSales Invoice Item`.parent {permission_cond}
 			and `tabSales Invoice`.docstatus = 1 {1}
-		""".format(additional_query_columns or '', conditions), filters, as_dict=1) #nosec
+		""".format(additional_query_columns or '', conditions, permission_cond=get_match_cond("Sales Invoice")), filters, as_dict=1) #nosec
 
 def get_delivery_notes_against_sales_order(item_list):
 	so_dn_map = frappe._dict()
@@ -424,12 +425,12 @@ def get_grand_total(filters, doctype):
 	return frappe.db.sql(""" SELECT
 		SUM(`tab{0}`.base_grand_total)
 		FROM `tab{0}`
-		WHERE `tab{0}`.docstatus = 1
+		WHERE `tab{0}`.docstatus = 1 {permission_cond}
 		and posting_date between %s and %s
-	""".format(doctype), (filters.get('from_date'), filters.get('to_date')))[0][0] #nosec
+	""".format(doctype, permission_cond=get_match_cond(doctype)), (filters.get('from_date'), filters.get('to_date')))[0][0] #nosec
 
 def get_deducted_taxes():
-	return frappe.db.sql_list("select name from `tabPurchase Taxes and Charges` where add_deduct_tax = 'Deduct'")
+	return frappe.get_all_with_user_permissions("Purchase Taxes and Charges", {"add_deduct_tax": "Deduct"}, pluck="name")
 
 def get_tax_accounts(item_list, columns, company_currency,
 		doctype='Sales Invoice', tax_doctype='Sales Taxes and Charges'):
@@ -457,12 +458,12 @@ def get_tax_accounts(item_list, columns, company_currency,
 			charge_type, base_tax_amount_after_discount_amount
 		from `tab%s`
 		where
-			parenttype = %s and docstatus = 1
+			parenttype = %s and docstatus = 1 {permission_cond}
 			and (description is not null and description != '')
 			and parent in (%s)
 			%s
 		order by description
-	""" % (tax_doctype, '%s', ', '.join(['%s']*len(invoice_item_row)), conditions),
+	""".format(permission_cond=get_match_cond(tax_doctype)) % (tax_doctype, '%s', ', '.join(['%s']*len(invoice_item_row)), conditions),
 		tuple([doctype] + list(invoice_item_row)))
 
 	for name, parent, description, item_wise_tax_detail, charge_type, tax_amount in tax_details:

@@ -17,7 +17,7 @@ def get_data(report_filters):
 	filters = get_report_filters(report_filters)
 	fields = get_report_fields()
 
-	return frappe.get_all('Purchase Invoice',
+	return frappe.get_all_with_user_permissions('Purchase Invoice',
 		fields= fields, filters=filters)
 
 def get_report_filters(report_filters):

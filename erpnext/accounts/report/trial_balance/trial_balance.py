@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond
 from frappe.utils import cstr, flt, formatdate, getdate
 
 import erpnext
@@ -64,7 +65,8 @@ def get_data(filters):
 
 	accounts = frappe.db.sql("""select name, account_number, parent_account, account_name, root_type, report_type, lft, rgt
 
-		from `tabAccount` where company=%s order by lft""", filters.company, as_dict=True)
+		from `tabAccount` where company=%s {permission_cond} order by lft
+		""".format(permission_cond=get_match_cond("Account")), filters.company, as_dict=True)
 	company_currency = filters.presentation_currency or erpnext.get_company_currency(filters.company)
 
 	if not accounts:
@@ -73,7 +75,7 @@ def get_data(filters):
 	accounts, accounts_by_name, parent_children_map = filter_accounts(accounts)
 
 	min_lft, max_rgt = frappe.db.sql("""select min(lft), max(rgt) from `tabAccount`
-		where company=%s""", (filters.company,))[0]
+		where company=%s {permission_cond}""".format(permission_cond=get_match_cond("Account")), (filters.company,))[0]
 
 	gl_entries_by_account = {}
 
@@ -162,7 +164,8 @@ def get_rootwise_opening_balances(filters, report_type):
 			and (posting_date < %(from_date)s or ifnull(is_opening, 'No') = 'Yes')
 			and account in (select name from `tabAccount` where report_type=%(report_type)s)
 			and is_cancelled = 0
-		group by account""".format(additional_conditions=additional_conditions), query_filters , as_dict=True)
+			{permission_cond}
+		group by account""".format(additional_conditions=additional_conditions, permission_cond=get_match_cond("GL Entry")), query_filters , as_dict=True)
 
 	opening = frappe._dict()
 	for d in gle:

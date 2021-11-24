@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond
 from frappe.utils import flt, getdate
 
 from erpnext.accounts.report.accounts_receivable.accounts_receivable import ReceivablePayableReport
@@ -199,13 +200,13 @@ def get_entries(filters):
 	return frappe.db.sql("""select
 		voucher_type, voucher_no, party_type, party, posting_date, debit, credit, remarks, against_voucher
 		from `tabGL Entry`
-		where company=%(company)s and voucher_type in ('Journal Entry', 'Payment Entry') {0}
-	""".format(get_conditions(filters)), filters, as_dict=1)
+		where company=%(company)s and voucher_type in ('Journal Entry', 'Payment Entry') {0} {permission_cond}
+	""".format(get_conditions(filters), permission_cond=get_match_cond("GL Entry")), filters, as_dict=1)
 
 def get_invoice_posting_date_map(filters):
 	invoice_details = {}
 	dt = "Sales Invoice" if filters.get("payment_type") == _("Incoming") else "Purchase Invoice"
-	for t in frappe.db.sql("select name, posting_date, due_date from `tab{0}`".format(dt), as_dict=1):
+	for t in frappe.get_all_with_user_permissions(dt, fields=["name", "posting_date", "due_date"]):
 		invoice_details[t.name] = t
 
 	return invoice_details

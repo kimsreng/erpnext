@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond
 from frappe.utils import flt
 
 
@@ -15,7 +16,7 @@ def execute(filters=None):
 def get_data(filters):
 	data = []
 	depreciation_accounts = frappe.db.sql_list(""" select name from tabAccount
-		where ifnull(account_type, '') = 'Depreciation' """)
+		where ifnull(account_type, '') = 'Depreciation'{permission_cond} """.format(permission_cond=get_match_cond("Account")))
 
 	filters_data = [["company", "=", filters.get('company')],
 		["posting_date", ">=", filters.get('from_date')],
@@ -29,14 +30,14 @@ def get_data(filters):
 	if filters.get("asset_category"):
 
 		assets = frappe.db.sql_list("""select name from tabAsset
-			where asset_category = %s and docstatus=1""", filters.get("asset_category"))
+			where asset_category = %s and docstatus=1"{permission_cond} """.format(permission_cond=get_match_cond("Asset")), filters.get("asset_category"))
 
 		filters_data.append(["against_voucher", "in", assets])
 
 	if filters.get("finance_book"):
 		filters_data.append(["finance_book", "in", ['', filters.get('finance_book')]])
 
-	gl_entries = frappe.get_all('GL Entry',
+	gl_entries = frappe.get_all_with_user_permissions('GL Entry',
 		filters= filters_data,
 		fields = ["against_voucher", "debit_in_account_currency as debit", "voucher_no", "posting_date"],
 		order_by= "against_voucher, posting_date")

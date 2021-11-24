@@ -4,6 +4,7 @@
 from __future__ import unicode_literals
 
 import frappe
+from frappe.desk.reportview import get_match_cond
 from frappe.model.meta import get_field_precision
 
 from erpnext import get_default_currency
@@ -39,10 +40,12 @@ def get_ordered_to_be_billed_data(args):
 			and (`{child_tab}`.base_amount -
 			round(`{child_tab}`.billed_amt * ifnull(`{parent_tab}`.conversion_rate, 1), {precision}) -
 			(`{child_tab}`.base_rate * ifnull(`{child_tab}`.returned_qty, 0))) > 0
+			{permission_cond}
 		order by
 			`{parent_tab}`.{order} {order_by}
-		""".format(parent_tab = 'tab' + doctype, child_tab = 'tab' + child_tab, precision= precision, party = party,
-			date_field = args.get('date'), project_field = project_field, order= args.get('order'), order_by = args.get('order_by')))
+		""".format(parent_tab = 'tab' + doctype, child_tab = 'tab' + child_tab, precision= precision, party = party, 
+			permission_cond=get_match_cond(doctype), date_field = args.get('date'), project_field = project_field, 
+			order= args.get('order'), order_by = args.get('order_by')))
 
 def get_project_field(doctype, party):
 	if party == "supplier": doctype = doctype + ' Item'

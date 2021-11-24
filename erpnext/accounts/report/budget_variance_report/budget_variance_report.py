@@ -7,16 +7,21 @@ import datetime
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond
 from frappe.utils import flt, formatdate
 from six import iteritems
 
 from erpnext.controllers.trends import get_period_date_ranges, get_period_month_ranges
-
+from frappe.core.doctype.agent.agent import remove_abbr_from_text
 
 def execute(filters=None):
 	if not filters:
 		filters = {}
-
+	if filters['from_fiscal_year'] and frappe.get_agent():
+		filters['from_fiscal_year'] = remove_abbr_from_text(filters['from_fiscal_year'], frappe.get_agent())
+	if filters['to_fiscal_year'] and frappe.get_agent():
+		filters['to_fiscal_year'] = remove_abbr_from_text(filters['to_fiscal_year'], frappe.get_agent())
+	
 	columns = get_columns(filters)
 	if filters.get("budget_against_filter"):
 		dimensions = filters.get("budget_against_filter")
@@ -208,12 +213,13 @@ def get_dimension_target_details(filters):
 				and b.fiscal_year between %s and %s
 				and b.budget_against = %s
 				and b.company = %s
-				{cond}
+				{cond} {permission_cond}
 			order by
 				b.fiscal_year
 		""".format(
 			budget_against=budget_against,
 			cond=cond,
+			permission_cond=get_match_cond("Budget", 'b')
 		),
 		tuple(
 			[
@@ -241,9 +247,10 @@ def get_target_distribution_details(filters):
 			where
 				mdp.parent = md.name
 				and md.fiscal_year between %s and %s
+				{permission_cond}
 			order by
 				md.fiscal_year
-		""",
+		""".format(permission_cond=get_match_cond("Monthly Distribution", "md")),
 		(filters.from_fiscal_year, filters.to_fiscal_year), as_dict=1):
 		target_details.setdefault(d.name, {}).setdefault(
 			d.month, flt(d.percentage_allocation)
@@ -292,10 +299,11 @@ def get_actual_details(name, filters):
 						name = gl.{budget_against}
 						{cond}
 				)
+				{permission_cond}
 				group by
 					gl.name
 				order by gl.fiscal_year
-		""".format(tab=filters.budget_against, budget_against=budget_against, cond=cond),
+		""".format(tab=filters.budget_against, budget_against=budget_against, cond=cond, permission_cond=get_match_cond("GL Entry", "gl")),
 		(filters.from_fiscal_year, filters.to_fiscal_year, name), as_dict=1)
 
 	cc_actual_details = {}
@@ -347,7 +355,8 @@ def get_fiscal_years(filters):
 				`tabFiscal Year`
 			where
 				name between %(from_fiscal_year)s and %(to_fiscal_year)s
-		""",
+				{permission_cond}
+		""".format(permission_cond=get_match_cond("Fiscal Year")),
 		{
 			"from_fiscal_year": filters["from_fiscal_year"],
 			"to_fiscal_year": filters["to_fiscal_year"]

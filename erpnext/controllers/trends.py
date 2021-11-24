@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond
 from frappe.utils import getdate
 
 
@@ -93,9 +94,9 @@ def get_data(filters, conditions):
 
 			#to get distinct value of col specified by group_by in filter
 			row = frappe.db.sql("""select DISTINCT(%s) from `tab%s` t1, `tab%s Item` t2 %s
-						where t2.parent = t1.name and t1.company = %s and %s between %s and %s
+						where t2.parent = t1.name and t1.company = %s and %s between %s and %s {permission_cond}
 						and t1.docstatus = 1 and %s = %s %s %s
-					""" %
+					""".format(permission_cond=get_match_cond(conditions["trans"], "t1")) %
 					(sel_col,  conditions["trans"],  conditions["trans"], conditions["addl_tables"],
 						"%s", posting_date, "%s", "%s", conditions["group_by"], "%s", conditions.get("addl_tables_relational_cond"), cond),
 					(filters.get("company"), year_start_date, year_end_date, data1[d][0]), as_list=1)
@@ -105,9 +106,9 @@ def get_data(filters, conditions):
 
 				#get data for group_by filter
 				row1 = frappe.db.sql(""" select %s , %s from `tab%s` t1, `tab%s Item` t2 %s
-							where t2.parent = t1.name and t1.company = %s and %s between %s and %s
+							where t2.parent = t1.name and t1.company = %s and %s between %s and %s {permission_cond}
 							and t1.docstatus = 1 and %s = %s and %s = %s %s %s
-						""" %
+						""".format(permission_cond=get_match_cond(conditions["trans"], "t1")) %
 						(sel_col, conditions["period_wise_select"], conditions["trans"],
 							conditions["trans"], conditions["addl_tables"], "%s", posting_date, "%s","%s", sel_col,
 							"%s", conditions["group_by"], "%s", conditions.get("addl_tables_relational_cond"), cond),
@@ -122,10 +123,10 @@ def get_data(filters, conditions):
 				data.append(des)
 	else:
 		data = frappe.db.sql(""" select %s from `tab%s` t1, `tab%s Item` t2 %s
-					where t2.parent = t1.name and t1.company = %s and %s between %s and %s and
+					where t2.parent = t1.name and t1.company = %s and %s between %s and %s {permission_cond} and
 					t1.docstatus = 1 %s %s
 					group by %s
-				""" %
+				""".format(permission_cond=get_match_cond(conditions["trans"], "t1")) %
 				(query_details, conditions["trans"], conditions["trans"], conditions["addl_tables"],
 					"%s", posting_date, "%s", "%s", cond, conditions.get("addl_tables_relational_cond", ""), conditions["group_by"]),
 				(filters.get("company"), year_start_date, year_end_date), as_list=1)

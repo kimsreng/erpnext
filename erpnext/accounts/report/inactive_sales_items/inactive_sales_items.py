@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond
 from frappe.utils import cint
 
 
@@ -107,18 +108,18 @@ def get_data(filters):
 
 
 def get_sales_details(filters):
-	data = []
 	item_details_map = {}
 
 	date_field = "s.transaction_date" if filters["based_on"] == "Sales Order" else "s.posting_date"
-
+	doctype = filters['based_on']
 	sales_data = frappe.db.sql("""
 		select s.territory, s.customer, si.item_group, si.item_code, si.qty, {date_field} as last_order_date,
 		DATEDIFF(CURDATE(), {date_field}) as days_since_last_order
 		from `tab{doctype}` s, `tab{doctype} Item` si
-		where s.name = si.parent and s.docstatus = 1
+		where s.name = si.parent and s.docstatus = 1 {permission_cond}
 		order by days_since_last_order """ #nosec
-		.format(date_field = date_field, doctype = filters['based_on']), as_dict=1)
+		.format(date_field = date_field, doctype = doctype, permission_cond=get_match_cond(doctype, "s")), 
+		as_dict=1)
 
 	for d in sales_data:
 		item_details_map.setdefault((d.territory,d.item_code), d)
@@ -131,7 +132,7 @@ def get_territories(filters):
 	if filters.get("territory"):
 		filter_dict.update({'name': filters['territory']})
 
-	territories = frappe.get_all("Territory", fields=["name"], filters=filter_dict)
+	territories = frappe.get_all_with_user_permissions("Territory", fields=["name"], filters=filter_dict)
 
 	return territories
 
@@ -151,6 +152,6 @@ def get_items(filters):
 			"name": filters["item"]
 		})
 
-	items = frappe.get_all("Item", fields=["name", "item_group", "item_name", "item_code"], filters=filters_dict, order_by="name")
+	items = frappe.get_all_with_user_permissions("Item", fields=["name", "item_group", "item_name", "item_code"], filters=filters_dict, order_by="name")
 
 	return items
