@@ -247,7 +247,7 @@ def make_reverse_gl_entries(gl_entries=None, voucher_type=None, voucher_no=None,
 	"""
 
 	if not gl_entries:
-		gl_entries = frappe.get_all("GL Entry",
+		gl_entries = frappe.get_all_with_user_permissions("GL Entry",
 			fields = ["*"],
 			filters = {
 				"voucher_type": voucher_type,

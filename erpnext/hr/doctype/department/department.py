@@ -7,7 +7,7 @@ import frappe
 from frappe.utils.nestedset import NestedSet, get_root_of
 
 from erpnext.utilities.transaction_base import delete_events
-
+from frappe.desk.reportview import get_match_cond
 
 class Department(NestedSet):
 	nsm_parent_field = 'parent_department'
@@ -70,7 +70,8 @@ def get_children(doctype, parent=None, company=None, is_root=False):
 		from `tab{doctype}`
 		where
 			{condition}
-		order by name""".format(doctype=doctype, condition=condition), var_dict, as_dict=1)
+			{permission_cond}
+		order by name""".format(doctype=doctype, condition=condition, permission_cond=get_match_cond(doctype)), var_dict, as_dict=1)
 
 @frappe.whitelist()
 def add_node():

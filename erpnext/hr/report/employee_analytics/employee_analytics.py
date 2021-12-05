@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 
 
 def execute(filters=None):
@@ -40,9 +41,13 @@ def get_conditions(filters):
 
 def get_employees(filters):
 	conditions = get_conditions(filters)
-	return frappe.db.sql("""select name, employee_name, date_of_birth,
-	branch, department, designation,
-	gender, company from `tabEmployee` where status = 'Active' %s""" % conditions, as_list=1)
+	return frappe.db.sql("""
+	select name, employee_name, date_of_birth,
+		branch, department, designation,
+		gender, company 
+	from `tabEmployee` 
+	where status = 'Active' %s {permission_cond}
+	""".format(permission_cond=get_match_cond_for_reports("Employee")) % conditions, as_list=1)
 
 def get_parameters(filters):
 	if filters.get("parameter") == "Grade":
@@ -62,14 +67,18 @@ def get_chart_data(parameters,employees, filters):
 		if parameter:
 			total_employee = frappe.db.sql("""select count(*) from
 				`tabEmployee` where """+
-				parameter_field_name + """ = %s and  company = %s""" ,( parameter[0], filters.get("company")), as_list=1)
+				parameter_field_name + """ = %s and  company = %s {permission_cond}""".format(permission_cond=get_match_cond_for_reports("Employee")) ,( parameter[0], filters.get("company")), as_list=1)
 			if total_employee[0][0]:
 				label.append(parameter)
 			datasets.append(total_employee[0][0])
 
 	values = [ value for value in datasets if value !=0]
-
-	total_employee = frappe.db.count('Employee', {'status':'Active'})
+	
+	count_filters = {'status':'Active'}
+	for f in get_match_cond_for_reports("Employee", as_condition=False):
+		for k, v in f.items():
+			count_filters[k] = v[0]
+	total_employee = frappe.db.count('Employee', count_filters)
 	others = total_employee - sum(values)
 
 	label.append(["Not Set"])

@@ -18,7 +18,7 @@ def execute(filters=None):
 	for doctype in ("Product Bundle Item",
 		"BOM Explosion Item" if filters.search_sub_assemblies else "BOM Item"):
 		all_boms = {}
-		for d in frappe.get_all(doctype, fields=["parent", "item_code"]):
+		for d in frappe.get_all_with_user_permissions(doctype, fields=["parent", "item_code"]):
 			all_boms.setdefault(d.parent, []).append(d.item_code)
 
 		for parent, items in iteritems(all_boms):

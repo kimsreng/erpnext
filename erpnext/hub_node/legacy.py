@@ -33,7 +33,7 @@ def make_opportunity(buyer_name, email_id):
 
 	o = frappe.new_doc("Opportunity")
 	o.opportunity_from = "Lead"
-	o.lead = frappe.get_all("Lead", filters={"email_id": email_id}, fields = ["name"])[0]["name"]
+	o.lead = frappe.get_all_with_user_permissions("Lead", filters={"email_id": email_id}, fields = ["name"])[0]["name"]
 	o.save(ignore_permissions=True)
 
 @frappe.whitelist()

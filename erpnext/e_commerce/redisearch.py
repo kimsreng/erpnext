@@ -159,7 +159,7 @@ def define_autocomplete_dictionary():
 	except Exception:
 		return False
 
-	items = frappe.get_all(
+	items = frappe.get_all_with_user_permissions(
 		'Website Item',
 		fields=['web_item_name', 'item_group'],
 		filters={"published": 1}
@@ -174,7 +174,7 @@ def define_autocomplete_dictionary():
 
 @if_redisearch_loaded
 def reindex_all_web_items():
-	items = frappe.get_all(
+	items = frappe.get_all_with_user_permissions(
 		'Website Item',
 		fields=get_fields_indexed(),
 		filters={"published": True}

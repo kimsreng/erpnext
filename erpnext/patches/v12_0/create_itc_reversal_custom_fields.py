@@ -8,7 +8,7 @@ from erpnext.regional.india.utils import get_gst_accounts
 
 
 def execute():
-	company = frappe.get_all('Company', filters = {'country': 'India'}, fields=['name'])
+	company = frappe.get_all_with_user_permissions('Company', filters = {'country': 'India'}, fields=['name'])
 	if not company:
 		return
 
@@ -74,7 +74,7 @@ def execute():
 		WHERE trim(coalesce(itc_cess_amount, '')) = '' """)
 
 	# Get purchase invoices
-	invoices = frappe.get_all('Purchase Invoice',
+	invoices = frappe.get_all_with_user_permissions('Purchase Invoice',
 		{'posting_date': ('>=', '2021-04-01'), 'eligibility_for_itc': ('!=', 'Ineligible')},
 		['name'])
 

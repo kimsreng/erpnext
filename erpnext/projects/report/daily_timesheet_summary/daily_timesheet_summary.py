@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
-from frappe.desk.reportview import build_match_conditions
+from frappe.desk.reportview import build_match_conditions, get_match_cond_for_reports
 
 
 def execute(filters=None):
@@ -28,11 +28,17 @@ def get_column():
 		_("Project") + ":Link/Project:120", _("Status") + "::70"]
 
 def get_data(conditions, filters):
-	time_sheet = frappe.db.sql(""" select `tabTimesheet`.name, `tabTimesheet`.employee, `tabTimesheet`.employee_name,
-		`tabTimesheet Detail`.from_time, `tabTimesheet Detail`.to_time, `tabTimesheet Detail`.hours,
-		`tabTimesheet Detail`.activity_type, `tabTimesheet Detail`.task, `tabTimesheet Detail`.project,
-		`tabTimesheet`.status from `tabTimesheet Detail`, `tabTimesheet` where
-		`tabTimesheet Detail`.parent = `tabTimesheet`.name and %s order by `tabTimesheet`.name"""%(conditions), filters, as_list=1)
+	time_sheet = frappe.db.sql(""" 
+		select `tabTimesheet`.name, `tabTimesheet`.employee, `tabTimesheet`.employee_name,
+			`tabTimesheet Detail`.from_time, `tabTimesheet Detail`.to_time, `tabTimesheet Detail`.hours,
+			`tabTimesheet Detail`.activity_type, `tabTimesheet Detail`.task, `tabTimesheet Detail`.project,
+			`tabTimesheet`.status 
+		from `tabTimesheet Detail`, `tabTimesheet` 
+		where
+			`tabTimesheet Detail`.parent = `tabTimesheet`.name and %s 
+			{permission_cond}
+		order by `tabTimesheet`.name
+		""".format(permission_cond=get_match_cond_for_reports("Timesheet")) %(conditions), filters, as_list=1)
 
 	return time_sheet
 

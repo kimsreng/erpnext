@@ -90,7 +90,7 @@ class CourseEnrollment(Document):
 			return activity.name
 
 def check_activity_exists(enrollment, content_type, content):
-	activity = frappe.get_all("Course Activity", filters={'enrollment': enrollment, 'content_type': content_type, 'content': content})
+	activity = frappe.get_all_with_user_permissions("Course Activity", filters={'enrollment': enrollment, 'content_type': content_type, 'content': content})
 	if activity:
 		return activity[0].name
 	else:

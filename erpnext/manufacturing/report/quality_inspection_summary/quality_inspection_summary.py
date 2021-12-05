@@ -27,7 +27,7 @@ def get_data(filters):
 	query_filters["report_date"] = (">=", filters.get("from_date"))
 	query_filters["report_date"] = ("<=", filters.get("to_date"))
 
-	return frappe.get_all("Quality Inspection",
+	return frappe.get_all_with_user_permissions("Quality Inspection",
 		fields= fields, filters=query_filters, order_by="report_date asc")
 
 def get_chart_data(periodic_data, columns):

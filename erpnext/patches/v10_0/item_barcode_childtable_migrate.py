@@ -8,7 +8,7 @@ import frappe
 
 def execute():
 	frappe.reload_doc("stock", "doctype", "item_barcode")
-	if frappe.get_all("Item Barcode", limit=1): return
+	if frappe.get_all_with_user_permissions("Item Barcode", limit=1): return
 	if "barcode" not in frappe.db.get_table_columns("Item"): return
 
 	items_barcode = frappe.db.sql("select name, barcode from tabItem where barcode is not null", as_dict=True)

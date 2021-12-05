@@ -628,7 +628,7 @@ class Asset(AccountsController):
 		return (depreciation_amount * flt(days)) / flt(total_days), days, months
 
 def update_maintenance_status():
-	assets = frappe.get_all(
+	assets = frappe.get_all_with_user_permissions(
 		"Asset", filters={"docstatus": 1, "maintenance_required": 1}
 	)
 

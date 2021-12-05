@@ -293,7 +293,7 @@ class ProductionPlan(Document):
 		self.delete_draft_work_order()
 
 	def delete_draft_work_order(self):
-		for d in frappe.get_all('Work Order', fields = ["name"],
+		for d in frappe.get_all_with_user_permissions('Work Order', fields = ["name"],
 			filters = {'docstatus': 0, 'production_plan': ("=", self.name)}):
 			frappe.delete_doc('Work Order', d.name)
 

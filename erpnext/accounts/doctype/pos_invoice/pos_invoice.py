@@ -73,7 +73,7 @@ class POSInvoice(SalesInvoice):
 
 	def before_cancel(self):
 		if self.consolidated_invoice and frappe.db.get_value('Sales Invoice', self.consolidated_invoice, 'docstatus') == 1:
-			pos_closing_entry = frappe.get_all(
+			pos_closing_entry = frappe.get_all_with_user_permissions(
 				"POS Invoice Reference",
 				ignore_permissions=True,
 				filters={ 'pos_invoice': self.name },

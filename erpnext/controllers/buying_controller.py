@@ -320,7 +320,7 @@ class BuyingController(StockController, Subcontracting):
 			item_codes = list(set(item.item_code for item in
 				self.get("items")))
 			if item_codes:
-				items = frappe.get_all('Item', filters={
+				items = frappe.get_all_with_user_permissions('Item', filters={
 					'name': ['in', item_codes],
 					'is_sub_contracted_item': 1
 				})
@@ -689,7 +689,7 @@ class BuyingController(StockController, Subcontracting):
 
 def get_asset_item_details(asset_items):
 	asset_items_data = {}
-	for d in frappe.get_all('Item', fields = ["name", "auto_create_assets", "asset_naming_series"],
+	for d in frappe.get_all_with_user_permissions('Item', fields = ["name", "auto_create_assets", "asset_naming_series"],
 		filters = {'name': ('in', asset_items)}):
 		asset_items_data.setdefault(d.name, d)
 

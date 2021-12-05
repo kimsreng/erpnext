@@ -18,9 +18,9 @@ def make_sample_data(domains, make_dependent = False):
 	to help the user get started"""
 
 	if make_dependent:
-		items = frappe.get_all("Item", {'is_sales_item': 1})
-		customers = frappe.get_all("Customer")
-		warehouses = frappe.get_all("Warehouse")
+		items = frappe.get_all_with_user_permissions("Item", {'is_sales_item': 1})
+		customers = frappe.get_all_with_user_permissions("Customer")
+		warehouses = frappe.get_all_with_user_permissions("Warehouse")
 
 		if items and customers:
 			for i in range(3):
@@ -29,7 +29,7 @@ def make_sample_data(domains, make_dependent = False):
 				make_quote(items, customer)
 
 		if items and warehouses:
-			make_material_request(frappe.get_all("Item"))
+			make_material_request(frappe.get_all_with_user_permissions("Item"))
 
 	make_projects(domains)
 	import_notification()

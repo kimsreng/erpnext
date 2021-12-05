@@ -19,7 +19,7 @@ class Contract(Document):
 
 		# If identical, append contract name with the next number in the iteration
 		if frappe.db.exists("Contract", name):
-			count = len(frappe.get_all("Contract", filters={"name": ["like", "%{}%".format(name)]}))
+			count = len(frappe.get_all_with_user_permissions("Contract", filters={"name": ["like", "%{}%".format(name)]}))
 			name = "{} - {}".format(name, count)
 
 		self.name = _(name)
@@ -100,7 +100,7 @@ def update_status_for_contracts():
 	and submitted Contracts
 	"""
 
-	contracts = frappe.get_all("Contract",
+	contracts = frappe.get_all_with_user_permissions("Contract",
 								filters={"is_signed": True,
 										"docstatus": 1},
 								fields=["name", "start_date", "end_date"])

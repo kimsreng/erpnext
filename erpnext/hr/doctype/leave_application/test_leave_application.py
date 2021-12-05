@@ -93,7 +93,7 @@ class TestLeaveApplication(unittest.TestCase):
 		application.insert()
 		application.submit()
 
-		attendance = frappe.get_all('Attendance', ['name', 'status', 'attendance_date'],
+		attendance = frappe.get_all_with_user_permissions('Attendance', ['name', 'status', 'attendance_date'],
 			dict(attendance_date=('between', ['2018-01-01', '2018-01-03']), docstatus=("!=", 2)))
 
 		# attendance created for all 3 days
@@ -521,7 +521,7 @@ class TestLeaveApplication(unittest.TestCase):
 			status = "Approved"
 		))
 		leave_application.submit()
-		leave_ledger_entry = frappe.get_all('Leave Ledger Entry', fields='*', filters=dict(transaction_name=leave_application.name))
+		leave_ledger_entry = frappe.get_all_with_user_permissions('Leave Ledger Entry', fields='*', filters=dict(transaction_name=leave_application.name))
 
 		self.assertEqual(leave_ledger_entry[0].employee, leave_application.employee)
 		self.assertEqual(leave_ledger_entry[0].leave_type, leave_application.leave_type)
@@ -554,7 +554,7 @@ class TestLeaveApplication(unittest.TestCase):
 		))
 		leave_application.submit()
 
-		leave_ledger_entry = frappe.get_all('Leave Ledger Entry', '*', filters=dict(transaction_name=leave_application.name))
+		leave_ledger_entry = frappe.get_all_with_user_permissions('Leave Ledger Entry', '*', filters=dict(transaction_name=leave_application.name))
 
 		self.assertEqual(len(leave_ledger_entry), 2)
 		self.assertEqual(leave_ledger_entry[0].employee, leave_application.employee)

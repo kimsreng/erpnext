@@ -7,7 +7,7 @@ from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
 
 
 def execute():
-	company = frappe.get_all('Company', filters = {'country': 'India'})
+	company = frappe.get_all_with_user_permissions('Company', filters = {'country': 'India'})
 	if not company:
 		return
 
@@ -61,7 +61,7 @@ def execute():
 			WHERE ifnull(irn_cancelled, 0) = 1''')
 
 	# set correct acknowledgement in e-invoices
-	einvoices = frappe.get_all('Sales Invoice', {'irn': ['is', 'set']}, ['name', 'signed_einvoice'])
+	einvoices = frappe.get_all_with_user_permissions('Sales Invoice', {'irn': ['is', 'set']}, ['name', 'signed_einvoice'])
 
 	if einvoices:
 		for inv in einvoices:

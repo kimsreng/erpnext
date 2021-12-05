@@ -21,7 +21,7 @@ class Guardian(Document):
 	def load_students(self):
 		"""Load `students` from the database"""
 		self.students = []
-		students = frappe.get_all("Student Guardian", filters={"guardian":self.name}, fields=["parent"])
+		students = frappe.get_all_with_user_permissions("Student Guardian", filters={"guardian":self.name}, fields=["parent"])
 		for student in students:
 			self.append("students", {
 				"student":student.parent,

@@ -199,7 +199,7 @@ def apply_pricing_rule(args, doc=None):
 		"automatically_set_serial_nos_based_on_fifo")
 
 	item_code_list = tuple(item.get('item_code') for item in item_list)
-	query_items = frappe.get_all('Item', fields=['item_code','has_serial_no'], filters=[['item_code','in',item_code_list]],as_list=1)
+	query_items = frappe.get_all_with_user_permissions('Item', fields=['item_code','has_serial_no'], filters=[['item_code','in',item_code_list]],as_list=1)
 	serialized_items = dict()
 	for item_code, val in query_items:
 		serialized_items.setdefault(item_code, val)
@@ -471,7 +471,7 @@ def get_item_uoms(doctype, txt, searchfield, start, page_len, filters):
 		field = frappe.scrub(filters.get('apply_on'))
 		items = [d.name for d in frappe.db.get_all("Item", filters={field: filters.get('value')})]
 
-	return frappe.get_all('UOM Conversion Detail', filters={
+	return frappe.get_all_with_user_permissions('UOM Conversion Detail', filters={
 			'parent': ('in', items),
 			'uom': ("like", "{0}%".format(txt))
 		}, fields = ["distinct uom"], as_list=1)

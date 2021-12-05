@@ -831,7 +831,7 @@ class AccountsController(TransactionBase):
 	def update_allocated_advance_taxes_on_cancel(self):
 		if self.get('advances'):
 			tax_accounts = [d.account_head for d in self.get('taxes')]
-			allocated_tax_map = frappe._dict(frappe.get_all('GL Entry', fields=['account', 'sum(credit - debit)'],
+			allocated_tax_map = frappe._dict(frappe.get_all_with_user_permissions('GL Entry', fields=['account', 'sum(credit - debit)'],
 				filters={'voucher_no': self.name, 'account': ('in', tax_accounts)},
 				group_by='account', as_list=1))
 
@@ -1297,7 +1297,7 @@ class AccountsController(TransactionBase):
 		return frappe.get_value(doctype, po_or_so, 'payment_terms_template')
 
 	def linked_order_has_payment_schedule(self, po_or_so):
-		return frappe.get_all('Payment Schedule', filters={'parent': po_or_so})
+		return frappe.get_all_with_user_permissions('Payment Schedule', filters={'parent': po_or_so})
 
 	def fetch_payment_terms_from_order(self, po_or_so, po_or_so_doctype):
 		"""

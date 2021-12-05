@@ -220,7 +220,7 @@ class Task(NestedSet):
 
 @frappe.whitelist()
 def check_if_child_exists(name):
-	child_tasks = frappe.get_all("Task", filters={"parent_task": name})
+	child_tasks = frappe.get_all_with_user_permissions("Task", filters={"parent_task": name})
 	child_tasks = [get_link_to_form("Task", task.name) for task in child_tasks]
 	return child_tasks
 
@@ -258,7 +258,7 @@ def set_multiple_status(names, status):
 		task.save()
 
 def set_tasks_as_overdue():
-	tasks = frappe.get_all("Task", filters={"status": ["not in", ["Cancelled", "Completed"]]}, fields=["name", "status", "review_date"])
+	tasks = frappe.get_all_with_user_permissions("Task", filters={"status": ["not in", ["Cancelled", "Completed"]]}, fields=["name", "status", "review_date"])
 	for task in tasks:
 		if task.status == "Pending Review":
 			if getdate(task.review_date) > getdate(today()):

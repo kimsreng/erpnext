@@ -9,7 +9,7 @@ from frappe.model import data_field_options
 
 def execute():
 
-    for field in frappe.get_all('Custom Field',
+    for field in frappe.get_all_with_user_permissions('Custom Field',
                             fields = ['name'],
                             filters = {
                                 'fieldtype': 'Data',

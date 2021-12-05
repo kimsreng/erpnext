@@ -20,7 +20,7 @@ def execute():
             frappe.db.set_value('Payment Entry', payment_entry, 'clearance_date', None)
 
 def get_intra_company_payment_entries_with_clearance_dates():
-    return frappe.get_all(
+    return frappe.get_all_with_user_permissions(
         'Payment Entry',
         filters = {
             'payment_type': 'Internal Transfer',
@@ -35,7 +35,7 @@ def get_reconciled_bank_transactions(intra_company_pe):
     reconciled_bank_transactions = {}
 
     for payment_entry in intra_company_pe:
-        reconciled_bank_transactions[payment_entry] = frappe.get_all(
+        reconciled_bank_transactions[payment_entry] = frappe.get_all_with_user_permissions(
             'Bank Transaction Payments',
             filters = {
                 'payment_entry': payment_entry

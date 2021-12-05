@@ -49,7 +49,7 @@ class JobCard(Document):
 	def set_sub_operations(self):
 		if self.operation:
 			self.sub_operations = []
-			for row in frappe.get_all('Sub Operation',
+			for row in frappe.get_all_with_user_permissions('Sub Operation',
 				filters = {'parent': self.operation}, fields=['operation', 'idx'], order_by='idx'):
 				row.status = 'Pending'
 				row.sub_operation = row.operation
@@ -385,7 +385,7 @@ class JobCard(Document):
 
 	def update_corrective_in_work_order(self, wo):
 		wo.corrective_operation_cost = 0.0
-		for row in frappe.get_all('Job Card', fields = ['total_time_in_mins', 'hour_rate'],
+		for row in frappe.get_all_with_user_permissions('Job Card', fields = ['total_time_in_mins', 'hour_rate'],
 			filters = {'is_corrective_job_card': 1, 'docstatus': 1, 'work_order': self.work_order}):
 			wo.corrective_operation_cost += flt(row.total_time_in_mins) * flt(row.hour_rate)
 
@@ -433,7 +433,7 @@ class JobCard(Document):
 		wo.save()
 
 	def get_current_operation_data(self):
-		return frappe.get_all('Job Card',
+		return frappe.get_all_with_user_permissions('Job Card',
 			fields = ["sum(total_time_in_mins) as time_in_mins", "sum(total_completed_qty) as completed_qty"],
 			filters = {"docstatus": 1, "work_order": self.work_order, "operation_id": self.operation_id,
 				"is_corrective_job_card": 0})
@@ -480,7 +480,7 @@ class JobCard(Document):
 						break
 
 				if completed:
-					job_cards = frappe.get_all('Job Card', filters = {'work_order': self.work_order,
+					job_cards = frappe.get_all_with_user_permissions('Job Card', filters = {'work_order': self.work_order,
 						'docstatus': ('!=', 2)}, fields = 'sum(transferred_qty) as qty', group_by='operation_id')
 
 					if job_cards:
@@ -536,7 +536,7 @@ class JobCard(Document):
 
 		current_operation_qty += flt(self.total_completed_qty)
 
-		data = frappe.get_all("Work Order Operation",
+		data = frappe.get_all_with_user_permissions("Work Order Operation",
 			fields = ["operation", "status", "completed_qty"],
 			filters={"docstatus": 1, "parent": self.work_order, "sequence_id": ('<', self.sequence_id)},
 			order_by = "sequence_id, idx")
@@ -563,7 +563,7 @@ def make_time_log(args):
 @frappe.whitelist()
 def get_operation_details(work_order, operation):
 	if work_order and operation:
-		return frappe.get_all("Work Order Operation", fields = ["name", "idx"],
+		return frappe.get_all_with_user_permissions("Work Order Operation", fields = ["name", "idx"],
 			filters = {
 				"parent": work_order,
 				"operation": operation
@@ -579,7 +579,7 @@ def get_operations(doctype, txt, searchfield, start, page_len, filters):
 	if txt:
 		args["operation"] = ("like", "%{0}%".format(txt))
 
-	return frappe.get_all("Work Order Operation",
+	return frappe.get_all_with_user_permissions("Work Order Operation",
 		filters = args,
 		fields = ["distinct operation as operation"],
 		limit_start = start,

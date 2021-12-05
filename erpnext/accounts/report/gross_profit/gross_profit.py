@@ -7,7 +7,7 @@ import frappe
 from frappe import _, scrub
 from frappe.utils import cint, flt
 
-from erpnext.controllers.queries import get_match_cond
+from erpnext.controllers.queries import get_match_cond_for_reports
 from erpnext.stock.utils import get_incoming_rate
 
 
@@ -292,7 +292,7 @@ class GrossProfitGenerator(object):
 				and si.docstatus = 1
 				and si.is_return = 1
 				{permission_cond}
-		""".format(permission_cond=get_match_cond("Sales Invoice", "si")), as_dict=1)
+		""".format(permission_cond=get_match_cond_for_reports("Sales Invoice", "si")), as_dict=1)
 
 		self.returned_invoices = frappe._dict()
 		for inv in returned_invoices:
@@ -425,7 +425,7 @@ class GrossProfitGenerator(object):
 			order by
 				`tabSales Invoice`.posting_date desc, `tabSales Invoice`.posting_time desc"""
 			.format(conditions=conditions, sales_person_cols=sales_person_cols,
-				sales_team_table=sales_team_table, match_cond = get_match_cond('Sales Invoice')), self.filters, as_dict=1)
+				sales_team_table=sales_team_table, match_cond = get_match_cond_for_reports('Sales Invoice')), self.filters, as_dict=1)
 
 	def group_items_by_invoice(self):
 		"""
@@ -537,7 +537,7 @@ class GrossProfitGenerator(object):
 			where company=%(company)s and is_cancelled = 0 {permission_cond}
 			order by
 				item_code desc, warehouse desc, posting_date desc,
-				posting_time desc, creation desc""".format(permission_cond=get_match_cond("Stock Ledger Entry")), self.filters, as_dict=True)
+				posting_time desc, creation desc""".format(permission_cond=get_match_cond_for_reports("Stock Ledger Entry")), self.filters, as_dict=True)
 		self.sle = {}
 		for r in res:
 			if (r.item_code, r.warehouse) not in self.sle:

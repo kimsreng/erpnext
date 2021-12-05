@@ -84,5 +84,5 @@ def get_practitioner_list(doctype, txt, searchfield, start, page_len, filters=No
 		'name': ('like', '%%%s%%' % txt)
 	}
 
-	return frappe.get_all('Healthcare Practitioner', fields = fields,
+	return frappe.get_all_with_user_permissions('Healthcare Practitioner', fields = fields,
 		filters = filters, start=start, page_length=page_len, order_by='name, practitioner_name', as_list=1)

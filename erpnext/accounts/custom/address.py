@@ -53,7 +53,7 @@ def get_shipping_address(company, address = None):
 	if not address:
 		filters.append(["Address", "is_shipping_address", "=", 1])
 
-	address = frappe.get_all("Address", filters=filters, fields=fields) or {}
+	address = frappe.get_all_with_user_permissions("Address", filters=filters, fields=fields) or {}
 
 	if address:
 		address_as_dict = address[0]

@@ -30,7 +30,7 @@ class ProcessDeferredAccounting(Document):
 
 	def on_cancel(self):
 		self.ignore_linked_doctypes = ['GL Entry']
-		gl_entries = frappe.get_all('GL Entry', fields = ['*'],
+		gl_entries = frappe.get_all_with_user_permissions('GL Entry', fields = ['*'],
 			filters={
 				'against_voucher_type': self.doctype,
 				'against_voucher': self.name

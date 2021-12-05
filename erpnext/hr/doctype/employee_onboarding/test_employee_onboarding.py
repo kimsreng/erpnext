@@ -51,7 +51,7 @@ class TestEmployeeOnboarding(unittest.TestCase):
 
 		# complete the task
 		project = frappe.get_doc('Project', onboarding.project)
-		for task in frappe.get_all('Task', dict(project=project.name)):
+		for task in frappe.get_all_with_user_permissions('Task', dict(project=project.name)):
 			task = frappe.get_doc('Task', task.name)
 			task.status = 'Completed'
 			task.save()

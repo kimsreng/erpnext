@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import flt
 
 
@@ -218,7 +219,8 @@ def get_mapped_mr_details(conditions):
 			AND parent.name=child.parent
 			AND parent.docstatus=1
 			{conditions}
-		""".format(conditions=conditions), as_dict=1) #nosec
+			{permission_cond}
+		""".format(conditions=conditions, permission_cond=get_match_cond_for_reports("Material Request", "parent")), as_dict=1) #nosec
 
 	procurement_record_against_mr = []
 	for record in mr_details:
@@ -255,7 +257,8 @@ def get_mapped_pi_records():
 			pi_item.docstatus = 1
 			AND po.status not in ("Closed","Completed","Cancelled")
 			AND pi_item.po_detail IS NOT NULL
-		"""))
+			{permission_cond}
+		""".format(permission_cond=get_match_cond_for_reports("Purchase Order", "po"))))
 
 def get_mapped_pr_records():
 	return frappe._dict(frappe.db.sql("""
@@ -268,7 +271,8 @@ def get_mapped_pr_records():
 			AND pr.name=pr_item.parent
 			AND pr_item.purchase_order_item IS NOT NULL
 			AND pr.status not in  ("Closed","Completed","Cancelled")
-		"""))
+			{permission_cond}
+		""".format(permission_cond=get_match_cond_for_reports("Purchase Receipt", "pr"))))
 
 def get_po_entries(conditions):
 	return frappe.db.sql("""
@@ -296,6 +300,7 @@ def get_po_entries(conditions):
 			AND parent.name = child.parent
 			AND parent.status not in  ("Closed","Completed","Cancelled")
 			{conditions}
+			{permission_cond}
 		GROUP BY
 			parent.name, child.item_code
-		""".format(conditions=conditions), as_dict=1) #nosec
+		""".format(conditions=conditions, permission_cond=get_match_cond_for_reports("Purchase Order", "parent")), as_dict=1) #nosec

@@ -296,7 +296,7 @@ def get_timesheet_data(name, project):
 	if project and project!='':
 		data = get_projectwise_timesheet_data(project, name)
 	else:
-		data = frappe.get_all('Timesheet',
+		data = frappe.get_all_with_user_permissions('Timesheet',
 			fields = ["(total_billable_amount - total_billed_amount) as billing_amt", "total_billable_hours as billing_hours"], filters = {'name': name})
 	return {
 		'billing_hours': data[0].billing_hours if data else None,
@@ -425,8 +425,8 @@ def get_timesheets_list(doctype, txt, filters, limit_start, limit_page_length=20
 		customer = contact.get_link_for('Customer')
 
 	if customer:
-		sales_invoices = [d.name for d in frappe.get_all('Sales Invoice', filters={'customer': customer})] or [None]
-		projects = [d.name for d in frappe.get_all('Project', filters={'customer': customer})]
+		sales_invoices = [d.name for d in frappe.get_all_with_user_permissions('Sales Invoice', filters={'customer': customer})] or [None]
+		projects = [d.name for d in frappe.get_all_with_user_permissions('Project', filters={'customer': customer})]
 		# Return timesheet related data to web portal.
 		timesheets = frappe.db.sql('''
 			SELECT

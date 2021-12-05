@@ -178,12 +178,12 @@ def get_children(doctype, parent=None, company=None, is_root=False):
 	return warehouses
 
 def get_warehouse_wise_stock_value(company):
-	warehouses = frappe.get_all('Warehouse',
+	warehouses = frappe.get_all_with_user_permissions('Warehouse',
 		fields = ['name', 'parent_warehouse'], filters = {'company': company})
 	parent_warehouse = {d.name : d.parent_warehouse for d in warehouses}
 
 	filters = {'warehouse': ('in', [data.name for data in warehouses])}
-	bin_data = frappe.get_all('Bin', fields = ['sum(stock_value) as stock_value', 'warehouse'],
+	bin_data = frappe.get_all_with_user_permissions('Bin', fields = ['sum(stock_value) as stock_value', 'warehouse'],
 		filters = filters, group_by = 'warehouse')
 
 	warehouse_wise_stock_value = defaultdict(float)
@@ -229,7 +229,7 @@ def get_child_warehouses(warehouse):
 
 def get_warehouses_based_on_account(account, company=None):
 	warehouses = []
-	for d in frappe.get_all("Warehouse", fields = ["name", "is_group"],
+	for d in frappe.get_all_with_user_permissions("Warehouse", fields = ["name", "is_group"],
 		filters = {"account": account}):
 		if d.is_group:
 			warehouses.extend(get_child_warehouses(d.name))
@@ -238,7 +238,7 @@ def get_warehouses_based_on_account(account, company=None):
 
 	if (not warehouses and company and
 		frappe.get_cached_value("Company", company, "default_inventory_account") == account):
-		warehouses = [d.name for d in frappe.get_all("Warehouse", filters={'is_group': 0})]
+		warehouses = [d.name for d in frappe.get_all_with_user_permissions("Warehouse", filters={'is_group': 0})]
 
 	if not warehouses:
 		frappe.throw(_("Warehouse not found against the account {0}")

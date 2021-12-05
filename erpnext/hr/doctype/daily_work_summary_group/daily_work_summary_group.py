@@ -23,7 +23,7 @@ class DailyWorkSummaryGroup(Document):
 def trigger_emails():
 	'''Send emails to Employees at the given hour asking
 			them what did they work on today'''
-	groups = frappe.get_all("Daily Work Summary Group")
+	groups = frappe.get_all_with_user_permissions("Daily Work Summary Group")
 	for d in groups:
 		group_doc = frappe.get_doc("Daily Work Summary Group", d)
 		if (is_current_hour(group_doc.send_emails_at)
@@ -44,7 +44,7 @@ def is_current_hour(hour):
 
 def send_summary():
 	'''Send summary to everyone'''
-	for d in frappe.get_all('Daily Work Summary', dict(status='Open')):
+	for d in frappe.get_all_with_user_permissions('Daily Work Summary', dict(status='Open')):
 		daily_work_summary = frappe.get_doc('Daily Work Summary', d.name)
 		daily_work_summary.send_summary()
 

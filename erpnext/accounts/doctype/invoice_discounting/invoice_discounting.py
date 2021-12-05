@@ -36,7 +36,7 @@ class InvoiceDiscounting(AccountsController):
 
 	def validate_invoices(self):
 		discounted_invoices = [record.sales_invoice for record in
-			frappe.get_all("Discounted Invoice",fields=["sales_invoice"], filters={"docstatus":1})]
+			frappe.get_all_with_user_permissions("Discounted Invoice",fields=["sales_invoice"], filters={"docstatus":1})]
 
 		for record in self.invoices:
 			if record.sales_invoice in discounted_invoices:

@@ -540,7 +540,7 @@ class TestPurchaseOrder(unittest.TestCase):
 		self.assertRaises(UOMMustBeIntegerError, po.insert)
 
 	def test_ordered_qty_for_closing_po(self):
-		bin = frappe.get_all("Bin", filters={"item_code": "_Test Item", "warehouse": "_Test Warehouse - _TC"},
+		bin = frappe.get_all_with_user_permissions("Bin", filters={"item_code": "_Test Item", "warehouse": "_Test Warehouse - _TC"},
 			fields=["ordered_qty"])
 
 		existing_ordered_qty = bin[0].ordered_qty if bin else 0.0

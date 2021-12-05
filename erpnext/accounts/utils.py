@@ -1110,7 +1110,7 @@ def get_journal_entry(account, stock_adjustment_account, amount):
 
 def check_and_delete_linked_reports(report):
 	""" Check if reports are referenced in Desktop Icon """
-	icons = frappe.get_all("Desktop Icon",
+	icons = frappe.get_all_with_user_permissions("Desktop Icon",
 						fields = ['name'],
 						filters = {
 							"_report": report

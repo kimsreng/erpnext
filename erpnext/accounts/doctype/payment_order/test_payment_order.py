@@ -21,7 +21,7 @@ class TestPaymentOrder(unittest.TestCase):
 		create_bank_account()
 
 	def tearDown(self):
-		for bt in frappe.get_all("Payment Order"):
+		for bt in frappe.get_all_with_user_permissions("Payment Order"):
 			doc = frappe.get_doc("Payment Order", bt.name)
 			doc.cancel()
 			doc.delete()

@@ -579,7 +579,7 @@ class Subscription(Document):
 		current_invoice = self.get_current_invoice()
 		invoice_list = [d.invoice for d in self.invoices]
 
-		outstanding_invoices = frappe.get_all(doctype, fields=['name'],
+		outstanding_invoices = frappe.get_all_with_user_permissions(doctype, fields=['name'],
 			filters={'status': ('!=', 'Paid'), 'name': ('in', invoice_list)})
 
 		if outstanding_invoices:

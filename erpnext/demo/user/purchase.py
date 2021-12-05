@@ -31,10 +31,10 @@ def work():
 			mr = make_material_request(item_code, qty)
 
 	if random.random() < 0.6:
-		for mr in frappe.get_all('Material Request',
+		for mr in frappe.get_all_with_user_permissions('Material Request',
 			filters={'material_request_type': 'Purchase', 'status': 'Open'},
 			limit=random.randint(1,6)):
-			if not frappe.get_all('Request for Quotation',
+			if not frappe.get_all_with_user_permissions('Request for Quotation',
 				filters={'material_request': mr.name}, limit=1):
 				rfq = make_request_for_quotation(mr.name)
 				rfq.transaction_date = frappe.flags.current_date
@@ -44,9 +44,9 @@ def work():
 
 	# Make suppier quotation from RFQ against each supplier.
 	if random.random() < 0.6:
-		for rfq in frappe.get_all('Request for Quotation',
+		for rfq in frappe.get_all_with_user_permissions('Request for Quotation',
 			filters={'status': 'Open'}, limit=random.randint(1, 6)):
-			if not frappe.get_all('Supplier Quotation',
+			if not frappe.get_all_with_user_permissions('Supplier Quotation',
 				filters={'request_for_quotation': rfq.name}, limit=1):
 				rfq = frappe.get_doc('Request for Quotation', rfq.name)
 

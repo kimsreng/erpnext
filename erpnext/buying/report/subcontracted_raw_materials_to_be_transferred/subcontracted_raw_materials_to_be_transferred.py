@@ -78,7 +78,7 @@ def get_data(filters):
 	return data
 
 def get_po_items_to_supply(filters):
-	return frappe.db.get_all(
+	return frappe.get_all_with_user_permissions(
 		"Purchase Order",
 		fields=[
 			"name as purchase_order",

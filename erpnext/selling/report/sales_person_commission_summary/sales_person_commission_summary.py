@@ -111,7 +111,9 @@ def get_entries(filters):
 			`tab%s` dt, `tabSales Team` st
 		where
 			st.parent = dt.name and st.parenttype = %s
-			and dt.docstatus = 1 %s order by dt.name desc,st.sales_person
+			and dt.docstatus = 1 %s
+			{permission_cond} 
+		order by dt.name desc,st.sales_person
 		""" %(date_field, filters["doc_type"], '%s', conditions),
 			tuple([filters["doc_type"]] + values), as_dict=1)
 

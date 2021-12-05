@@ -93,18 +93,18 @@ class ShiftType(Document):
 		if not from_date:
 			del filters["start_date"]
 
-		assigned_employees = frappe.get_all('Shift Assignment', 'employee', filters, as_list=True)
+		assigned_employees = frappe.get_all_with_user_permissions('Shift Assignment', 'employee', filters, as_list=True)
 		assigned_employees = [x[0] for x in assigned_employees]
 
 		if consider_default_shift:
 			filters = {'default_shift': self.name, 'status': ['!=', 'Inactive']}
-			default_shift_employees = frappe.get_all('Employee', 'name', filters, as_list=True)
+			default_shift_employees = frappe.get_all_with_user_permissions('Employee', 'name', filters, as_list=True)
 			default_shift_employees = [x[0] for x in default_shift_employees]
 			return list(set(assigned_employees+default_shift_employees))
 		return assigned_employees
 
 def process_auto_attendance_for_all_shifts():
-	shift_list = frappe.get_all('Shift Type', 'name', {'enable_auto_attendance':'1'}, as_list=True)
+	shift_list = frappe.get_all_with_user_permissions('Shift Type', 'name', {'enable_auto_attendance':'1'}, as_list=True)
 	for shift in shift_list:
 		doc = frappe.get_doc('Shift Type', shift[0])
 		doc.process_auto_attendance()

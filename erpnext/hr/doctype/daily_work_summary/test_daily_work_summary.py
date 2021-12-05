@@ -47,7 +47,7 @@ class TestDailyWorkSummary(unittest.TestCase):
 		email_account.receive(test_mails=test_mails)
 
 		daily_work_summary = frappe.get_doc('Daily Work Summary',
-			frappe.get_all('Daily Work Summary')[0].name)
+			frappe.get_all_with_user_permissions('Daily Work Summary')[0].name)
 
 		args = daily_work_summary.get_message_details()
 
@@ -60,7 +60,7 @@ class TestDailyWorkSummary(unittest.TestCase):
 		frappe.db.sql('delete from `tabCommunication`')
 		frappe.db.sql('delete from `tabDaily Work Summary Group`')
 
-		self.users = frappe.get_all('User',
+		self.users = frappe.get_all_with_user_permissions('User',
 			fields=['email'],
 			filters=dict(email=('!=', 'test@example.com')))
 		self.setup_groups(hour)

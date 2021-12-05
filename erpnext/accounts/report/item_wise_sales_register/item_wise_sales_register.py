@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
-from frappe.desk.reportview import get_match_cond
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.model.meta import get_field_precision
 from frappe.utils import cstr, flt
 from frappe.utils.xlsxutils import handle_html
@@ -401,7 +401,7 @@ def get_items(filters, additional_query_columns):
 		from `tabSales Invoice`, `tabSales Invoice Item`
 		where `tabSales Invoice`.name = `tabSales Invoice Item`.parent {permission_cond}
 			and `tabSales Invoice`.docstatus = 1 {1}
-		""".format(additional_query_columns or '', conditions, permission_cond=get_match_cond("Sales Invoice")), filters, as_dict=1) #nosec
+		""".format(additional_query_columns or '', conditions, permission_cond=get_match_cond_for_reports("Sales Invoice")), filters, as_dict=1) #nosec
 
 def get_delivery_notes_against_sales_order(item_list):
 	so_dn_map = frappe._dict()
@@ -427,7 +427,7 @@ def get_grand_total(filters, doctype):
 		FROM `tab{0}`
 		WHERE `tab{0}`.docstatus = 1 {permission_cond}
 		and posting_date between %s and %s
-	""".format(doctype, permission_cond=get_match_cond(doctype)), (filters.get('from_date'), filters.get('to_date')))[0][0] #nosec
+	""".format(doctype, permission_cond=get_match_cond_for_reports(doctype)), (filters.get('from_date'), filters.get('to_date')))[0][0] #nosec
 
 def get_deducted_taxes():
 	return frappe.get_all_with_user_permissions("Purchase Taxes and Charges", {"add_deduct_tax": "Deduct"}, pluck="name")
@@ -463,7 +463,7 @@ def get_tax_accounts(item_list, columns, company_currency,
 			and parent in (%s)
 			%s
 		order by description
-	""".format(permission_cond=get_match_cond(tax_doctype)) % (tax_doctype, '%s', ', '.join(['%s']*len(invoice_item_row)), conditions),
+	""".format(permission_cond=get_match_cond_for_reports(tax_doctype)) % (tax_doctype, '%s', ', '.join(['%s']*len(invoice_item_row)), conditions),
 		tuple([doctype] + list(invoice_item_row)))
 
 	for name, parent, description, item_wise_tax_detail, charge_type, tax_amount in tax_details:

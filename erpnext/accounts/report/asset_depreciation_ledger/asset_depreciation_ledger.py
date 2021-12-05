@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
-from frappe.desk.reportview import get_match_cond
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import flt
 
 
@@ -16,7 +16,7 @@ def execute(filters=None):
 def get_data(filters):
 	data = []
 	depreciation_accounts = frappe.db.sql_list(""" select name from tabAccount
-		where ifnull(account_type, '') = 'Depreciation'{permission_cond} """.format(permission_cond=get_match_cond("Account")))
+		where ifnull(account_type, '') = 'Depreciation'{permission_cond} """.format(permission_cond=get_match_cond_for_reports("Account")))
 
 	filters_data = [["company", "=", filters.get('company')],
 		["posting_date", ">=", filters.get('from_date')],
@@ -30,7 +30,7 @@ def get_data(filters):
 	if filters.get("asset_category"):
 
 		assets = frappe.db.sql_list("""select name from tabAsset
-			where asset_category = %s and docstatus=1"{permission_cond} """.format(permission_cond=get_match_cond("Asset")), filters.get("asset_category"))
+			where asset_category = %s and docstatus=1"{permission_cond} """.format(permission_cond=get_match_cond_for_reports("Asset")), filters.get("asset_category"))
 
 		filters_data.append(["against_voucher", "in", assets])
 
@@ -75,7 +75,7 @@ def get_assets_details(assets):
 	fields = ["name as asset", "gross_purchase_amount",
 		"asset_category", "status", "depreciation_method", "purchase_date"]
 
-	for d in frappe.get_all("Asset", fields = fields, filters = {'name': ('in', assets)}):
+	for d in frappe.get_all_with_user_permissions("Asset", fields = fields, filters = {'name': ('in', assets)}):
 		assets_details.setdefault(d.asset, d)
 
 	return assets_details

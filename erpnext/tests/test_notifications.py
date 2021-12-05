@@ -15,7 +15,7 @@ class TestNotifications(unittest.TestCase):
 			Test notification config entries for targets as percentages
 		'''
 
-		company = frappe.get_all("Company")[0]
+		company = frappe.get_all_with_user_permissions("Company")[0]
 		frappe.db.set_value("Company", company.name, "monthly_sales_target", 10000)
 		frappe.db.set_value("Company", company.name, "total_monthly_sales", 1000)
 

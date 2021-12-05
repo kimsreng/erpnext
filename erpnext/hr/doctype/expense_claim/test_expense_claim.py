@@ -110,7 +110,7 @@ class TestExpenseClaim(unittest.TestCase):
 		self.assertEqual(expense_claim.status, 'Rejected')
 		self.assertEqual(expense_claim.total_sanctioned_amount, 0.0)
 
-		gl_entry = frappe.get_all('GL Entry', {'voucher_type': 'Expense Claim', 'voucher_no': expense_claim.name})
+		gl_entry = frappe.get_all_with_user_permissions('GL Entry', {'voucher_type': 'Expense Claim', 'voucher_no': expense_claim.name})
 		self.assertEqual(len(gl_entry), 0)
 
 	def test_expense_approver_perms(self):

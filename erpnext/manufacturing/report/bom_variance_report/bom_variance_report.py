@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 
 
 def execute(filters=None):
@@ -87,10 +88,11 @@ def get_data(filters):
 
 	results = []
 	for d in frappe.db.sql(""" select name as work_order, qty, produced_qty, production_item, bom_no
-		from `tabWork Order` where produced_qty > qty and docstatus = 1 and {0}""".format(cond), as_dict=1):
+		from `tabWork Order` where produced_qty > qty and docstatus = 1 and {0} {permission_cond}
+		""".format(cond, permission_cond=get_match_cond_for_reports("Work Order")), as_dict=1):
 		results.append(d)
 
-		for data in frappe.get_all('Work Order Item', fields=["item_code as raw_material_code",
+		for data in frappe.get_all_with_user_permissions('Work Order Item', fields=["item_code as raw_material_code",
 			"required_qty", "consumed_qty"], filters={'parent': d.work_order, 'parenttype': 'Work Order'}):
 			results.append(data)
 
@@ -104,7 +106,7 @@ def get_work_orders(doctype, txt, searchfield, start, page_len, filters):
 		cond += " and bom_no = '%s'" % filters.get('bom_no')
 
 	return frappe.db.sql("""select name from `tabWork Order`
-		where name like %(name)s and {0} and produced_qty > qty and docstatus = 1
-		order by name limit {1}, {2}""".format(cond, start, page_len),{
+		where name like %(name)s and {0} and produced_qty > qty and docstatus = 1 {permission_cond}
+		order by name limit {1}, {2}""".format(cond, start, page_len, permission_cond=get_match_cond_for_reports("Work Order")),{
 			'name': "%%%s%%" % txt
 		}, as_list=1)

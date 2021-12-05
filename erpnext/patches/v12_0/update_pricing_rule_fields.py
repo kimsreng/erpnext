@@ -13,7 +13,7 @@ parentfield = {
 
 def execute():
 
-	if not frappe.get_all('Pricing Rule', limit=1):
+	if not frappe.get_all_with_user_permissions('Pricing Rule', limit=1):
 		return
 
 	frappe.reload_doc('accounts', 'doctype', 'pricing_rule_detail')
@@ -56,7 +56,7 @@ def execute():
 		frappe.reload_doc('accounts', 'doctype', frappe.scrub(doctype))
 
 		field = frappe.scrub(apply_on)
-		data = frappe.get_all('Pricing Rule', fields=[field, "name", "creation", "modified",
+		data = frappe.get_all_with_user_permissions('Pricing Rule', fields=[field, "name", "creation", "modified",
 			"owner", "modified_by"], filters= {'apply_on': apply_on})
 
 		values = []

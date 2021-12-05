@@ -8,6 +8,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import flt
 from six import iteritems
 
@@ -96,7 +97,7 @@ def get_columns(filters):
 
 def validate_filters(filters):
 	if not (filters.get("item_code") or filters.get("warehouse")):
-		sle_count = flt(frappe.db.sql("""select count(name) from `tabStock Ledger Entry`""")[0][0])
+		sle_count = flt(frappe.db.sql("""select count(name) from `tabStock Ledger Entry` where 1=1 {perm_cond}""".format(perm_cond=get_match_cond_for_reports("Stock Ledger Entry")))[0][0])
 		if sle_count > 500000:
 			frappe.throw(_("Please set filter based on Item or Warehouse"))
 	if not filters.get("company"):
@@ -117,7 +118,7 @@ def get_warehouse_list(filters):
 
 	return frappe.db.sql("""select name
 		from `tabWarehouse` where is_group = 0
-		{condition}""".format(condition=condition), value, as_dict=1)
+		{condition} {perm_cond}""".format(condition=condition, perm_cond=get_match_cond_for_reports("Warehouse")), value, as_dict=1)
 
 def add_warehouse_column(columns, warehouse_list):
 	if len(warehouse_list) > 1:

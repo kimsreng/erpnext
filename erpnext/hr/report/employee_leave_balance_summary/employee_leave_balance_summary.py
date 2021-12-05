@@ -13,7 +13,7 @@ from erpnext.hr.report.employee_leave_balance.employee_leave_balance import (
 
 
 def execute(filters=None):
-	leave_types = frappe.db.sql_list("select name from `tabLeave Type` order by name asc")
+	leave_types = frappe.get_all_with_user_permissions("Leave Type", pluck="name", order_by="name asc")
 
 	columns = get_columns(leave_types)
 	data = get_data(filters, leave_types)
@@ -48,7 +48,7 @@ def get_data(filters, leave_types):
 	user = frappe.session.user
 	conditions = get_conditions(filters)
 
-	active_employees = frappe.get_all("Employee",
+	active_employees = frappe.get_all_with_user_permissions("Employee",
 		filters=conditions,
 		fields=["name", "employee_name", "department", "user_id", "leave_approver"])
 

@@ -1138,7 +1138,7 @@ class TestSalesInvoice(unittest.TestCase):
 		disposal_account = frappe.get_cached_value("Company", "_Test Company", "disposal_account")
 
 		# Asset value is 100,000 but it was sold for 90,000, so there should be a loss of 10,000
-		loss_for_si = frappe.get_all(
+		loss_for_si = frappe.get_all_with_user_permissions(
 			"GL Entry",
 			filters = {
 				"voucher_no": si.name,
@@ -1147,7 +1147,7 @@ class TestSalesInvoice(unittest.TestCase):
 			fields = ["credit", "debit"]
 		)[0]
 
-		loss_for_return_si = frappe.get_all(
+		loss_for_return_si = frappe.get_all_with_user_permissions(
 			"GL Entry",
 			filters = {
 				"voucher_no": return_si.name,
@@ -1975,7 +1975,7 @@ class TestSalesInvoice(unittest.TestCase):
 		si.insert()
 		si.submit()
 
-		sles = frappe.get_all("Stock Ledger Entry", filters={"voucher_no": si.name},
+		sles = frappe.get_all_with_user_permissions("Stock Ledger Entry", filters={"voucher_no": si.name},
 			fields=["name", "actual_qty"])
 
 		# check if both SLEs are created
@@ -2277,7 +2277,7 @@ class TestSalesInvoice(unittest.TestCase):
 		self.assertEqual(flt(si.outstanding_amount), 0.0)
 
 		# check creation of journal entry
-		jv = frappe.get_all('Journal Entry Account', {
+		jv = frappe.get_all_with_user_permissions('Journal Entry Account', {
 			'account': si.debit_to,
 			'party_type': 'Customer',
 			'party': si.customer,
@@ -2470,7 +2470,7 @@ def make_sales_invoice_for_ewaybill():
 
 	gst_settings = frappe.get_doc("GST Settings")
 
-	gst_account = frappe.get_all(
+	gst_account = frappe.get_all_with_user_permissions(
 		"GST Account",
 		fields=["cgst_account", "sgst_account", "igst_account"],
 		filters = {"company": "_Test Company"}

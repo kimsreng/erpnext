@@ -35,7 +35,7 @@ def get_tasks(project, start=0, search=None, item_status=None):
 		filters["subject"] = ("like", "%{0}%".format(search))
 	# if item_status:
 # 		filters["status"] = item_status
-	tasks = frappe.get_all("Task", filters=filters,
+	tasks = frappe.get_all_with_user_permissions("Task", filters=filters,
 		fields=["name", "subject", "status", "modified", "_assign", "exp_end_date", "is_group", "parent_task"],
 		limit_start=start, limit_page_length=10)
 	task_nest = []
@@ -61,11 +61,11 @@ def get_timesheets(project, start=0, search=None):
 	if search:
 		filters["activity_type"] = ("like", "%{0}%".format(search))
 
-	timesheets = frappe.get_all('Timesheet Detail', filters=filters,
+	timesheets = frappe.get_all_with_user_permissions('Timesheet Detail', filters=filters,
 	fields=['project','activity_type','from_time','to_time','parent'],
 	limit_start=start, limit_page_length=10)
 	for timesheet in timesheets:
-		info = frappe.get_all('Timesheet', filters={"name": timesheet.parent},
+		info = frappe.get_all_with_user_permissions('Timesheet', filters={"name": timesheet.parent},
 			fields=['name','status','modified','modified_by'],
 			limit_start=start, limit_page_length=10)
 
@@ -79,5 +79,5 @@ def get_timesheet_html(project, start=0):
 		{"doc": {"timesheets": get_timesheets(project, start)}}, is_path=True)
 
 def get_attachments(project):
-	return frappe.get_all('File', filters= {"attached_to_name": project, "attached_to_doctype": 'Project', "is_private":0},
+	return frappe.get_all_with_user_permissions('File', filters= {"attached_to_name": project, "attached_to_doctype": 'Project', "is_private":0},
 		fields=['file_name','file_url', 'file_size'])

@@ -84,5 +84,5 @@ class InterviewFeedback(Document):
 
 @frappe.whitelist()
 def get_applicable_interviewers(interview):
-	data = frappe.get_all('Interview Detail', filters={'parent': interview}, fields=['interviewer'])
+	data = frappe.get_all_with_user_permissions('Interview Detail', filters={'parent': interview}, fields=['interviewer'])
 	return [d.interviewer for d in data]

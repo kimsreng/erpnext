@@ -55,7 +55,7 @@ def get_party_addresses_and_contact(party_type, party, party_group):
 	if party:
 		filters = { "name": party }
 
-	fetch_party_list = frappe.get_list(party_type, filters=filters, fields=["name", party_group], as_list=True)
+	fetch_party_list = frappe.get_all_with_user_permissions(party_type, filters=filters, fields=["name", party_group], as_list=True)
 	party_list = [d[0] for d in fetch_party_list]
 	party_groups = {}
 	for d in fetch_party_list:
@@ -99,7 +99,7 @@ def get_party_details(party_type, party_list, doctype, party_details):
 	]
 	fields = ["`tabDynamic Link`.link_name"] + field_map.get(doctype, [])
 
-	records = frappe.get_list(doctype, filters=filters, fields=fields, as_list=True)
+	records = frappe.get_all_with_user_permissions(doctype, filters=filters, fields=fields, as_list=True)
 	for d in records:
 		details = party_details.get(d[0])
 		details.setdefault(frappe.scrub(doctype), []).append(d[1:])

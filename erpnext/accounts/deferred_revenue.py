@@ -316,7 +316,7 @@ def process_deferred_accounting(posting_date=None):
 	start_date = add_months(today(), -1)
 	end_date = add_days(today(), -1)
 
-	companies = frappe.get_all('Company')
+	companies = frappe.get_all_with_user_permissions('Company')
 
 	for company in companies:
 		for record_type in ('Income', 'Expense'):

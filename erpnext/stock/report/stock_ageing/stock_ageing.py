@@ -7,6 +7,7 @@ from operator import itemgetter
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import cint, date_diff, flt
 from six import iteritems
 
@@ -243,9 +244,10 @@ def get_stock_ledger_entries(filters):
 			posting_date <= %(to_date)s and
 			is_cancelled != 1
 			{sle_conditions}
+			{permission_cond}
 			order by posting_date, posting_time, sle.creation, actual_qty""" #nosec
 		.format(item_conditions=get_item_conditions(filters),
-			sle_conditions=get_sle_conditions(filters)), filters, as_dict=True)
+			sle_conditions=get_sle_conditions(filters), permission_cond=get_match_cond_for_reports("Stock Ledger Entry", "sle")), filters, as_dict=True)
 
 def get_item_conditions(filters):
 	conditions = []

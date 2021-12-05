@@ -99,7 +99,7 @@ def get_employees_with_number(number):
 	employee_emails = frappe.cache().hget('employees_with_number', number)
 	if employee_emails: return employee_emails
 
-	employees = frappe.get_all('Employee', filters={
+	employees = frappe.get_all_with_user_permissions('Employee', filters={
 		'cell_number': ['like', '%{}%'.format(number)],
 		'user_id': ['!=', '']
 	}, fields=['user_id'])
@@ -150,7 +150,7 @@ def link_existing_conversations(doc, state):
 
 def get_linked_call_logs(doctype, docname):
 	# content will be shown in timeline
-	logs = frappe.get_all('Dynamic Link', fields=['parent'], filters={
+	logs = frappe.get_all_with_user_permissions('Dynamic Link', fields=['parent'], filters={
 		'parenttype': 'Call Log',
 		'link_doctype': doctype,
 		'link_name': docname
@@ -158,7 +158,7 @@ def get_linked_call_logs(doctype, docname):
 
 	logs = set([log.parent for log in logs])
 
-	logs = frappe.get_all('Call Log', fields=['*'], filters={
+	logs = frappe.get_all_with_user_permissions('Call Log', fields=['*'], filters={
 		'name': ['in', logs]
 	})
 

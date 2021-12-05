@@ -16,7 +16,7 @@ class SoilTexture(Document):
 
 	@frappe.whitelist()
 	def load_contents(self):
-		docs = frappe.get_all("Agriculture Analysis Criteria", filters={'linked_doctype':'Soil Texture'})
+		docs = frappe.get_all_with_user_permissions("Agriculture Analysis Criteria", filters={'linked_doctype':'Soil Texture'})
 		for doc in docs:
 			self.append('soil_texture_criteria', {'title': str(doc.name)})
 

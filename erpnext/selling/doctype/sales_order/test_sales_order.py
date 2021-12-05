@@ -787,7 +787,7 @@ class TestSalesOrder(unittest.TestCase):
 		self.assertEqual(len(po.items), 1)
 
 		# test ordered_qty and reserved_qty for drop ship item
-		bin_po_item = frappe.get_all("Bin", filters={"item_code": po_item.item_code, "warehouse": "_Test Warehouse - _TC"},
+		bin_po_item = frappe.get_all_with_user_permissions("Bin", filters={"item_code": po_item.item_code, "warehouse": "_Test Warehouse - _TC"},
 			fields=["ordered_qty", "reserved_qty"])
 
 		ordered_qty = bin_po_item[0].ordered_qty if bin_po_item else 0.0
@@ -807,7 +807,7 @@ class TestSalesOrder(unittest.TestCase):
 		so.update_reserved_qty()
 
 		# test ordered_qty and reserved_qty for drop ship item after closing so
-		bin_po_item = frappe.get_all("Bin", filters={"item_code": po_item.item_code, "warehouse": "_Test Warehouse - _TC"},
+		bin_po_item = frappe.get_all_with_user_permissions("Bin", filters={"item_code": po_item.item_code, "warehouse": "_Test Warehouse - _TC"},
 			fields=["ordered_qty", "reserved_qty"])
 
 		ordered_qty = bin_po_item[0].ordered_qty if bin_po_item else 0.0
@@ -921,7 +921,7 @@ class TestSalesOrder(unittest.TestCase):
 		self.assertEqual(purchase_orders[1].supplier, '_Test Supplier 1')
 
 	def test_reserved_qty_for_closing_so(self):
-		bin = frappe.get_all("Bin", filters={"item_code": "_Test Item", "warehouse": "_Test Warehouse - _TC"},
+		bin = frappe.get_all_with_user_permissions("Bin", filters={"item_code": "_Test Item", "warehouse": "_Test Warehouse - _TC"},
 			fields=["reserved_qty"])
 
 		existing_reserved_qty = bin[0].reserved_qty if bin else 0.0

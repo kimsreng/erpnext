@@ -200,12 +200,12 @@ class TestTaxWithholdingCategory(unittest.TestCase):
 			d.cancel()
 
 def cancel_invoices():
-	purchase_invoices = frappe.get_all("Purchase Invoice", {
+	purchase_invoices = frappe.get_all_with_user_permissions("Purchase Invoice", {
 		'supplier': ['in', ['Test TDS Supplier', 'Test TDS Supplier1', 'Test TDS Supplier2']],
 		'docstatus': 1
 	}, pluck="name")
 
-	sales_invoices = frappe.get_all("Sales Invoice", {
+	sales_invoices = frappe.get_all_with_user_permissions("Sales Invoice", {
 		'customer': 'Test TCS Customer',
 		'docstatus': 1
 	}, pluck="name")

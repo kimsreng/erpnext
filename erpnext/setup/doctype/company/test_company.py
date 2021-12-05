@@ -82,7 +82,7 @@ class TestCompany(unittest.TestCase):
 						if account_type in ["Bank", "Cash"]:
 							filters["is_group"] = 1
 
-						has_matching_accounts = frappe.get_all("Account", filters)
+						has_matching_accounts = frappe.get_all_with_user_permissions("Account", filters)
 						error_message = _("No Account matched these filters: {}").format(json.dumps(filters))
 
 						self.assertTrue(has_matching_accounts, msg=error_message)

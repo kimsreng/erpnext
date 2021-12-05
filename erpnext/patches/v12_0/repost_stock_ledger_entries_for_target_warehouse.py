@@ -7,7 +7,7 @@ import frappe
 
 
 def execute():
-	warehouse_perm = frappe.get_all("User Permission",
+	warehouse_perm = frappe.get_all_with_user_permissions("User Permission",
 		fields=["count(*) as p_count", "is_default", "user"], filters={"allow": "Warehouse"}, group_by="user")
 
 	if not warehouse_perm:
@@ -15,7 +15,7 @@ def execute():
 
 	execute_patch = False
 	for perm_data in warehouse_perm:
-		if perm_data.p_count == 1 or (perm_data.p_count > 1 and frappe.get_all("User Permission",
+		if perm_data.p_count == 1 or (perm_data.p_count > 1 and frappe.get_all_with_user_permissions("User Permission",
 			filters = {"user": perm_data.user, "allow": "warehouse", "is_default": 1}, limit=1)):
 			execute_patch = True
 			break

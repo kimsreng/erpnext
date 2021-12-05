@@ -7,7 +7,7 @@ from erpnext.regional.united_states.setup import add_permissions
 
 
 def execute():
-	company = frappe.get_all('Company', filters = {'country': 'United States'}, fields=['name'])
+	company = frappe.get_all_with_user_permissions('Company', filters = {'country': 'United States'}, fields=['name'])
 	if not company:
 		return
 

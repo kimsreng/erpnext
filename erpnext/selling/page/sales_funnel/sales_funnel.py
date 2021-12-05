@@ -50,7 +50,7 @@ def get_funnel_data(from_date, to_date, company):
 def get_opp_by_lead_source(from_date, to_date, company):
 	validate_filters(from_date, to_date, company)
 
-	opportunities = frappe.get_all("Opportunity", filters=[['status', 'in', ['Open', 'Quotation', 'Replied']], ['company', '=', company], ['transaction_date', 'Between', [from_date, to_date]]], fields=['currency', 'sales_stage', 'opportunity_amount', 'probability', 'source'])
+	opportunities = frappe.get_all_with_user_permissions("Opportunity", filters=[['status', 'in', ['Open', 'Quotation', 'Replied']], ['company', '=', company], ['transaction_date', 'Between', [from_date, to_date]]], fields=['currency', 'sales_stage', 'opportunity_amount', 'probability', 'source'])
 
 	if opportunities:
 		default_currency = frappe.get_cached_value('Global Defaults', 'None',  'default_currency')
@@ -82,7 +82,7 @@ def get_opp_by_lead_source(from_date, to_date, company):
 def get_pipeline_data(from_date, to_date, company):
 	validate_filters(from_date, to_date, company)
 
-	opportunities = frappe.get_all("Opportunity", filters=[['status', 'in', ['Open', 'Quotation', 'Replied']], ['company', '=', company], ['transaction_date', 'Between', [from_date, to_date]]], fields=['currency', 'sales_stage', 'opportunity_amount', 'probability'])
+	opportunities = frappe.get_all_with_user_permissions("Opportunity", filters=[['status', 'in', ['Open', 'Quotation', 'Replied']], ['company', '=', company], ['transaction_date', 'Between', [from_date, to_date]]], fields=['currency', 'sales_stage', 'opportunity_amount', 'probability'])
 
 	if opportunities:
 		default_currency = frappe.get_cached_value('Global Defaults', 'None',  'default_currency')

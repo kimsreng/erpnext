@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
-from frappe.desk.reportview import get_match_cond
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import add_days, flt, formatdate
 
 
@@ -86,7 +86,7 @@ def get_asset_categories(filters):
 		from `tabAsset`
 		where docstatus=1 and company=%(company)s and purchase_date <= %(to_date)s {permission_cond}
 		group by asset_category
-	""".format(permission_cond=get_match_cond("Asset")), {"to_date": filters.to_date, "from_date": filters.from_date, "company": filters.company}, as_dict=1)
+	""".format(permission_cond=get_match_cond_for_reports("Asset")), {"to_date": filters.to_date, "from_date": filters.from_date, "company": filters.company}, as_dict=1)
 
 def get_assets(filters):
 	return frappe.db.sql("""
@@ -132,7 +132,7 @@ def get_assets(filters):
 			where a.docstatus=1 and a.company=%(company)s and a.purchase_date <= %(to_date)s {asset_cond}
 			group by a.asset_category) as results
 		group by results.asset_category
-		""".format(asset_cond=get_match_cond("Asset", "a")), {"to_date": filters.to_date, "from_date": filters.from_date, "company": filters.company}, as_dict=1)
+		""".format(asset_cond=get_match_cond_for_reports("Asset", "a")), {"to_date": filters.to_date, "from_date": filters.from_date, "company": filters.company}, as_dict=1)
 
 
 def get_columns(filters):

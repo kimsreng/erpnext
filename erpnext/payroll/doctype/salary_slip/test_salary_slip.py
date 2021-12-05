@@ -402,7 +402,7 @@ class TestSalarySlip(unittest.TestCase):
 		create_salary_slips_for_payroll_period(applicant, salary_structure.name,
 			payroll_period, deduct_random=False, num=6)
 
-		salary_slips = frappe.get_all('Salary Slip', fields=['year_to_date', 'net_pay'], filters={'employee_name':
+		salary_slips = frappe.get_all_with_user_permissions('Salary Slip', fields=['year_to_date', 'net_pay'], filters={'employee_name':
 			'test_ytd@salary.com'}, order_by = 'posting_date')
 
 		year_to_date = 0
@@ -430,7 +430,7 @@ class TestSalarySlip(unittest.TestCase):
 		create_salary_slips_for_payroll_period(applicant, salary_structure.name,
 			payroll_period, deduct_random=False, num=3)
 
-		salary_slips = frappe.get_all("Salary Slip", fields=["name"], filters={"employee_name":
+		salary_slips = frappe.get_all_with_user_permissions("Salary Slip", fields=["name"], filters={"employee_name":
 			employee_name}, order_by="posting_date")
 
 		year_to_date = dict()

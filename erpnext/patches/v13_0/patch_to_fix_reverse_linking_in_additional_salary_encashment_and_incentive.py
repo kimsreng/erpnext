@@ -12,16 +12,16 @@ def execute():
 
 	frappe.reload_doc("hr", "doctype", "Leave Encashment")
 
-	additional_salaries = frappe.get_all("Additional Salary",
+	additional_salaries = frappe.get_all_with_user_permissions("Additional Salary",
 		fields = ['name', "salary_slip", "type", "salary_component"],
 		filters = {'salary_slip': ['!=', '']},
 		group_by = 'salary_slip'
 	)
-	leave_encashments = frappe.get_all("Leave Encashment",
+	leave_encashments = frappe.get_all_with_user_permissions("Leave Encashment",
 		fields = ["name","additional_salary"],
 		filters = {'additional_salary': ['!=', '']}
 	)
-	employee_incentives = frappe.get_all("Employee Incentive",
+	employee_incentives = frappe.get_all_with_user_permissions("Employee Incentive",
 		fields= ["name", "additional_salary"],
 		filters = {'additional_salary': ['!=', '']}
 	)

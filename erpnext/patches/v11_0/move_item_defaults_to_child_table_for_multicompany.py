@@ -19,8 +19,8 @@ def execute():
 	frappe.reload_doc('stock', 'doctype', 'item_default')
 	frappe.reload_doc('stock', 'doctype', 'item')
 
-	companies = frappe.get_all("Company")
-	if len(companies) == 1 and not frappe.get_all("Item Default", limit=1):
+	companies = frappe.get_all_with_user_permissions("Company")
+	if len(companies) == 1 and not frappe.get_all_with_user_permissions("Item Default", limit=1):
 		try:
 			frappe.db.sql('''
 					INSERT INTO `tabItem Default`

@@ -114,7 +114,7 @@ def get_recipients(name, for_feedback=0):
 
 @frappe.whitelist()
 def get_interviewers(interview_round):
-	return frappe.get_all('Interviewer', filters={'parent': interview_round}, fields=['user as interviewer'])
+	return frappe.get_all_with_user_permissions('Interviewer', filters={'parent': interview_round}, fields=['user as interviewer'])
 
 
 def send_interview_reminder():
@@ -128,7 +128,7 @@ def send_interview_reminder():
 	reminder_date_time = datetime.datetime.now() + datetime.timedelta(
 		hours=remind_before.hour, minutes=remind_before.minute, seconds=remind_before.second)
 
-	interviews = frappe.get_all('Interview', filters={
+	interviews = frappe.get_all_with_user_permissions('Interview', filters={
 		'scheduled_on': ['between', (datetime.datetime.now(), reminder_date_time)],
 		'status': 'Pending',
 		'reminded': 0,
@@ -161,7 +161,7 @@ def send_daily_feedback_reminder():
 		return
 
 	interview_feedback_template = frappe.get_doc('Email Template', reminder_settings.feedback_reminder_notification_template)
-	interviews = frappe.get_all('Interview', filters={'status': ['in', ['Under Review', 'Pending']], 'docstatus': ['!=', 2]})
+	interviews = frappe.get_all_with_user_permissions('Interview', filters={'status': ['in', ['Under Review', 'Pending']], 'docstatus': ['!=', 2]})
 
 	for entry in interviews:
 		recipients = get_recipients(entry.name, for_feedback=1)
@@ -183,7 +183,7 @@ def send_daily_feedback_reminder():
 
 @frappe.whitelist()
 def get_expected_skill_set(interview_round):
-	return frappe.get_all('Expected Skill Set', filters ={'parent': interview_round}, fields=['skill'])
+	return frappe.get_all_with_user_permissions('Expected Skill Set', filters ={'parent': interview_round}, fields=['skill'])
 
 
 @frappe.whitelist()
@@ -229,7 +229,7 @@ def get_interviewer_list(doctype, txt, searchfield, start, page_len, filters):
 	if filters and isinstance(filters, list):
 		filters.extend(filters)
 
-	return frappe.get_all('Has Role', limit_start=start, limit_page_length=page_len,
+	return frappe.get_all_with_user_permissions('Has Role', limit_start=start, limit_page_length=page_len,
 		filters=filters, fields = ['parent'], as_list=1)
 
 

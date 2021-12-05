@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 import frappe
 from frappe import _
 from frappe.utils import flt
-from frappe.desk.reportview import get_match_cond
+from frappe.desk.reportview import get_match_cond_for_reports
 
 
 def execute(filters=None):
@@ -50,9 +50,9 @@ def get_item_details(conditions):
 
 	item_map = {}
 	if conditions:
-		conditions += get_match_cond("Item")
+		conditions += get_match_cond_for_reports("Item")
 	else:
-		conditions = get_match_cond("Item", as_condition=False)
+		conditions = "WHERE 1=1 {cond}".format(cond=get_match_cond_for_reports("Item"))
 
 	for i in frappe.db.sql("""select name, item_group, item_name, description,
 		brand, stock_uom from tabItem %s
@@ -65,7 +65,7 @@ def get_price_list():
 	"""Get selling & buying price list of every item"""
 
 	rate = {}
-	permissions_cond = get_match_cond("Item Price").replace("tabItem Price", "ip")
+	permissions_cond = get_match_cond_for_reports("Item Price").replace("tabItem Price", "ip")
 	price_list = frappe.db.sql("""select ip.item_code, ip.buying, ip.selling,
 		concat(ifnull(cu.symbol,ip.currency), " ", round(ip.price_list_rate,2), " - ", ip.price_list) as price
 		from `tabItem Price` ip, `tabPrice List` pl, `tabCurrency` cu
@@ -85,9 +85,9 @@ def get_price_list():
 
 def get_last_purchase_rate():
 	item_last_purchase_rate_map = {}
-	po_cond = get_match_cond("Purchase Order").replace("`tabPurchase Order`", "po")
-	pr_cond = get_match_cond("Purchase Receipt").replace("`tabPurchase Receipt`", "pr")
-	pi_cond = get_match_cond("Purchase Invoice").replace("`tabPurchase Invoice`", "pi")
+	po_cond = get_match_cond_for_reports("Purchase Order", "po")
+	pr_cond = get_match_cond_for_reports("Purchase Receipt", "pr")
+	pi_cond = get_match_cond_for_reports("Purchase Invoice", "pi")
 	
 	query = """select * from (
 				(select
@@ -121,7 +121,7 @@ def get_item_bom_rate():
 	"""Get BOM rate of an item from BOM"""
 
 	item_bom_map = {}
-	cond = get_match_cond("BOM")
+	cond = get_match_cond_for_reports("BOM")
 	for b in frappe.db.sql("""select item, (total_cost/quantity) as bom_rate
 		from `tabBOM` where is_active=1 and is_default=1{cond}""".format(cond=cond), as_dict=1):
 			item_bom_map.setdefault(b.item, flt(b.bom_rate))
@@ -132,10 +132,11 @@ def get_valuation_rate():
 	"""Get an average valuation rate of an item from all warehouses"""
 
 	item_val_rate_map = {}
-	cond = get_match_cond("Bin")
+	cond = get_match_cond_for_reports("Bin")
 	for d in frappe.db.sql("""select item_code,
 		sum(actual_qty*valuation_rate)/sum(actual_qty) as val_rate
-		from tabBin where actual_qty > 0 group by item_code{cond}""".format(cond=cond), as_dict=1):
+		from tabBin where actual_qty > 0 {cond} 
+		group by item_code""".format(cond=cond), as_dict=1):
 			item_val_rate_map.setdefault(d.item_code, d.val_rate)
 
 	return item_val_rate_map

@@ -70,7 +70,7 @@ def get_data(filters):
 	lead_details = []
 	lead_filters = get_lead_filters(filters)
 
-	for lead in frappe.get_all('Lead', fields = ['name', 'lead_name', 'company_name'], filters=lead_filters):
+	for lead in frappe.get_all_with_user_permissions('Lead', fields = ['name', 'lead_name', 'company_name'], filters=lead_filters):
 		data = frappe.db.sql("""
 			select
 				`tabCommunication`.reference_doctype, `tabCommunication`.reference_name,

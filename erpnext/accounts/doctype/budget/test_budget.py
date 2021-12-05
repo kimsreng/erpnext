@@ -289,10 +289,10 @@ def make_budget(**args):
 
 	if budget_against == "Project":
 		project_name = "{0}%".format("_Test Project/" + fiscal_year)
-		budget_list = frappe.get_all("Budget", fields=["name"], filters = {"name": ("like", project_name)})
+		budget_list = frappe.get_all_with_user_permissions("Budget", fields=["name"], filters = {"name": ("like", project_name)})
 	else:
 		cost_center_name = "{0}%".format(cost_center or "_Test Cost Center - _TC/" + fiscal_year)
-		budget_list = frappe.get_all("Budget", fields=["name"], filters = {"name": ("like", cost_center_name)})
+		budget_list = frappe.get_all_with_user_permissions("Budget", fields=["name"], filters = {"name": ("like", cost_center_name)})
 	for d in budget_list:
 		frappe.db.sql("delete from `tabBudget` where name = %(name)s", d)
 		frappe.db.sql("delete from `tabBudget Account` where parent = %(name)s", d)

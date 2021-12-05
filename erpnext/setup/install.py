@@ -241,7 +241,7 @@ def update_select_perm_after_install():
 		return
 
 	frappe.flags.ignore_select_perm = False
-	for row in frappe.get_all('User Type', filters= {'is_standard': 0}):
+	for row in frappe.get_all_with_user_permissions('User Type', filters= {'is_standard': 0}):
 		print('Updating user type :- ', row.name)
 		doc = frappe.get_doc('User Type', row.name)
 		doc.save()

@@ -134,7 +134,7 @@ def make_accrual_interest_entry_for_demand_loans(posting_date, process_loan_inte
 		})
 
 	if not open_loans:
-		open_loans = frappe.get_all("Loan",
+		open_loans = frappe.get_all_with_user_permissions("Loan",
 			fields=["name", "total_payment", "total_amount_paid", "loan_account", "interest_income_account",
 				"is_term_loan", "status", "disbursement_date", "disbursed_amount", "applicant_type", "applicant",
 				"rate_of_interest", "total_interest_payable", "written_off_amount", "total_principal_paid", "repayment_start_date"],

@@ -98,9 +98,9 @@ def get_po(filters):
 			["transaction_date", ">=", filters.from_date],
 			["docstatus", "=", 1]
 		]
-	return frappe.get_all("Purchase Order", filters=record_filters, fields=["name", "transaction_date", "supplier"])
+	return frappe.get_all_with_user_permissions("Purchase Order", filters=record_filters, fields=["name", "transaction_date", "supplier"])
 
 def get_purchase_order_item_supplied(po):
-	return frappe.get_all("Purchase Order Item", filters=[
+	return frappe.get_all_with_user_permissions("Purchase Order Item", filters=[
 			('parent', 'IN', po)
 	], fields=["parent", "item_code", "item_name", "qty", "received_qty"])

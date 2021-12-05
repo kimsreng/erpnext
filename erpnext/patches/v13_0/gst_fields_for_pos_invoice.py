@@ -5,7 +5,7 @@ from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
 
 
 def execute():
-	company = frappe.get_all('Company', filters = {'country': 'India'}, fields=['name'])
+	company = frappe.get_all_with_user_permissions('Company', filters = {'country': 'India'}, fields=['name'])
 	if not company:
 		return
 

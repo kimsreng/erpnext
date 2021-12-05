@@ -160,7 +160,7 @@ def get_ordered_putaway_rules(item_code, company, source_warehouse=None):
 	if source_warehouse:
 		filters.update({"warehouse": ["!=", source_warehouse]})
 
-	rules = frappe.get_all("Putaway Rule",
+	rules = frappe.get_all_with_user_permissions("Putaway Rule",
 		fields=["name", "item_code", "stock_capacity", "priority", "warehouse"],
 		filters=filters,
 		order_by="priority asc, capacity desc")

@@ -9,7 +9,7 @@ from frappe.utils import flt
 from six import iteritems
 
 from erpnext.stock.report.stock_ledger.stock_ledger import get_item_group_condition
-
+from frappe.desk.reportview import get_match_cond_for_reports
 
 def execute(filters=None):
 	if not filters:
@@ -98,8 +98,8 @@ def get_items(filters):
 		select item.name as item_code, item.item_name, pb.description, item.item_group, item.brand, item.stock_uom
 		from `tabItem` item
 		inner join `tabProduct Bundle` pb on pb.new_item_code = item.name
-		where ifnull(item.disabled, 0) = 0 {0}
-	""".format(conditions), filters, as_dict=1)  # nosec
+		where ifnull(item.disabled, 0) = 0 {0} {permission_cond}
+	""".format(conditions, permission_cond=get_match_cond_for_reports("Item", "item")), filters, as_dict=1)  # nosec
 
 	parent_items = []
 	for d in parent_item_details:

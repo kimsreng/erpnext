@@ -86,7 +86,7 @@ class Lead(SellingController):
 	def check_email_id_is_unique(self):
 		if self.email_id:
 			# validate email is unique
-			duplicate_leads = frappe.get_all("Lead", filters={"email_id": self.email_id, "name": ["!=", self.name]})
+			duplicate_leads = frappe.get_all_with_user_permissions("Lead", filters={"email_id": self.email_id, "name": ["!=", self.name]})
 			duplicate_leads = [lead.name for lead in duplicate_leads]
 
 			if duplicate_leads:
@@ -284,13 +284,13 @@ def make_quotation(source_name, target_doc=None):
 	return target_doc
 
 def _set_missing_values(source, target):
-	address = frappe.get_all('Dynamic Link', {
+	address = frappe.get_all_with_user_permissions('Dynamic Link', {
 			'link_doctype': source.doctype,
 			'link_name': source.name,
 			'parenttype': 'Address',
 		}, ['parent'], limit=1)
 
-	contact = frappe.get_all('Dynamic Link', {
+	contact = frappe.get_all_with_user_permissions('Dynamic Link', {
 			'link_doctype': source.doctype,
 			'link_name': source.name,
 			'parenttype': 'Contact',
@@ -361,7 +361,7 @@ def make_lead_from_communication(communication, ignore_communication_links=False
 def get_lead_with_phone_number(number):
 	if not number: return
 
-	leads = frappe.get_all('Lead', or_filters={
+	leads = frappe.get_all_with_user_permissions('Lead', or_filters={
 		'phone': ['like', '%{}'.format(number)],
 		'mobile_no': ['like', '%{}'.format(number)]
 	}, limit=1, order_by="creation DESC")
@@ -371,6 +371,6 @@ def get_lead_with_phone_number(number):
 	return lead
 
 def daily_open_lead():
-	leads = frappe.get_all("Lead", filters = [["contact_date", "Between", [nowdate(), nowdate()]]])
+	leads = frappe.get_all_with_user_permissions("Lead", filters = [["contact_date", "Between", [nowdate(), nowdate()]]])
 	for lead in leads:
 		frappe.db.set_value("Lead", lead.name, "status", "Open")

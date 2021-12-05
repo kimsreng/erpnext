@@ -49,7 +49,7 @@
 			</td>
 			<td class="text-right total-discount">
 				<span>
-				{%- for row in frappe.get_all(doctype="Coupon Code",
+				{%- for row in frappe.get_all_with_user_permissions(doctype="Coupon Code",
 				fields=["coupon_code"], filters={ "name":doc.coupon_code}) -%}
 					<span>{{ row.coupon_code }}</span>
 				{% endfor %}

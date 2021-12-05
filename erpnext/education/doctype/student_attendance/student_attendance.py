@@ -93,7 +93,7 @@ class StudentAttendance(Document):
 
 def get_holiday_list(company=None):
 	if not company:
-		company = get_default_company() or frappe.get_all('Company')[0].name
+		company = get_default_company() or frappe.get_all_with_user_permissions('Company')[0].name
 
 	holiday_list = frappe.get_cached_value('Company', company,  'default_holiday_list')
 	if not holiday_list:

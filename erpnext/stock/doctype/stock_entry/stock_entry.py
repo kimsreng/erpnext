@@ -182,7 +182,7 @@ class StockEntry(StockController):
 
 	def delete_linked_stock_entry(self):
 		if self.purpose == "Send to Warehouse":
-			for d in frappe.get_all("Stock Entry", filters={"docstatus": 0,
+			for d in frappe.get_all_with_user_permissions("Stock Entry", filters={"docstatus": 0,
 				"outgoing_stock_entry": self.name, "purpose": "Receive at Warehouse"}):
 				frappe.delete_doc("Stock Entry", d.name)
 
@@ -262,7 +262,7 @@ class StockEntry(StockController):
 				item_code = []
 				for item in self.items:
 					if cstr(item.t_warehouse) == '':
-						req_items = frappe.get_all('Work Order Item',
+						req_items = frappe.get_all_with_user_permissions('Work Order Item',
 										filters={'parent': self.work_order, 'item_code': item.item_code}, fields=["item_code"])
 
 						transferred_materials = frappe.db.sql("""
@@ -962,7 +962,7 @@ class StockEntry(StockController):
 			args.batch_no = get_batch_no(args['item_code'], args['s_warehouse'], args['qty'])
 
 		if self.purpose == "Send to Subcontractor" and self.get("purchase_order") and args.get('item_code'):
-			subcontract_items = frappe.get_all("Purchase Order Item Supplied",
+			subcontract_items = frappe.get_all_with_user_permissions("Purchase Order Item Supplied",
 				{"parent": self.purchase_order, "rm_item_code": args.get('item_code')}, "main_item_code")
 
 			if subcontract_items and len(subcontract_items) == 1:
@@ -1141,7 +1141,7 @@ class StockEntry(StockController):
 
 		fields = ["qty_to_produce as qty", "produced_qty", "name"]
 
-		data = frappe.get_all("Batch", filters = filters, fields = fields, order_by="creation asc")
+		data = frappe.get_all_with_user_permissions("Batch", filters = filters, fields = fields, order_by="creation asc")
 
 		if not data:
 			self.add_finished_goods(args, item)
@@ -1269,7 +1269,7 @@ class StockEntry(StockController):
 
 	def get_used_scrap_items(self):
 		used_scrap_items = defaultdict(float)
-		data = frappe.get_all(
+		data = frappe.get_all_with_user_permissions(
 			'Stock Entry',
 			fields = [
 				'`tabStock Entry Detail`.`item_code`', '`tabStock Entry Detail`.`qty`'
@@ -1289,7 +1289,7 @@ class StockEntry(StockController):
 
 	def get_unconsumed_raw_materials(self):
 		wo = frappe.get_doc("Work Order", self.work_order)
-		wo_items = frappe.get_all('Work Order Item',
+		wo_items = frappe.get_all_with_user_permissions('Work Order Item',
 			filters={'parent': self.work_order},
 			fields=["item_code", "source_warehouse", "required_qty", "consumed_qty", "transferred_qty"]
 			)
@@ -1360,7 +1360,7 @@ class StockEntry(StockController):
 		for item in transferred_materials:
 			qty= item.qty
 			item_code = item.original_item or item.item_code
-			req_items = frappe.get_all('Work Order Item',
+			req_items = frappe.get_all_with_user_permissions('Work Order Item',
 				filters={'parent': self.work_order, 'item_code': item_code},
 				fields=["required_qty", "consumed_qty"]
 				)
@@ -1620,7 +1620,7 @@ class StockEntry(StockController):
 					continue
 
 				stock_entries_child_list.append(d.ste_detail)
-				transferred_qty = frappe.get_all("Stock Entry Detail", fields = ["sum(qty) as qty"],
+				transferred_qty = frappe.get_all_with_user_permissions("Stock Entry Detail", fields = ["sum(qty) as qty"],
 					filters = { 'against_stock_entry': d.against_stock_entry,
 						'ste_detail': d.ste_detail,'docstatus': 1})
 
@@ -1726,7 +1726,7 @@ class StockEntry(StockController):
 		filters = [["Stock Entry","work_order","=",self.work_order], ["Stock Entry","purpose","=","Manufacture"],
 			["Stock Entry","docstatus","=",1], ["Stock Entry Detail","item_code","=",self.pro_doc.production_item]]
 
-		stock_entries = frappe.get_all("Stock Entry", fields=fields, filters=filters)
+		stock_entries = frappe.get_all_with_user_permissions("Stock Entry", fields=fields, filters=filters)
 
 		if self.pro_doc.serial_no:
 			args["serial_no"] = self.get_available_serial_nos(stock_entries)
@@ -1894,7 +1894,7 @@ def get_valuation_rate_for_finished_good_entry(work_order):
 
 	field = "(SUM(total_outgoing_value) / %s) as valuation_rate" % (work_order_qty)
 
-	stock_data = frappe.get_all("Stock Entry",
+	stock_data = frappe.get_all_with_user_permissions("Stock Entry",
 		fields = field,
 		filters = {
 			"docstatus": 1,
@@ -1979,7 +1979,7 @@ def get_supplied_items(purchase_order):
 	filters = [['Stock Entry', 'docstatus', '=', 1], ['Stock Entry', 'purchase_order', '=', purchase_order]]
 
 	supplied_item_details = {}
-	for row in frappe.get_all('Stock Entry', fields = fields, filters = filters):
+	for row in frappe.get_all_with_user_permissions('Stock Entry', fields = fields, filters = filters):
 		if not row.po_detail:
 			continue
 

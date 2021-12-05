@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
-from frappe.desk.reportview import get_match_cond
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import cstr, flt
 from six import itervalues
 
@@ -40,7 +40,7 @@ def get_data(filters, dimension_items_list):
 			`tabAccount`
 		where
 			company=%s {permission_cond}
-			order by lft""".format(permision_cond=get_match_cond("Account")), (filters.company), as_dict=True)
+			order by lft""".format(permision_cond=get_match_cond_for_reports("Account")), (filters.company), as_dict=True)
 
 	if not acc:
 		return None
@@ -182,7 +182,7 @@ def get_dimension_items_list(dimension, company):
 	filters = {}
 	if 'company' in fieldnames:
 		filters['company'] = company
-	return frappe.get_all(dimension, filters, as_list=True)
+	return frappe.get_all_with_user_permissions(dimension, filters, as_list=True)
 
 def get_columns(dimension_items_list, accumulated_values=1, company=None):
 	columns = [{

@@ -60,7 +60,7 @@ def execute():
 		frappe.reload_doc("healthcare", "doctype", "healthcare_practitioner")
 		frappe.reload_doc("healthcare", "doctype", "practitioner_service_unit_schedule")
 		if frappe.db.has_column('Healthcare Practitioner', 'physician_schedule'):
-			for doc in frappe.get_all('Healthcare Practitioner'):
+			for doc in frappe.get_all_with_user_permissions('Healthcare Practitioner'):
 				_doc = frappe.get_doc('Healthcare Practitioner', doc.name)
 				if _doc.physician_schedule:
 					_doc.append('practitioner_schedules', {'schedule': _doc.physician_schedule})

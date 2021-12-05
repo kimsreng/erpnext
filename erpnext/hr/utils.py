@@ -115,7 +115,7 @@ class EmployeeBoardingController(Document):
 
 	def on_cancel(self):
 		# delete task project
-		for task in frappe.get_all("Task", filters={"project": self.project}):
+		for task in frappe.get_all_with_user_permissions("Task", filters={"project": self.project}):
 			frappe.delete_doc("Task", task.name, force=1)
 		frappe.delete_doc("Project", self.project, force=1)
 		self.db_set('project', '')
@@ -125,7 +125,7 @@ class EmployeeBoardingController(Document):
 
 @frappe.whitelist()
 def get_onboarding_details(parent, parenttype):
-	return frappe.get_all("Employee Boarding Activity",
+	return frappe.get_all_with_user_permissions("Employee Boarding Activity",
 		fields=["activity_name", "role", "user", "required_for_employee_creation", "description", "task_weight"],
 		filters={"parent": parent, "parenttype": parenttype},
 		order_by= "idx")
@@ -311,10 +311,10 @@ def generate_leave_encashment():
 	from erpnext.hr.doctype.leave_encashment.leave_encashment import create_leave_encashment
 
 	if frappe.db.get_single_value('HR Settings', 'auto_leave_encashment'):
-		leave_type = frappe.get_all('Leave Type', filters={'allow_encashment': 1}, fields=['name'])
+		leave_type = frappe.get_all_with_user_permissions('Leave Type', filters={'allow_encashment': 1}, fields=['name'])
 		leave_type=[l['name'] for l in leave_type]
 
-		leave_allocation = frappe.get_all("Leave Allocation", filters={
+		leave_allocation = frappe.get_all_with_user_permissions("Leave Allocation", filters={
 			'to_date': add_days(today(), -1),
 			'leave_type': ('in', leave_type)
 		}, fields=['employee', 'leave_period', 'leave_type', 'to_date', 'total_leaves_allocated', 'new_leaves_allocated'])
@@ -391,7 +391,7 @@ def get_leave_allocations(date, leave_type):
 
 
 def get_earned_leaves():
-	return frappe.get_all("Leave Type",
+	return frappe.get_all_with_user_permissions("Leave Type",
 		fields=["name", "max_leaves_allowed", "earned_leave_frequency", "rounding", "based_on_date_of_joining"],
 		filters={'is_earned_leave' : 1})
 
@@ -500,7 +500,7 @@ def get_holidays_for_employee(employee, start_date, end_date, raise_exception=Tr
 	if only_non_weekly:
 		filters['weekly_off'] = False
 
-	holidays = frappe.get_all(
+	holidays = frappe.get_all_with_user_permissions(
 		'Holiday',
 		fields=['description', 'holiday_date'],
 		filters=filters

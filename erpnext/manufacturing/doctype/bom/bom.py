@@ -195,7 +195,7 @@ class BOM(WebsiteGenerator):
 			fields = ["sequence_id", "operation", "workstation", "description",
 				"time_in_mins", "batch_size", "operating_cost", "idx", "hour_rate"]
 
-			for row in frappe.get_all("BOM Operation", fields = fields,
+			for row in frappe.get_all_with_user_permissions("BOM Operation", fields = fields,
 				filters = {'parenttype': 'Routing', 'parent': self.routing}, order_by="sequence_id, idx"):
 				child = self.append('operations', row)
 				child.hour_rate = flt(row.hour_rate / self.conversion_rate, 2)
@@ -453,7 +453,7 @@ class BOM(WebsiteGenerator):
 			frappe.throw(_("BOM recursion: {0} cannot be parent or child of {0}").format(bom_name))
 
 		bom_list = self.traverse_tree()
-		child_items = frappe.get_all('BOM Item', fields=["bom_no", "item_code"],
+		child_items = frappe.get_all_with_user_permissions('BOM Item', fields=["bom_no", "item_code"],
 			filters={'parent': ('in', bom_list), 'parenttype': 'BOM'}) or []
 
 		child_bom = {d.bom_no for d in child_items}
@@ -465,7 +465,7 @@ class BOM(WebsiteGenerator):
 		if self.item in child_items_codes:
 			_throw_error(self.item)
 
-		bom_nos = frappe.get_all('BOM Item', fields=["parent"],
+		bom_nos = frappe.get_all_with_user_permissions('BOM Item', fields=["parent"],
 			filters={'bom_no': self.name, 'parenttype': 'BOM'}) or []
 
 		if self.name in {d.parent for d in bom_nos}:
@@ -938,7 +938,7 @@ def get_children(doctype, parent=None, is_root=False, **filters):
 		bom_doc = frappe.get_cached_doc("BOM", frappe.form_dict.parent)
 		frappe.has_permission("BOM", doc=bom_doc, throw=True)
 
-		bom_items = frappe.get_all('BOM Item',
+		bom_items = frappe.get_all_with_user_permissions('BOM Item',
 			fields=['item_code', 'bom_no as value', 'stock_qty'],
 			filters=[['parent', '=', frappe.form_dict.parent]],
 			order_by='idx')
@@ -1007,7 +1007,7 @@ def add_non_stock_items_cost(stock_entry, work_order, expense_account):
 	for d in bom.get(table):
 		items.setdefault(d.item_code, d.amount)
 
-	non_stock_items = frappe.get_all('Item',
+	non_stock_items = frappe.get_all_with_user_permissions('Item',
 		fields="name", filters={'name': ('in', list(items.keys())), 'ifnull(is_stock_item, 0)': 0}, as_list=1)
 
 	non_stock_items_cost = 0.0
@@ -1121,7 +1121,7 @@ def item_query(doctype, txt, searchfield, start, page_len, filters):
 		for s_field in searchfields:
 			or_cond_filters[s_field] = ("like", "%{0}%".format(txt))
 
-		barcodes = frappe.get_all("Item Barcode",
+		barcodes = frappe.get_all_with_user_permissions("Item Barcode",
 			fields=["distinct parent as item_code"],
 			filters = {"barcode": ("like", "%{0}%".format(txt))})
 

@@ -75,7 +75,7 @@ def get_notification_config():
 	}
 
 	doctype = [d for d in notifications.get('for_doctype')]
-	for doc in frappe.get_all('DocType',
+	for doc in frappe.get_all_with_user_permissions('DocType',
 		fields= ["name"], filters = {"name": ("not in", doctype), 'is_submittable': 1}):
 		notifications["for_doctype"][doc.name] = {"docstatus": 0}
 

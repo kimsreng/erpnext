@@ -12,7 +12,7 @@ def execute():
 	frappe.reload_doc('crm', 'doctype', 'lost_reason_detail', force=True)
 	frappe.reload_doc('setup', 'doctype', 'quotation_lost_reason_detail', force=True)
 
-	company = frappe.get_all('Company', filters = {'country': 'United States'})
+	company = frappe.get_all_with_user_permissions('Company', filters = {'country': 'United States'})
 	if not company:
 		return
 

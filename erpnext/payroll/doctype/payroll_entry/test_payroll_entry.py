@@ -52,7 +52,7 @@ class TestPayrollEntry(unittest.TestCase):
 
 	def test_payroll_entry(self): # pylint: disable=no-self-use
 		company = erpnext.get_default_company()
-		for data in frappe.get_all('Salary Component', fields = ["name"]):
+		for data in frappe.get_all_with_user_permissions('Salary Component', fields = ["name"]):
 			if not frappe.db.get_value('Salary Component Account',
 				{'parent': data.name, 'company': company}, 'name'):
 				get_salary_component_account(data.name)
@@ -68,7 +68,7 @@ class TestPayrollEntry(unittest.TestCase):
 	def test_multi_currency_payroll_entry(self): # pylint: disable=no-self-use
 		company = erpnext.get_default_company()
 		employee = make_employee("test_muti_currency_employee@payroll.com", company=company)
-		for data in frappe.get_all('Salary Component', fields = ["name"]):
+		for data in frappe.get_all_with_user_permissions('Salary Component', fields = ["name"]):
 			if not frappe.db.get_value('Salary Component Account',
 				{'parent': data.name, 'company': company}, 'name'):
 				get_salary_component_account(data.name)
@@ -102,7 +102,7 @@ class TestPayrollEntry(unittest.TestCase):
 		self.assertEqual(salary_slip.base_net_pay, payment_entry[0].total_credit)
 
 	def test_payroll_entry_with_employee_cost_center(self): # pylint: disable=no-self-use
-		for data in frappe.get_all('Salary Component', fields = ["name"]):
+		for data in frappe.get_all_with_user_permissions('Salary Component', fields = ["name"]):
 			if not frappe.db.get_value('Salary Component Account',
 				{'parent': data.name, 'company': "_Test Company"}, 'name'):
 				get_salary_component_account(data.name)

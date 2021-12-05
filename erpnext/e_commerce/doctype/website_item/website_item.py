@@ -120,7 +120,7 @@ class WebsiteItem(WebsiteGenerator):
 			return
 
 		# find if website image url exists as public
-		file_doc = frappe.get_all(
+		file_doc = frappe.get_all_with_user_permissions(
 			"File",
 			filters={
 				"file_url": self.website_image
@@ -203,7 +203,7 @@ class WebsiteItem(WebsiteGenerator):
 		context.body_class = "product-page"
 
 		context.parents = get_parent_item_groups(self.item_group, from_item=True) # breadcumbs
-		self.attributes = frappe.get_all("Item Variant Attribute",
+		self.attributes = frappe.get_all_with_user_permissions("Item Variant Attribute",
 			fields=["attribute", "attribute_value"],
 			filters={"parent": self.item_code})
 
@@ -246,7 +246,7 @@ class WebsiteItem(WebsiteGenerator):
 
 		# load variants
 		# also used in set_attribute_context
-		context.variants = frappe.get_all(
+		context.variants = frappe.get_all_with_user_permissions(
 			"Item",
 			filters={
 				"variant_of": self.item_code,
@@ -294,7 +294,7 @@ class WebsiteItem(WebsiteGenerator):
 
 	def set_selected_attributes(self, variants, context, attribute_values_available):
 		for variant in variants:
-			variant.attributes = frappe.get_all(
+			variant.attributes = frappe.get_all_with_user_permissions(
 				"Item Variant Attribute",
 				filters={"parent": variant.name},
 				fields=["attribute", "attribute_value as value"])

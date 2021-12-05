@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import flt
 
 
@@ -80,7 +81,8 @@ def get_lead_data(filters, based_on):
 		select {based_on_field}, name
 		from `tabLead`
 		where {based_on_field} is not null and {based_on_field} != '' {conditions}
-	""".format(based_on_field=based_on_field, conditions=conditions), filters, as_dict=1)
+		{permission_cond}
+	""".format(based_on_field=based_on_field, conditions=conditions, permission_cond=get_match_cond_for_reports("Lead")), filters, as_dict=1)
 
 	lead_map = frappe._dict()
 	for d in lead_details:

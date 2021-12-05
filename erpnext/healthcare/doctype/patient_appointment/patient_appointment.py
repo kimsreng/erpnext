@@ -384,7 +384,7 @@ def get_available_slots(practitioner_doc, date):
 					filters['practitioner'] = practitioner
 					filters.pop('service_unit')
 
-				appointments = frappe.get_all(
+				appointments = frappe.get_all_with_user_permissions(
 					'Patient Appointment',
 					filters=filters,
 					fields=['name', 'appointment_time', 'duration', 'status'])
@@ -551,7 +551,7 @@ def get_prescribed_therapies(patient):
 
 def update_appointment_status():
 	# update the status of appointments daily
-	appointments = frappe.get_all('Patient Appointment', {
+	appointments = frappe.get_all_with_user_permissions('Patient Appointment', {
 		'status': ('not in', ['Closed', 'Cancelled'])
 	}, as_dict=1)
 

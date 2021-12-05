@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 
 
 def execute(filters=None):
@@ -26,7 +27,7 @@ def get_employees(filters):
 	conditions = get_conditions(filters)
 	return frappe.db.sql("""select name, employee_name, date_of_birth,
 	branch, department, designation,
-	gender, company from tabEmployee where status = 'Active' %s""" % conditions, as_list=1)
+	gender, company from tabEmployee where status = 'Active' %s {permission_cond}""".format(permission_cond=get_match_cond_for_reports("Employee")) % conditions, as_list=1)
 
 def get_conditions(filters):
 	conditions = ""

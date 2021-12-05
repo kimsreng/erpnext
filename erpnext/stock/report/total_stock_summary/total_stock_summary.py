@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 
 
 def execute(filters=None):
@@ -53,7 +54,8 @@ def get_total_stock(filters):
 			INNER JOIN `tabWarehouse` warehouse
 				ON warehouse.name = ledger.warehouse
 			WHERE
-				ledger.actual_qty != 0 %s""" % (columns, conditions))
+				ledger.actual_qty != 0 %s {permission_cond}
+			""".format(permission_cond=get_match_cond_for_reports("Bin", "ledger")) % (columns, conditions))
 
 def validate_filters(filters):
 	if filters.get("group_by") == 'Company' and \

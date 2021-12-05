@@ -73,7 +73,7 @@ class Member(Document):
 
 
 def get_or_create_member(user_details):
-	member_list = frappe.get_all("Member", filters={'email': user_details.email, 'membership_type': user_details.plan_id})
+	member_list = frappe.get_all_with_user_permissions("Member", filters={'email': user_details.email, 'membership_type': user_details.plan_id})
 	if member_list and member_list[0]:
 		return member_list[0]['name']
 	else:

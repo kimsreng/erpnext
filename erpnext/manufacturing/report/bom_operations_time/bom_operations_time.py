@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
-
+from frappe.desk.reportview import get_match_cond_for_reports
 
 def execute(filters=None):
 	data = get_data(filters)
@@ -23,7 +23,8 @@ def get_data(filters):
 		FROM `tabBOM` bom, `tabBOM Operation` bomps
 		WHERE
 			bom.docstatus = 1 and bom.is_active = 1 and bom.name = bomps.parent
-		""", as_dict=1):
+			{permission_cond}
+		""".format(permision_cond=get_match_cond_for_reports("BOM", "bom")), as_dict=1):
 		row = get_args()
 		if d.name not in bom_data:
 			bom_data.append(d.name)
@@ -45,7 +46,7 @@ def get_data(filters):
 	return data
 
 def get_bom_count(bom_data):
-	data = frappe.get_all("BOM Item",
+	data = frappe.get_all_with_user_permissions("BOM Item",
 		fields=["count(name) as count", "bom_no"],
 		filters= {"bom_no": ("in", bom_data)}, group_by = "bom_no")
 

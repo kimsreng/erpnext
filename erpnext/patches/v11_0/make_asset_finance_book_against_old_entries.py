@@ -18,7 +18,7 @@ def execute():
 		frappe.db.sql(""" update `tabAsset` ast, `tabWarehouse` wh
 			set ast.location = wh.warehouse_name where ast.warehouse = wh.name""")
 
-		for d in frappe.get_all('Asset'):
+		for d in frappe.get_all_with_user_permissions('Asset'):
 			doc = frappe.get_doc('Asset', d.name)
 			if doc.calculate_depreciation:
 				fb = doc.append('finance_books', {
@@ -35,7 +35,7 @@ def execute():
 		frappe.db.sql(""" update `tabDepreciation Schedule` ds, `tabAsset` ast
 			set ds.depreciation_method = ast.depreciation_method, ds.finance_book_id = 1 where ds.parent = ast.name """)
 
-		for category in frappe.get_all('Asset Category'):
+		for category in frappe.get_all_with_user_permissions('Asset Category'):
 			asset_category_doc = frappe.get_doc("Asset Category", category)
 			row = asset_category_doc.append('finance_books', {
 				'depreciation_method': asset_category_doc.depreciation_method,

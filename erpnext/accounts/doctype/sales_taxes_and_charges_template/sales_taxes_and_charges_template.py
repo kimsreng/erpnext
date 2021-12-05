@@ -32,7 +32,7 @@ class SalesTaxesandChargesTemplate(Document):
 
 def valdiate_taxes_and_charges_template(doc):
 	# default should not be disabled
-	# if not doc.is_default and not frappe.get_all(doc.doctype, filters={"is_default": 1}):
+	# if not doc.is_default and not frappe.get_all_with_user_permissions(doc.doctype, filters={"is_default": 1}):
 	# 	doc.is_default = 1
 
 	if doc.is_default == 1:

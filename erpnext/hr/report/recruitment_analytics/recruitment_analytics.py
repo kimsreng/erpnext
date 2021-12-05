@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 
 
 def execute(filters=None):
@@ -140,13 +141,14 @@ def get_staffing_plan(filters):
 			spd.parent = sp.name
 		And
 			sp.to_date > '{0}'
-		""".format(filters.on_date), as_dict = 1)
+		{permission_cond}
+		""".format(filters.on_date, permission_cond=get_match_cond_for_reports("Staffing Plan","sp")), as_dict = 1)
 
 	return staffing_plan
 
 def get_job_opening(sp_list):
 
-	job_openings = frappe.get_all("Job Opening", filters = [["staffing_plan", "IN", sp_list]], fields =["name", "staffing_plan"])
+	job_openings = frappe.get_all_with_user_permissions("Job Opening", filters = [["staffing_plan", "IN", sp_list]], fields =["name", "staffing_plan"])
 
 	sp_jo_map = {}
 	jo_list = []
@@ -166,7 +168,7 @@ def get_job_applicant(jo_list):
 	jo_ja_map = {}
 	ja_list =[]
 
-	applicants = frappe.get_all("Job Applicant", filters = [["job_title", "IN", jo_list]], fields =["name", "job_title","applicant_name", 'status'])
+	applicants = frappe.get_all_with_user_permissions("Job Applicant", filters = [["job_title", "IN", jo_list]], fields =["name", "job_title","applicant_name", 'status'])
 
 	for applicant in applicants:
 		if applicant.job_title not in jo_ja_map.keys():
@@ -181,7 +183,7 @@ def get_job_applicant(jo_list):
 def get_job_offer(ja_list):
 	ja_joff_map = {}
 
-	offers = frappe.get_all("Job Offer", filters = [["job_applicant", "IN", ja_list]], fields =["name", "job_applicant", "status", 'offer_date', 'designation'])
+	offers = frappe.get_all_with_user_permissions("Job Offer", filters = [["job_applicant", "IN", ja_list]], fields =["name", "job_applicant", "status", 'offer_date', 'designation'])
 
 	for offer in offers:
 		if offer.job_applicant not in ja_joff_map.keys():

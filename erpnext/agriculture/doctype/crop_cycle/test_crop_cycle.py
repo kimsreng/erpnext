@@ -57,7 +57,7 @@ def check_task_creation():
 		}
 	}
 
-	all_tasks = frappe.get_all('Task')
+	all_tasks = frappe.get_all_with_user_permissions('Task')
 
 	for task in all_tasks:
 		sample_task = frappe.get_doc('Task', task.name)

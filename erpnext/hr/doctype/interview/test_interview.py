@@ -36,7 +36,7 @@ class TestInterview(unittest.TestCase):
 
 		self.assertEqual(interview.scheduled_on, add_days(getdate(previous_scheduled_date), 2))
 
-		notification = frappe.get_all("Email Queue", filters={"message": ("like", "%Your Interview session is rescheduled from%")})
+		notification = frappe.get_all_with_user_permissions("Email Queue", filters={"message": ("like", "%Your Interview session is rescheduled from%")})
 		self.assertIsNotNone(notification)
 
 	def test_notification_for_scheduling(self):

@@ -383,7 +383,7 @@ class SalesOrder(SellingController):
 		'''Returns items with BOM that already do not have a linked work order'''
 		items = []
 		item_codes = [i.item_code for i in self.items]
-		product_bundle_parents = [pb.new_item_code for pb in frappe.get_all("Product Bundle", {"new_item_code": ["in", item_codes]}, ["new_item_code"])]
+		product_bundle_parents = [pb.new_item_code for pb in frappe.get_all_with_user_permissions("Product Bundle", {"new_item_code": ["in", item_codes]}, ["new_item_code"])]
 
 		for table in [self.items, self.packed_items]:
 			for i in table:
@@ -980,7 +980,7 @@ def make_purchase_order(source_name, selected_items=None, target_doc=None):
 	return doc
 
 def set_delivery_date(items, sales_order):
-	delivery_dates = frappe.get_all(
+	delivery_dates = frappe.get_all_with_user_permissions(
 		'Sales Order Item',
 		filters = {
 			'parent': sales_order
@@ -1035,7 +1035,7 @@ def update_status(status, name):
 	so.update_status(status)
 
 def get_default_bom_item(item_code):
-	bom = frappe.get_all('BOM', dict(item=item_code, is_active=True),
+	bom = frappe.get_all_with_user_permissions('BOM', dict(item=item_code, is_active=True),
 			order_by='is_default desc')
 	bom = bom[0].name if bom else None
 

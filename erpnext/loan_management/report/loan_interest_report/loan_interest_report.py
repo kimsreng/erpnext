@@ -48,7 +48,7 @@ def get_active_loan_details(filters):
 	if filters.get('company'):
 		filter_obj.update({'company': filters.get('company')})
 
-	loan_details = frappe.get_all("Loan",
+	loan_details = frappe.get_all_with_user_permissions("Loan",
 		fields=["name as loan", "applicant_type", "applicant as applicant_name", "loan_type",
 		"disbursed_amount", "rate_of_interest", "total_payment", "total_principal_paid",
 		"total_interest_payable", "written_off_amount", "status"],
@@ -91,17 +91,17 @@ def get_active_loan_details(filters):
 	return loan_details
 
 def get_sanctioned_amount_map():
-	return frappe._dict(frappe.get_all("Sanctioned Loan Amount", fields=["applicant", "sanctioned_amount_limit"],
+	return frappe._dict(frappe.get_all_with_user_permissions("Sanctioned Loan Amount", fields=["applicant", "sanctioned_amount_limit"],
 		as_list=1))
 
 def get_payments(loans):
-	return frappe._dict(frappe.get_all("Loan Repayment", fields=["against_loan", "sum(amount_paid)"],
+	return frappe._dict(frappe.get_all_with_user_permissions("Loan Repayment", fields=["against_loan", "sum(amount_paid)"],
 		filters={"against_loan": ("in", loans)}, group_by="against_loan", as_list=1))
 
 def get_interest_accruals(loans):
 	accrual_map = {}
 
-	interest_accruals = frappe.get_all("Loan Interest Accrual",
+	interest_accruals = frappe.get_all_with_user_permissions("Loan Interest Accrual",
 		fields=["loan", "interest_amount", "posting_date", "penalty_amount",
 		"paid_interest_amount", "accrual_type"], filters={"loan": ("in", loans)}, order_by="posting_date desc")
 
@@ -136,7 +136,7 @@ def get_interest_accruals(loans):
 	return accrual_map
 
 def get_penal_interest_rate_map():
-	return frappe._dict(frappe.get_all("Loan Type", fields=["name", "penalty_interest_rate"], as_list=1))
+	return frappe._dict(frappe.get_all_with_user_permissions("Loan Type", fields=["name", "penalty_interest_rate"], as_list=1))
 
 def get_loan_wise_pledges(filters):
 	loan_wise_unpledges = {}

@@ -11,7 +11,7 @@ import frappe
 class TestPromotionalScheme(unittest.TestCase):
 	def test_promotional_scheme(self):
 		ps = make_promotional_scheme()
-		price_rules = frappe.get_all('Pricing Rule', fields = ["promotional_scheme_id", "name", "creation"],
+		price_rules = frappe.get_all_with_user_permissions('Pricing Rule', fields = ["promotional_scheme_id", "name", "creation"],
 			filters = {'promotional_scheme': ps.name})
 		self.assertTrue(len(price_rules),1)
 		price_doc_details = frappe.db.get_value('Pricing Rule', price_rules[0].name, ['customer', 'min_qty', 'discount_percentage'], as_dict = 1)
@@ -23,7 +23,7 @@ class TestPromotionalScheme(unittest.TestCase):
 		ps.append('customer', {
 			'customer': "_Test Customer 2"})
 		ps.save()
-		price_rules = frappe.get_all('Pricing Rule', fields = ["promotional_scheme_id", "name"],
+		price_rules = frappe.get_all_with_user_permissions('Pricing Rule', fields = ["promotional_scheme_id", "name"],
 			filters = {'promotional_scheme': ps.name})
 		self.assertTrue(len(price_rules), 2)
 
@@ -37,7 +37,7 @@ class TestPromotionalScheme(unittest.TestCase):
 		self.assertTrue(price_doc_details.min_qty, 6)
 
 		frappe.delete_doc('Promotional Scheme', ps.name)
-		price_rules = frappe.get_all('Pricing Rule', fields = ["promotional_scheme_id", "name"],
+		price_rules = frappe.get_all_with_user_permissions('Pricing Rule', fields = ["promotional_scheme_id", "name"],
 			filters = {'promotional_scheme': ps.name})
 		self.assertEqual(price_rules, [])
 

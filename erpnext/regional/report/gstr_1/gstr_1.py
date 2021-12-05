@@ -1047,7 +1047,7 @@ def get_company_gstin_number(company, address=None, all_gstins=False):
 			["Dynamic Link", "parenttype", "=", "Address"],
 			["gstin", "!=", '']
 		]
-		gstin = frappe.get_all("Address", filters=filters, pluck="gstin", order_by="is_primary_address desc")
+		gstin = frappe.get_all_with_user_permissions("Address", filters=filters, pluck="gstin", order_by="is_primary_address desc")
 		if gstin and not all_gstins:
 			gstin = gstin[0]
 

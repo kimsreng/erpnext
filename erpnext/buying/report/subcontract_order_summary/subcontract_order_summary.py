@@ -32,7 +32,7 @@ def get_subcontracted_orders(report_filters):
 
 	filters = get_filters(report_filters)
 
-	return frappe.get_all('Purchase Order', fields = fields, filters=filters) or []
+	return frappe.get_all_with_user_permissions('Purchase Order', fields = fields, filters=filters) or []
 
 def get_filters(report_filters):
 	filters = [['Purchase Order', 'docstatus', '=', 1], ['Purchase Order', 'is_subcontracted', '=', 'Yes'],
@@ -54,7 +54,7 @@ def get_supplied_items(orders, report_filters):
 	filters = {'parent': ('in', [d.po_id for d in orders]), 'docstatus': 1}
 
 	supplied_items = {}
-	for row in frappe.get_all('Purchase Order Item Supplied', fields = fields, filters=filters):
+	for row in frappe.get_all_with_user_permissions('Purchase Order Item Supplied', fields = fields, filters=filters):
 		new_key = (row.parent, row.reference_name, row.main_item_code)
 
 		supplied_items.setdefault(new_key, []).append(row)

@@ -104,7 +104,7 @@ def get_items(start, page_length, price_list, pos_profile, item_group="", search
 	if items_data:
 		items_data = filter_service_items(items_data)
 		items = [d.item_code for d in items_data]
-		item_prices_data = frappe.get_all("Item Price",
+		item_prices_data = frappe.get_all_with_user_permissions("Item Price",
 			fields = ["item_code", "price_list_rate", "currency"],
 			filters = {'price_list': price_list, 'item_code': ['in', items]})
 
@@ -167,7 +167,7 @@ def get_conditions(search_term):
 
 def add_search_fields_condition(search_term):
 	condition = ''
-	search_fields = frappe.get_all('POS Search Fields', fields = ['fieldname'])
+	search_fields = frappe.get_all_with_user_permissions('POS Search Fields', fields = ['fieldname'])
 	if search_fields:
 		for field in search_fields:
 			condition += " or item.`{0}` like {1}".format(field['fieldname'], frappe.db.escape('%' + search_term + '%'))

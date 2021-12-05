@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _, msgprint
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import date_diff, flt
 
 
@@ -79,10 +80,11 @@ def get_communication_details(filters):
 					`tabSales Invoice`
 				WHERE
 					contact_email = %s AND date(creation) between %s and %s AND docstatus != 2
+					{permission_cond}
 				ORDER BY
 					creation
 				LIMIT 1
-			''', (d.contact_email, filters.from_date, filters.to_date))
+			'''.format(permission_cond=get_match_cond_for_reports("Sales Invoice")), (d.contact_email, filters.from_date, filters.to_date))
 
 		if not invoice: continue
 
@@ -93,7 +95,8 @@ def get_communication_details(filters):
 					`tabCommunication`
 				WHERE
 					sender = %s AND date(communication_date) <= %s
-			''', (d.contact_email, invoice))[0][0]
+					{permission_cond}
+			'''.format(permission_cond=get_match_cond_for_reports("Communication")), (d.contact_email, invoice))[0][0]
 
 		if not communication_count: continue
 

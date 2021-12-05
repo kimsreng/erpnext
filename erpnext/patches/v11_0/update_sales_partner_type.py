@@ -23,7 +23,7 @@ def execute():
 				insert_sales_partner_type(s)
 
 		# remove customization for partner type
-		for p in frappe.get_all('Property Setter', {'doc_type':d, 'field_name':'partner_type', 'property':'options'}):
+		for p in frappe.get_all_with_user_permissions('Property Setter', {'doc_type':d, 'field_name':'partner_type', 'property':'options'}):
 			frappe.delete_doc('Property Setter', p.name)
 
 def insert_sales_partner_type(s):

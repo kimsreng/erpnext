@@ -438,7 +438,7 @@ def make_company():
 def set_account_heads():
 	gst_settings = frappe.get_doc("GST Settings")
 
-	gst_account = frappe.get_all(
+	gst_account = frappe.get_all_with_user_permissions(
 		"GST Account",
 		fields=["cgst_account", "sgst_account", "igst_account"],
 		filters = {"company": "_Test Company GST"})

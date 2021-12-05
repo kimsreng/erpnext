@@ -26,7 +26,7 @@ def preview_report_card(doc):
 	doc = frappe._dict(json.loads(doc))
 	doc.students = [doc.student]
 	if not (doc.student_name and doc.student_batch):
-		program_enrollment = frappe.get_all("Program Enrollment", fields=["student_batch_name", "student_name"],
+		program_enrollment = frappe.get_all_with_user_permissions("Program Enrollment", fields=["student_batch_name", "student_name"],
 			filters={"student": doc.student, "docstatus": ('!=', 2), "academic_year": doc.academic_year})
 		if program_enrollment:
 			doc.batch = program_enrollment[0].student_batch_name
@@ -73,7 +73,7 @@ def preview_report_card(doc):
 def get_courses_criteria(courses):
 	course_criteria = frappe._dict()
 	for course in courses:
-		course_criteria[course] = [d.assessment_criteria for d in frappe.get_all("Course Assessment Criteria",
+		course_criteria[course] = [d.assessment_criteria for d in frappe.get_all_with_user_permissions("Course Assessment Criteria",
 			fields=["assessment_criteria"], filters={"parent": course})]
 	return course_criteria
 

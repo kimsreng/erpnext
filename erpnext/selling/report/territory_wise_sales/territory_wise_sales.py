@@ -7,6 +7,7 @@ import frappe
 from frappe import _
 
 from erpnext import get_default_currency
+from frappe.desk.reportview import get_match_cond_for_reports
 
 
 def execute(filters=None):
@@ -64,7 +65,7 @@ def get_data(filters=None):
 	sales_orders = get_sales_orders(quotations)
 	sales_invoices = get_sales_invoice(sales_orders)
 
-	for territory in frappe.get_all("Territory"):
+	for territory in frappe.get_all_with_user_permissions("Territory"):
 		territory_opportunities = []
 		if opportunities:
 			territory_opportunities = list(filter(lambda x: x.territory == territory.name, opportunities))
@@ -113,6 +114,10 @@ def get_opportunities(filters):
 			conditions += " WHERE"
 		conditions += " company = %(company)s"
 
+	if conditions:
+		conditions += get_match_cond_for_reports("Opportunity")
+	else:
+		conditions = "WHERE 1=1 {cond}".format(cond=get_match_cond_for_reports("Opportunity"))
 
 	return frappe.db.sql("""
 		SELECT name, territory, opportunity_amount
@@ -128,8 +133,8 @@ def get_quotations(opportunities):
 	return frappe.db.sql("""
 		SELECT `name`,`base_grand_total`, `opportunity`
 		FROM `tabQuotation`
-		WHERE docstatus=1 AND opportunity in ({0})
-	""".format(', '.join(["%s"]*len(opportunity_names))), tuple(opportunity_names), as_dict=1) #nosec
+		WHERE docstatus=1 AND opportunity in ({0}) {permission_cond}
+	""".format(', '.join(["%s"]*len(opportunity_names)), permission_cond=get_match_cond_for_reports("Quotation")), tuple(opportunity_names), as_dict=1) #nosec
 
 def get_sales_orders(quotations):
 	if not quotations:
@@ -140,8 +145,8 @@ def get_sales_orders(quotations):
 	return frappe.db.sql("""
 	SELECT so.`name`, so.`base_grand_total`, soi.prevdoc_docname as quotation
 	FROM `tabSales Order` so, `tabSales Order Item` soi
-	WHERE so.docstatus=1 AND so.name = soi.parent AND soi.prevdoc_docname in ({0})
-	""".format(', '.join(["%s"]*len(quotation_names))), tuple(quotation_names), as_dict=1) #nosec
+	WHERE so.docstatus=1 AND so.name = soi.parent AND soi.prevdoc_docname in ({0}) {permission_cond}
+	""".format(', '.join(["%s"]*len(quotation_names)), permission_cond=get_match_cond_for_reports("Sales Order", "so")), tuple(quotation_names), as_dict=1) #nosec
 
 def get_sales_invoice(sales_orders):
 	if not sales_orders:
@@ -152,8 +157,8 @@ def get_sales_invoice(sales_orders):
 	return frappe.db.sql("""
 	SELECT si.name, si.base_grand_total, sii.sales_order
 	FROM `tabSales Invoice` si, `tabSales Invoice Item` sii
-	WHERE si.docstatus=1 AND si.name = sii.parent AND sii.sales_order in ({0})
-	""".format(', '.join(["%s"]*len(so_names))), tuple(so_names), as_dict=1) #nosec
+	WHERE si.docstatus=1 AND si.name = sii.parent AND sii.sales_order in ({0}) {permission_cond}
+	""".format(', '.join(["%s"]*len(so_names)), permission_cond=get_match_cond_for_reports("Sales Invoice", "si")), tuple(so_names), as_dict=1) #nosec
 
 def _get_total(doclist, amount_field="base_grand_total"):
 	if not doclist:

@@ -112,7 +112,7 @@ class ProductSearch(FullTextSearch):
 		)
 
 def get_all_published_items():
-	return frappe.get_all("Website Item", filters={"variant_of": "", "published": 1}, pluck="item_code")
+	return frappe.get_all_with_user_permissions("Website Item", filters={"variant_of": "", "published": 1}, pluck="item_code")
 
 def update_index_for_path(path):
 	search = ProductSearch(INDEX_NAME)

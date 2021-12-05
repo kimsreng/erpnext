@@ -634,7 +634,7 @@ class TestPurchaseReceipt(ERPNextTestCase):
 		asset_item = "Test Asset Item"
 
 		if not frappe.db.exists('Item', asset_item):
-			asset_category = frappe.get_all('Asset Category')
+			asset_category = frappe.get_all_with_user_permissions('Asset Category')
 
 			if asset_category:
 				asset_category = asset_category[0].name

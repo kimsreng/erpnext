@@ -8,7 +8,7 @@ import frappe
 
 def execute():
 	frappe.reload_doc("accounts", "doctype", "pos_payment_method")
-	pos_profiles = frappe.get_all("POS Profile")
+	pos_profiles = frappe.get_all_with_user_permissions("POS Profile")
 
 	for pos_profile in pos_profiles:
 		payments = frappe.db.sql("""

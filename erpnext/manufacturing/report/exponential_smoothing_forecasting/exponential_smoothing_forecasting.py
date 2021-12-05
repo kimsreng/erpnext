@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import add_years, cint, flt, getdate
 
 import erpnext
@@ -113,7 +114,8 @@ class ForecastingReport(ExponentialSmoothingForecast):
 			WHERE
 				so.docstatus = 1 AND so.name = soi.parent AND
 				so.{date_field} < %s AND so.company = %s {cond}
-		""".format(doc=self.doctype, child_doc=self.child_doctype, date_field=date_field, cond=cond),
+				{perm_cond}
+		""".format(doc=self.doctype, child_doc=self.child_doctype, date_field=date_field, cond=cond, perm_cond=get_match_cond_for_reports(self.doctype, "so")),
 			tuple(input_data), as_dict=1)
 
 	def prepare_final_data(self):

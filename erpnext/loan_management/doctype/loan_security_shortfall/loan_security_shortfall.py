@@ -50,18 +50,18 @@ def check_for_ltv_shortfall(process_loan_security_shortfall):
 
 	update_time = get_datetime()
 
-	loan_security_price_map = frappe._dict(frappe.get_all("Loan Security Price",
+	loan_security_price_map = frappe._dict(frappe.get_all_with_user_permissions("Loan Security Price",
 		fields=["loan_security", "loan_security_price"],
 		filters = {
 			"valid_from": ("<=", update_time),
 			"valid_upto": (">=", update_time)
 		}, as_list=1))
 
-	loans = frappe.get_all('Loan', fields=['name', 'loan_amount', 'total_principal_paid', 'total_payment',
+	loans = frappe.get_all_with_user_permissions('Loan', fields=['name', 'loan_amount', 'total_principal_paid', 'total_payment',
 		'total_interest_payable', 'disbursed_amount', 'status'],
 		filters={'status': ('in',['Disbursed','Partially Disbursed']), 'is_secured_loan': 1})
 
-	loan_shortfall_map = frappe._dict(frappe.get_all("Loan Security Shortfall",
+	loan_shortfall_map = frappe._dict(frappe.get_all_with_user_permissions("Loan Security Shortfall",
 		fields=["loan", "name"], filters={"status": "Pending"}, as_list=1))
 
 	loan_security_map = {}

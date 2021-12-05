@@ -66,7 +66,7 @@ class SupplierQuotation(BuyingController):
 				rfq_list.add(item.request_for_quotation)
 		for rfq in rfq_list:
 			doc = frappe.get_doc('Request for Quotation', rfq)
-			doc_sup = frappe.get_all('Request for Quotation Supplier', filters=
+			doc_sup = frappe.get_all_with_user_permissions('Request for Quotation Supplier', filters=
 				{'parent': doc.name, 'supplier': self.supplier}, fields=['name', 'quote_status'])
 
 			doc_sup = doc_sup[0] if doc_sup else None

@@ -7,7 +7,7 @@ from erpnext.regional.south_africa.setup import add_permissions, make_custom_fie
 
 
 def execute():
-	company = frappe.get_all('Company', filters = {'country': 'South Africa'})
+	company = frappe.get_all_with_user_permissions('Company', filters = {'country': 'South Africa'})
 	if not company:
 		return
 

@@ -74,12 +74,12 @@ def get_production_plan_sub_assembly_item_details(filters, row, production_plan_
 			})
 
 def get_work_order_details(filters, order_details):
-	for row in frappe.get_all("Work Order", filters = {"production_plan": filters.get("production_plan")},
+	for row in frappe.get_all_with_user_permissions("Work Order", filters = {"production_plan": filters.get("production_plan")},
 		fields=["name", "produced_qty", "production_plan", "production_item"]):
 		order_details.setdefault((row.name, row.production_item), row)
 
 def get_purchase_order_details(filters, order_details):
-	for row in frappe.get_all("Purchase Order Item", filters = {"production_plan": filters.get("production_plan")},
+	for row in frappe.get_all_with_user_permissions("Purchase Order Item", filters = {"production_plan": filters.get("production_plan")},
 		fields=["parent", "received_qty as produced_qty", "item_code"]):
 		order_details.setdefault((row.parent, row.item_code), row)
 

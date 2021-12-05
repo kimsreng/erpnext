@@ -153,7 +153,7 @@ def get_charts_for_country(country, with_standard=False):
 
 
 def get_account_tree_from_existing_company(existing_company):
-	all_accounts = frappe.get_all('Account',
+	all_accounts = frappe.get_all_with_user_permissions('Account',
 		filters={'company': existing_company},
 		fields = ["name", "account_name", "parent_account", "account_type",
 			"is_group", "root_type", "tax_rate", "account_number"],

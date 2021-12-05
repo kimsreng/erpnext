@@ -116,7 +116,7 @@ def submit_draft_stock_entries():
 
 def make_sales_return_records():
 	if random.random() < 0.1:
-		for data in frappe.get_all('Delivery Note', fields=["name"], filters={"docstatus": 1}):
+		for data in frappe.get_all_with_user_permissions('Delivery Note', fields=["name"], filters={"docstatus": 1}):
 			if random.random() < 0.1:
 				try:
 					dn = make_sales_return(data.name)
@@ -128,7 +128,7 @@ def make_sales_return_records():
 
 def make_purchase_return_records():
 	if random.random() < 0.1:
-		for data in frappe.get_all('Purchase Receipt', fields=["name"], filters={"docstatus": 1}):
+		for data in frappe.get_all_with_user_permissions('Purchase Receipt', fields=["name"], filters={"docstatus": 1}):
 			if random.random() < 0.1:
 				try:
 					pr = make_purchase_return(data.name)

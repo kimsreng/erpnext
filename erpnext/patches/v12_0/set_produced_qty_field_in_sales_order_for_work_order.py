@@ -7,7 +7,7 @@ def execute():
 	frappe.reload_doctype('Sales Order Item')
 	frappe.reload_doctype('Sales Order')
 
-	for d in frappe.get_all('Work Order',
+	for d in frappe.get_all_with_user_permissions('Work Order',
 		fields = ['sales_order', 'sales_order_item'],
 		filters={'sales_order': ('!=', ''), 'sales_order_item': ('!=', '')}):
 

@@ -276,7 +276,7 @@ def get_tax_template_based_on_category(master_doctype, company, party_details):
 		party_details.taxes = get_taxes_and_charges(master_doctype, default_tax)
 
 def get_tax_template(master_doctype, company, is_inter_state, state_code):
-	tax_categories = frappe.get_all('Tax Category', fields = ['name', 'is_inter_state', 'gst_state'],
+	tax_categories = frappe.get_all_with_user_permissions('Tax Category', fields = ['name', 'is_inter_state', 'gst_state'],
 		filters = {'is_inter_state': is_inter_state})
 
 	default_tax = ''
@@ -701,7 +701,7 @@ def get_gst_accounts(company=None, account_wise=False, only_reverse_charge=0, on
 		filters.update({'is_reverse_charge_account': 0})
 
 	gst_accounts = frappe._dict()
-	gst_settings_accounts = frappe.get_all("GST Account",
+	gst_settings_accounts = frappe.get_all_with_user_permissions("GST Account",
 		filters=filters,
 		fields=["cgst_account", "sgst_account", "igst_account", "cess_account"])
 

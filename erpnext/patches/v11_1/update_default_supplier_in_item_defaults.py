@@ -18,7 +18,7 @@ def execute():
 	frappe.reload_doc('stock', 'doctype', 'item_default')
 	frappe.reload_doc('stock', 'doctype', 'item')
 
-	companies = frappe.get_all("Company")
+	companies = frappe.get_all_with_user_permissions("Company")
 	if len(companies) > 1:
 		frappe.db.sql(""" UPDATE `tabItem Default`, `tabItem`
 			SET `tabItem Default`.default_supplier = `tabItem`.default_supplier

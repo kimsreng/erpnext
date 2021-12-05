@@ -450,7 +450,7 @@ class LeaveApplication(Document):
 
 def get_allocation_expiry(employee, leave_type, to_date, from_date):
 	''' Returns expiry of carry forward allocation in leave ledger entry '''
-	expiry =  frappe.get_all("Leave Ledger Entry",
+	expiry =  frappe.get_all_with_user_permissions("Leave Ledger Entry",
 		filters={
 			'employee': employee,
 			'leave_type': leave_type,
@@ -580,7 +580,7 @@ def get_leave_allocation_records(employee, date, leave_type=None):
 
 def get_pending_leaves_for_period(employee, leave_type, from_date, to_date):
 	''' Returns leaves that are pending approval '''
-	leaves = frappe.get_all("Leave Application",
+	leaves = frappe.get_all_with_user_permissions("Leave Application",
 		filters={
 			"employee": employee,
 			"leave_type": leave_type,

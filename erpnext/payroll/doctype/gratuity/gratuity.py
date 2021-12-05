@@ -161,7 +161,7 @@ def get_non_working_days(employee, relieving_date, status):
 		filters["leave_type"] =  ("IN", lwp_leave_types)
 
 
-	record = frappe.get_all("Attendance", filters=filters, fields = ["COUNT(name) as total_lwp"])
+	record = frappe.get_all_with_user_permissions("Attendance", filters=filters, fields = ["COUNT(name) as total_lwp"])
 	return record[0].total_lwp if len(record) else 0
 
 def calculate_gratuity_amount(employee, gratuity_rule, experience):
@@ -200,7 +200,7 @@ def calculate_gratuity_amount(employee, gratuity_rule, experience):
 	return gratuity_amount
 
 def get_applicable_components(gratuity_rule):
-	applicable_earnings_component = frappe.get_all("Gratuity Applicable Component", filters= {'parent': gratuity_rule}, fields=["salary_component"])
+	applicable_earnings_component = frappe.get_all_with_user_permissions("Gratuity Applicable Component", filters= {'parent': gratuity_rule}, fields=["salary_component"])
 	if len(applicable_earnings_component) == 0:
 		frappe.throw(_("No Applicable Earnings Component found for Gratuity Rule: {0}").format(bold(get_link_to_form("Gratuity Rule",gratuity_rule))))
 	applicable_earnings_component = [component.salary_component for component in applicable_earnings_component]
@@ -236,7 +236,7 @@ def calculate_amount_based_on_current_slab(from_year, to_year, experience, total
 	return slab_found, gratuity_amount
 
 def get_gratuity_rule_slabs(gratuity_rule):
-	return frappe.get_all("Gratuity Rule Slab", filters= {'parent': gratuity_rule}, fields = ["*"], order_by="idx")
+	return frappe.get_all_with_user_permissions("Gratuity Rule Slab", filters= {'parent': gratuity_rule}, fields = ["*"], order_by="idx")
 
 def get_salary_structure(employee):
 	return frappe.get_list("Salary Structure Assignment", filters = {

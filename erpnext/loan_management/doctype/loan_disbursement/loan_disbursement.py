@@ -54,7 +54,7 @@ class LoanDisbursement(AccountsController):
 			frappe.throw(_("Disbursed Amount cannot be greater than {0}").format(possible_disbursal_amount))
 
 	def set_status_and_amounts(self, cancel=0):
-		loan_details = frappe.get_all("Loan",
+		loan_details = frappe.get_all_with_user_permissions("Loan",
 			fields = ["loan_amount", "disbursed_amount", "total_payment", "total_principal_paid", "total_interest_payable",
 				"status", "is_term_loan", "is_secured_loan"], filters= { "name": self.against_loan })[0]
 
@@ -157,14 +157,14 @@ class LoanDisbursement(AccountsController):
 def get_total_pledged_security_value(loan):
 	update_time = get_datetime()
 
-	loan_security_price_map = frappe._dict(frappe.get_all("Loan Security Price",
+	loan_security_price_map = frappe._dict(frappe.get_all_with_user_permissions("Loan Security Price",
 		fields=["loan_security", "loan_security_price"],
 		filters = {
 			"valid_from": ("<=", update_time),
 			"valid_upto": (">=", update_time)
 		}, as_list=1))
 
-	hair_cut_map = frappe._dict(frappe.get_all('Loan Security',
+	hair_cut_map = frappe._dict(frappe.get_all_with_user_permissions('Loan Security',
 		fields=["name", "haircut"], as_list=1))
 
 	security_value = 0.0
@@ -182,7 +182,7 @@ def get_disbursal_amount(loan, on_current_security_price=0):
 		"total_principal_paid", "total_interest_payable", "status", "is_term_loan", "is_secured_loan",
 		"maximum_loan_amount"], as_dict=1)
 
-	if loan_details.is_secured_loan and frappe.get_all('Loan Security Shortfall', filters={'loan': loan,
+	if loan_details.is_secured_loan and frappe.get_all_with_user_permissions('Loan Security Shortfall', filters={'loan': loan,
 		'status': 'Pending'}):
 		return 0
 

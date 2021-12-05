@@ -139,7 +139,7 @@ def repost_entries():
 	if riv_entries:
 		return
 
-	for d in frappe.get_all('Company', filters= {'enable_perpetual_inventory': 1}):
+	for d in frappe.get_all_with_user_permissions('Company', filters= {'enable_perpetual_inventory': 1}):
 		check_if_stock_and_account_balance_synced(today(), d.name)
 
 def get_repost_item_valuation_entries():

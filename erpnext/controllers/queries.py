@@ -227,7 +227,7 @@ def item_query(doctype, txt, searchfield, start, page_len, filters, as_dict=Fals
 	if filters and isinstance(filters, dict):
 		if filters.get('customer') or filters.get('supplier'):
 			party = filters.get('customer') or filters.get('supplier')
-			item_rules_list = frappe.get_all('Party Specific Item',
+			item_rules_list = frappe.get_all_with_user_permissions('Party Specific Item',
 				filters = {'party': party}, fields = ['restrict_based_on', 'based_on_value'])
 
 			filters_dict = {}
@@ -565,7 +565,7 @@ def get_filtered_dimensions(doctype, txt, searchfield, start, page_len, filters)
 
 		query_filters.append(['name', query_selector, dimensions])
 
-	output = frappe.get_all(doctype, filters=query_filters)
+	output = frappe.get_all_with_user_permissions(doctype, filters=query_filters)
 	result = [d.name for d in output]
 
 	return [(d,) for d in set(result)]
@@ -655,7 +655,7 @@ def item_manufacturer_query(doctype, txt, searchfield, start, page_len, filters)
 		['item_code', '=', filters.get("item_code")]
 	]
 
-	item_manufacturers = frappe.get_all(
+	item_manufacturers = frappe.get_all_with_user_permissions(
 		"Item Manufacturer",
 		fields=["manufacturer", "manufacturer_part_no"],
 		filters=item_filters,
@@ -740,7 +740,7 @@ def get_tax_template(doctype, txt, searchfield, start, page_len, filters):
 		item_group = item_group_doc.parent_item_group
 
 	if not taxes:
-		return frappe.db.sql(""" SELECT name FROM `tabItem Tax Template` """)
+		return frappe.db.sql(""" SELECT name FROM `tabItem Tax Template` WHERE 1=1 {match_cond}""".format(match_cond=get_match_cond("Item Tax Template")))
 	else:
 		valid_from = filters.get('valid_from')
 		valid_from = valid_from[1] if isinstance(valid_from, list) else valid_from

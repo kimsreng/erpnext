@@ -67,11 +67,11 @@ def generate_expiry_allocation_ledger_entries():
 				expire_allocation(allocation_obj)
 
 def get_allocation_records():
-	return frappe.get_all("Leave Allocation", filters={"docstatus": 1},
+	return frappe.get_all_with_user_permissions("Leave Allocation", filters={"docstatus": 1},
 		fields=['name'], order_by='to_date ASC')
 
 def get_leaves_application_records():
-	return frappe.get_all("Leave Application", filters={"docstatus": 1}, fields=['name'])
+	return frappe.get_all_with_user_permissions("Leave Application", filters={"docstatus": 1}, fields=['name'])
 
 def get_leave_encashment_records():
-	return frappe.get_all("Leave Encashment", filters={"docstatus": 1}, fields=['name'])
+	return frappe.get_all_with_user_permissions("Leave Encashment", filters={"docstatus": 1}, fields=['name'])

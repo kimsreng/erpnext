@@ -97,7 +97,7 @@ def get_shipment_customer_contact(customer_name):
 	contact_fname = 'Customer Shipment'
 	contact_lname = 'Testing'
 	customer_name = contact_fname + ' ' + contact_lname
-	contacts = frappe.get_all("Contact", fields=["name"], filters = {"name": customer_name})
+	contacts = frappe.get_all_with_user_permissions("Contact", fields=["name"], filters = {"name": customer_name})
 	if len(contacts):
 		return contacts[0]
 	else:
@@ -106,7 +106,7 @@ def get_shipment_customer_contact(customer_name):
 
 def get_shipment_customer_address(customer_name):
 	address_title = customer_name + ' address 123'
-	customer_address = frappe.get_all("Address", fields=["name"], filters = {"address_title": address_title})
+	customer_address = frappe.get_all_with_user_permissions("Address", fields=["name"], filters = {"address_title": address_title})
 	if len(customer_address):
 		return customer_address[0]
 	else:
@@ -114,7 +114,7 @@ def get_shipment_customer_address(customer_name):
 
 def get_shipment_customer():
 	customer_name = 'Shipment Customer'
-	customer = frappe.get_all("Customer", fields=["name"], filters = {"name": customer_name})
+	customer = frappe.get_all_with_user_permissions("Customer", fields=["name"], filters = {"name": customer_name})
 	if len(customer):
 		return customer[0]
 	else:
@@ -122,7 +122,7 @@ def get_shipment_customer():
 
 def get_shipment_company_address(company_name):
 	address_title = company_name + ' address 123'
-	addresses = frappe.get_all("Address", fields=["name"], filters = {"address_title": address_title})
+	addresses = frappe.get_all_with_user_permissions("Address", fields=["name"], filters = {"address_title": address_title})
 	if len(addresses):
 		return addresses[0]
 	else:
@@ -131,7 +131,7 @@ def get_shipment_company_address(company_name):
 def get_shipment_company():
 	company_name = 'Shipment Company'
 	abbr = 'SC'
-	companies = frappe.get_all("Company", fields=["name"], filters = {"company_name": company_name})
+	companies = frappe.get_all_with_user_permissions("Company", fields=["name"], filters = {"company_name": company_name})
 	if len(companies):
 		return companies[0]
 	else:
@@ -139,7 +139,7 @@ def get_shipment_company():
 
 def get_shipment_item(company_name):
 	item_name = 'Testing Shipment item'
-	items = frappe.get_all("Item",
+	items = frappe.get_all_with_user_permissions("Item",
 		fields=["name", "item_name", "item_code", "standard_rate"],
 		filters = {"item_name": item_name}
 	)

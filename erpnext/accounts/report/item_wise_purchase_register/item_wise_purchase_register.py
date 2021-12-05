@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
-from frappe.desk.reportview import get_match_cond
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import flt
 
 import erpnext
@@ -337,7 +337,7 @@ def get_items(filters, additional_query_columns):
 		from `tabPurchase Invoice`, `tabPurchase Invoice Item`
 		where `tabPurchase Invoice`.name = `tabPurchase Invoice Item`.`parent`{permission_cond} and
 		`tabPurchase Invoice`.docstatus = 1 {1} 
-	""".format(additional_query_columns,conditions, permission_cond=get_match_cond("Purchase Invoice")), filters, as_dict=1)
+	""".format(additional_query_columns,conditions, permission_cond=get_match_cond_for_reports("Purchase Invoice")), filters, as_dict=1)
 
 def get_aii_accounts():
 	return dict(frappe.db.sql("select name, stock_received_but_not_billed from tabCompany"))

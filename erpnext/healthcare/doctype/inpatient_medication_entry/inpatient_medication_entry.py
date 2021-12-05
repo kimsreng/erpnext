@@ -184,7 +184,7 @@ class InpatientMedicationEntry(Document):
 		return stock_entry.name
 
 	def cancel_stock_entries(self):
-		stock_entries = frappe.get_all('Stock Entry', {'inpatient_medication_entry': self.name})
+		stock_entries = frappe.get_all_with_user_permissions('Stock Entry', {'inpatient_medication_entry': self.name})
 		for entry in stock_entries:
 			doc = frappe.get_doc('Stock Entry', entry.name)
 			doc.cancel()

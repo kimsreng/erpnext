@@ -355,7 +355,7 @@ def notify_customers(delivery_trip):
 
 		context.update({"items": []})
 		if stop.delivery_note:
-			items = frappe.get_all("Delivery Note Item", filters={"parent": stop.delivery_note, "docstatus": 1}, fields=["*"])
+			items = frappe.get_all_with_user_permissions("Delivery Note Item", filters={"parent": stop.delivery_note, "docstatus": 1}, fields=["*"])
 			context.update({"items": items})
 
 		if contact_info and contact_info.email_id:

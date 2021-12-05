@@ -26,7 +26,7 @@ def setup(domain):
 	setup_role_permissions()
 	setup_custom_field_for_domain()
 
-	employees = frappe.get_all('Employee',  fields=['name', 'date_of_joining'])
+	employees = frappe.get_all_with_user_permissions('Employee',  fields=['name', 'date_of_joining'])
 
 	# monthly salary
 	setup_salary_structure(employees[:5], 0)
@@ -54,7 +54,7 @@ def complete_setup(domain='Manufacturing'):
 	print("Complete Setup...")
 	from frappe.desk.page.setup_wizard.setup_wizard import setup_complete
 
-	if not frappe.get_all('Company', limit=1):
+	if not frappe.get_all_with_user_permissions('Company', limit=1):
 		setup_complete({
 			"full_name": "Test User",
 			"email": "test_demo@erpnext.com",
@@ -135,7 +135,7 @@ def setup_employee():
 	frappe.db.set_value("HR Settings", None, "emp_created_by", "Naming Series")
 	frappe.db.commit()
 
-	for d in frappe.get_all('Salary Component'):
+	for d in frappe.get_all_with_user_permissions('Salary Component'):
 		salary_component = frappe.get_doc('Salary Component', d.name)
 		salary_component.append('accounts', dict(
 			company=erpnext.get_default_company(),
@@ -208,7 +208,7 @@ def setup_user_roles(domain):
 		user.add_roles('HR User', 'HR Manager', 'Accounts User')
 		frappe.db.set_global('demo_hr_user', user.name)
 		update_employee_department(user.name, 'Human Resources')
-		for d in frappe.get_all('User Permission', filters={"user": "CaitlinSnow@example.com"}):
+		for d in frappe.get_all_with_user_permissions('User Permission', filters={"user": "CaitlinSnow@example.com"}):
 			frappe.delete_doc('User Permission', d.name)
 
 	if not frappe.db.get_global('demo_sales_user_1'):
@@ -266,8 +266,8 @@ def setup_user_roles(domain):
 
 def setup_leave_allocation():
 	year = now_datetime().year
-	for employee in frappe.get_all('Employee', fields=['name']):
-		leave_types = frappe.get_all("Leave Type", fields=['name', 'max_continuous_days_allowed'])
+	for employee in frappe.get_all_with_user_permissions('Employee', fields=['name']):
+		leave_types = frappe.get_all_with_user_permissions("Leave Type", fields=['name', 'max_continuous_days_allowed'])
 		for leave_type in leave_types:
 			if not leave_type.max_continuous_days_allowed:
 				leave_type.max_continuous_days_allowed = 10
@@ -327,7 +327,7 @@ def setup_currency_exchange():
 def setup_mode_of_payment():
 	company_abbr = frappe.get_cached_value('Company',  erpnext.get_default_company(),  "abbr")
 	account_dict = {'Cash': 'Cash - '+ company_abbr , 'Bank': 'National Bank - '+ company_abbr}
-	for payment_mode in frappe.get_all('Mode of Payment', fields = ["name", "type"]):
+	for payment_mode in frappe.get_all_with_user_permissions('Mode of Payment', fields = ["name", "type"]):
 		if payment_mode.type:
 			mop = frappe.get_doc('Mode of Payment', payment_mode.name)
 			mop.append('accounts', {
@@ -365,7 +365,7 @@ def setup_account_to_expense_type():
 		doc.save(ignore_permissions=True)
 
 def setup_budget():
-	fiscal_years = frappe.get_all("Fiscal Year", order_by="year_start_date")[-2:]
+	fiscal_years = frappe.get_all_with_user_permissions("Fiscal Year", order_by="year_start_date")[-2:]
 
 	for fy in fiscal_years:
 		budget = frappe.new_doc("Budget")

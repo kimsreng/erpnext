@@ -7,6 +7,7 @@ import frappe
 from frappe import _
 
 from erpnext.stock.doctype.warehouse.warehouse import get_child_warehouses
+from frappe.desk.reportview import get_match_cond_for_reports
 
 # and bom_no is not null and bom_no !=''
 
@@ -74,10 +75,11 @@ class ProductionPlanReport(object):
 		order_by = " ORDER BY %s" % (order_mapper[self.filters.based_on][self.filters.order_by])
 
 		self.orders = frappe.db.sql(""" SELECT {fields} from {doctype}
-			WHERE {filters} {order_by}""".format(
+			WHERE {filters} {perm_cond} {order_by}""".format(
 				doctype = doctype,
 				filters = filters,
 				order_by = order_by,
+				perm_cond = get_match_cond_for_reports(doctype),
 				fields = mapper.get(self.filters.based_on)["fields"]
 			), tuple(self.filters.docnames), as_dict=1)
 
@@ -102,7 +104,7 @@ class ProductionPlanReport(object):
 		if self.filters.based_on == "Work Order":
 			work_orders = [d.name for d in self.orders]
 
-			raw_materials = frappe.get_all("Work Order Item",
+			raw_materials = frappe.get_all_with_user_permissions("Work Order Item",
 				fields=["parent", "item_code", "item_name as raw_material_name",
 					"source_warehouse as warehouse", "required_qty"],
 				filters = {"docstatus": 1, "parent": ("in", work_orders), "source_warehouse": ("!=", "")}) or []
@@ -131,7 +133,8 @@ class ProductionPlanReport(object):
 					`tabBOM` as bom, `tab{1}` as bom_item
 				WHERE
 					bom_item.parent in ({2}) and bom_item.parent = bom.name and bom.docstatus = 1
-			""".format(qty_field, bom_doctype, ','.join(["%s"] * len(bom_nos))), tuple(bom_nos), as_dict=1)
+					{perm_cond}
+			""".format(qty_field, bom_doctype, ','.join(["%s"] * len(bom_nos)), perm_cond=get_match_cond_for_reports("BOM", "bom")), tuple(bom_nos), as_dict=1)
 
 		if not raw_materials: return
 
@@ -148,7 +151,7 @@ class ProductionPlanReport(object):
 		if not (self.orders and self.item_codes): return
 
 		self.item_details = {}
-		for d in frappe.get_all("Item Default", fields = ["parent", "default_warehouse"],
+		for d in frappe.get_all_with_user_permissions("Item Default", fields = ["parent", "default_warehouse"],
 			filters = {"company": self.filters.company, "parent": ("in", self.item_codes)}):
 			self.item_details[d.parent] = d
 
@@ -161,7 +164,7 @@ class ProductionPlanReport(object):
 			self.mrp_warehouses.extend(get_child_warehouses(self.filters.raw_material_warehouse))
 			self.warehouses.extend(self.mrp_warehouses)
 
-		for d in frappe.get_all("Bin",
+		for d in frappe.get_all_with_user_permissions("Bin",
 			fields=["warehouse", "item_code", "actual_qty", "ordered_qty", "projected_qty"],
 			filters = {"item_code": ("in", self.item_codes), "warehouse": ("in", self.warehouses)}):
 			key = (d.item_code, d.warehouse)
@@ -173,7 +176,7 @@ class ProductionPlanReport(object):
 
 		self.purchase_details = {}
 
-		for d in frappe.get_all("Purchase Order Item",
+		for d in frappe.get_all_with_user_permissions("Purchase Order Item",
 			fields=["item_code", "min(schedule_date) as arrival_date", "qty as arrival_qty", "warehouse"],
 			filters = {"item_code": ("in", self.item_codes), "warehouse": ("in", self.warehouses)},
 			group_by = "item_code, warehouse"):

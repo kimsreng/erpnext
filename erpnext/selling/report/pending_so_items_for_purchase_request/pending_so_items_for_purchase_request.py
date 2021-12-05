@@ -114,7 +114,7 @@ def get_data():
 		""", as_dict = 1)
 
 	sales_orders = [row.name for row in sales_order_entry]
-	mr_records = frappe.get_all("Material Request Item",
+	mr_records = frappe.get_all_with_user_permissions("Material Request Item",
 		{"sales_order": ("in", sales_orders), "docstatus": 1},
 		["parent", "qty", "sales_order", "item_code"])
 
@@ -183,14 +183,14 @@ def get_data():
 	return pending_so
 
 def get_items_with_product_bundle(item_list):
-	bundled_items = frappe.get_all("Product Bundle", filters = [
+	bundled_items = frappe.get_all_with_user_permissions("Product Bundle", filters = [
 		("new_item_code", "IN", item_list)
 	], fields = ["new_item_code"])
 
 	return [d.new_item_code for d in bundled_items]
 
 def get_packed_items(sales_order_list):
-	packed_items = frappe.get_all("Packed Item", filters = [
+	packed_items = frappe.get_all_with_user_permissions("Packed Item", filters = [
 		("parent", "IN", sales_order_list)
 	], fields = ["parent_item", "item_code", "qty", "item_name", "description", "parent"])
 

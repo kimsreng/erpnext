@@ -17,7 +17,7 @@ def get_data(item):
 		return []
 	item_dicts = []
 
-	variant_results = frappe.db.get_all(
+	variant_results = frappe.get_all_with_user_permissions(
 		"Item",
 		fields=["name"],
 		filters={
@@ -129,7 +129,7 @@ def get_columns(item):
 	return columns
 
 def get_open_sales_orders_count(variants_list):
-	open_sales_orders = frappe.db.get_list(
+	open_sales_orders = frappe.get_all_with_user_permissions(
 		"Sales Order",
 		fields=[
 			"name",
@@ -153,7 +153,7 @@ def get_open_sales_orders_count(variants_list):
 	return order_count_map
 
 def get_stock_details_map(variant_list):
-	stock_details = frappe.db.get_all(
+	stock_details = frappe.get_all_with_user_permissions(
 		"Bin",
 		fields=[
 			"sum(planned_qty) as planned_qty",
@@ -178,7 +178,7 @@ def get_stock_details_map(variant_list):
 	return stock_details_map
 
 def get_buying_price_map(variant_list):
-	buying = frappe.db.get_all(
+	buying = frappe.get_all_with_user_permissions(
 		"Item Price",
 		fields=[
 			"avg(price_list_rate) as avg_rate",
@@ -198,7 +198,7 @@ def get_buying_price_map(variant_list):
 	return buying_price_map
 
 def get_selling_price_map(variant_list):
-	selling = frappe.db.get_all(
+	selling = frappe.get_all_with_user_permissions(
 		"Item Price",
 		fields=[
 			"avg(price_list_rate) as avg_rate",
@@ -218,7 +218,7 @@ def get_selling_price_map(variant_list):
 	return selling_price_map
 
 def get_attribute_values_map(variant_list):
-	attribute_list = frappe.db.get_all(
+	attribute_list = frappe.get_all_with_user_permissions(
 		"Item Variant Attribute",
 		fields=[
 			"attribute",

@@ -8,7 +8,7 @@ from collections import defaultdict
 import frappe
 from frappe import _
 from frappe.utils import cint, flt
-
+from frappe.desk.reportview import get_match_cond_for_reports
 from erpnext.setup.utils import get_exchange_rate
 
 
@@ -61,7 +61,8 @@ def get_data(filters, conditions):
 			AND sq.company = %(company)s
 			AND sq.transaction_date between %(from_date)s and %(to_date)s
 			{0}
-			order by sq.transaction_date, sqi.item_code""".format(conditions), filters, as_dict=1)
+			{permission_cond}
+			order by sq.transaction_date, sqi.item_code""".format(conditions, permission_cond=get_match_cond_for_reports("Supplier Quotation","sq")), filters, as_dict=1)
 
 	return supplier_quotation_data
 

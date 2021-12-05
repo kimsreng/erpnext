@@ -184,7 +184,7 @@ def get_unmarked_days(employee, month):
 	month_start, month_end = dates_of_month[0], dates_of_month[length-1]
 
 
-	records = frappe.get_all("Attendance", fields = ['attendance_date', 'employee'] , filters = [
+	records = frappe.get_all_with_user_permissions("Attendance", fields = ['attendance_date', 'employee'] , filters = [
 		["attendance_date", ">=", month_start],
 		["attendance_date", "<=", month_end],
 		["employee", "=", employee],

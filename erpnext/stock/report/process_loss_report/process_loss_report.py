@@ -5,6 +5,7 @@ from typing import Dict, List, Tuple
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 
 Filters = frappe._dict
 Row = frappe._dict
@@ -109,9 +110,10 @@ def run_query(query_args: QueryArgs) -> Data:
 			AND se.posting_date BETWEEN %(from_date)s AND %(to_date)s
 			{item_filter}
 			{work_order_filter}
+			{permission_cond}
 		GROUP BY
 			se.work_order
-	""".format(**query_args), query_args, as_dict=1, debug=1)
+	""".format(**query_args, permission_cond=get_match_cond_for_reports("Stock Entry", "se")), query_args, as_dict=1, debug=1)
 
 def update_data_with_total_pl_value(data: Data) -> None:
 	for row in data:

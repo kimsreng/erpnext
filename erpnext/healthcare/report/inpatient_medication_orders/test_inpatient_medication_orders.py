@@ -118,12 +118,12 @@ class TestInpatientMedicationOrders(unittest.TestCase):
 			self.ip_record.reload()
 			discharge_patient(self.ip_record, now_datetime())
 
-		for entry in frappe.get_all('Inpatient Medication Entry'):
+		for entry in frappe.get_all_with_user_permissions('Inpatient Medication Entry'):
 			doc = frappe.get_doc('Inpatient Medication Entry', entry.name)
 			doc.cancel()
 			doc.delete()
 
-		for entry in frappe.get_all('Inpatient Medication Order'):
+		for entry in frappe.get_all_with_user_permissions('Inpatient Medication Order'):
 			doc = frappe.get_doc('Inpatient Medication Order', entry.name)
 			doc.cancel()
 			doc.delete()

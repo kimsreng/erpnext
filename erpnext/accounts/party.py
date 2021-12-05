@@ -520,14 +520,14 @@ def get_dashboard_info(party_type, party, loyalty_program=None):
 
 	doctype = "Sales Invoice" if party_type=="Customer" else "Purchase Invoice"
 
-	companies = frappe.get_all(doctype, filters={
+	companies = frappe.get_all_with_user_permissions(doctype, filters={
 		'docstatus': 1,
 		party_type.lower(): party
 	}, distinct=1, fields=['company'])
 
 	company_wise_info = []
 
-	company_wise_grand_total = frappe.get_all(doctype,
+	company_wise_grand_total = frappe.get_all_with_user_permissions(doctype,
 		filters={
 			'docstatus': 1,
 			party_type.lower(): party,
@@ -540,7 +540,7 @@ def get_dashboard_info(party_type, party, loyalty_program=None):
 	loyalty_point_details = []
 
 	if party_type == "Customer":
-		loyalty_point_details = frappe._dict(frappe.get_all("Loyalty Point Entry",
+		loyalty_point_details = frappe._dict(frappe.get_all_with_user_permissions("Loyalty Point Entry",
 			filters={
 				'customer': party,
 				'expiry_date': ('>=', getdate()),

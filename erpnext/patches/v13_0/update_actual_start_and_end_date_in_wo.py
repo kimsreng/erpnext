@@ -13,7 +13,7 @@ def execute():
 	frappe.reload_doc("manufacturing", "doctype", "work_order_item")
 	frappe.reload_doc("manufacturing", "doctype", "job_card")
 
-	data = frappe.get_all("Work Order",
+	data = frappe.get_all_with_user_permissions("Work Order",
 		filters = {
 			"docstatus": 1,
 			"status": ("in", ["In Process", "Completed"])

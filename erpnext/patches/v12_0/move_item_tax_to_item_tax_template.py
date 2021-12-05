@@ -147,7 +147,7 @@ def get_company(company_abbr, parenttype=None, parent=None):
 		company = frappe.db.get_value("Company", filters={"abbr": company_abbr})
 
 	if not company:
-		companies = frappe.get_all('Company')
+		companies = frappe.get_all_with_user_permissions('Company')
 		if len(companies) == 1:
 			company = companies[0].name
 

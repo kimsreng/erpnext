@@ -47,13 +47,13 @@ class TestProductionPlan(unittest.TestCase):
 
 		pln = frappe.get_doc('Production Plan', pln.name)
 		self.assertTrue(pln.status, 'Material Requested')
-		material_requests = frappe.get_all('Material Request Item', fields = ['distinct parent'],
+		material_requests = frappe.get_all_with_user_permissions('Material Request Item', fields = ['distinct parent'],
 			filters = {'production_plan': pln.name}, as_list=1)
 
 		self.assertTrue(len(material_requests), 2)
 
 		pln.make_work_order()
-		work_orders = frappe.get_all('Work Order', fields = ['name'],
+		work_orders = frappe.get_all_with_user_permissions('Work Order', fields = ['name'],
 			filters = {'production_plan': pln.name}, as_list=1)
 
 		self.assertTrue(len(work_orders), len(pln.po_items))
@@ -74,7 +74,7 @@ class TestProductionPlan(unittest.TestCase):
 		plan = create_production_plan(item_code='Test Production Item 1', planned_start_date=planned_date)
 		plan.make_work_order()
 
-		work_orders = frappe.get_all('Work Order', fields = ['name', 'planned_start_date'],
+		work_orders = frappe.get_all_with_user_permissions('Work Order', fields = ['name', 'planned_start_date'],
 			filters = {'production_plan': plan.name})
 
 		self.assertEqual(work_orders[0].planned_start_date, planned_date)

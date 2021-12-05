@@ -20,9 +20,9 @@ class TestSalesPaymentSummary(unittest.TestCase):
 	@classmethod
 	def setUpClass(self):
 		create_records()
-		pes = frappe.get_all("Payment Entry")
-		jes = frappe.get_all("Journal Entry")
-		sis = frappe.get_all("Sales Invoice")
+		pes = frappe.get_all_with_user_permissions("Payment Entry")
+		jes = frappe.get_all_with_user_permissions("Journal Entry")
+		sis = frappe.get_all_with_user_permissions("Sales Invoice")
 		for pe in pes:
 			frappe.db.set_value("Payment Entry", pe.name, "docstatus", 2)
 		for je in jes:
@@ -57,7 +57,7 @@ class TestSalesPaymentSummary(unittest.TestCase):
 		self.assertTrue('Cash' in list(mop.values())[0])
 
 		# Cancel all Cash payment entry and check if this mode of payment is still fetched.
-		payment_entries = frappe.get_all("Payment Entry", filters={"mode_of_payment": "Cash", "docstatus": 1}, fields=["name", "docstatus"])
+		payment_entries = frappe.get_all_with_user_permissions("Payment Entry", filters={"mode_of_payment": "Cash", "docstatus": 1}, fields=["name", "docstatus"])
 		for payment_entry in payment_entries:
 			pe = frappe.get_doc("Payment Entry", payment_entry.name)
 			pe.cancel()
@@ -96,7 +96,7 @@ class TestSalesPaymentSummary(unittest.TestCase):
 				cc_init_amount = mopd_value[1]
 
 		# Cancel one Credit Card Payment Entry and check that it is not fetched in mode of payment details.
-		payment_entries = frappe.get_all("Payment Entry", filters={"mode_of_payment": "Credit Card", "docstatus": 1}, fields=["name", "docstatus"])
+		payment_entries = frappe.get_all_with_user_permissions("Payment Entry", filters={"mode_of_payment": "Credit Card", "docstatus": 1}, fields=["name", "docstatus"])
 		for payment_entry in payment_entries[:1]:
 			pe = frappe.get_doc("Payment Entry", payment_entry.name)
 			pe.cancel()

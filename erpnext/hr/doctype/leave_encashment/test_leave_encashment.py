@@ -70,7 +70,7 @@ class TestLeaveEncashment(unittest.TestCase):
 		leave_encashment.submit()
 
 		# assert links
-		add_sal = frappe.get_all("Additional Salary", filters = {"ref_docname": leave_encashment.name})[0]
+		add_sal = frappe.get_all_with_user_permissions("Additional Salary", filters = {"ref_docname": leave_encashment.name})[0]
 		self.assertTrue(add_sal)
 
 	def test_creation_of_leave_ledger_entry_on_submit(self):
@@ -86,7 +86,7 @@ class TestLeaveEncashment(unittest.TestCase):
 
 		leave_encashment.submit()
 
-		leave_ledger_entry = frappe.get_all('Leave Ledger Entry', fields='*', filters=dict(transaction_name=leave_encashment.name))
+		leave_ledger_entry = frappe.get_all_with_user_permissions('Leave Ledger Entry', fields='*', filters=dict(transaction_name=leave_encashment.name))
 
 		self.assertEqual(len(leave_ledger_entry), 1)
 		self.assertEqual(leave_ledger_entry[0].employee, leave_encashment.employee)

@@ -378,7 +378,7 @@ class PaymentEntry(AccountsController):
 				invoice_payment_amount_map[key] += ref.allocated_amount
 
 				if not invoice_paid_amount_map.get(key):
-					payment_schedule = frappe.get_all(
+					payment_schedule = frappe.get_all_with_user_permissions(
 						'Payment Schedule',
 						filters={'parent': ref.reference_name},
 						fields=['paid_amount', 'payment_amount', 'payment_term', 'discount', 'outstanding']
@@ -1123,7 +1123,7 @@ def split_invoices_based_on_payment_terms(outstanding_invoices):
 				allocate_payment_based_on_payment_terms = frappe.db.get_value(
 					'Payment Terms Template', payment_term_template, 'allocate_payment_based_on_payment_terms')
 				if allocate_payment_based_on_payment_terms:
-					payment_schedule = frappe.get_all('Payment Schedule', filters={'parent': d.voucher_no}, fields=["*"])
+					payment_schedule = frappe.get_all_with_user_permissions('Payment Schedule', filters={'parent': d.voucher_no}, fields=["*"])
 
 					for payment_term in payment_schedule:
 						if payment_term.outstanding > 0.1:

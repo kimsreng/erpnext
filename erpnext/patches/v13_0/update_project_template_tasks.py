@@ -21,7 +21,7 @@ def execute():
 		property_setter_doc.value += "\nTemplate"
 		property_setter_doc.save()
 
-	for template_name in frappe.get_all('Project Template'):
+	for template_name in frappe.get_all_with_user_permissions('Project Template'):
 		template = frappe.get_doc("Project Template", template_name.name)
 		replace_tasks = False
 		new_tasks = []

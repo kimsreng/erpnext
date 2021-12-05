@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 
 
 def execute(filters=None):
@@ -144,8 +145,9 @@ def get_data(filters):
 			company = %(company)s
 			AND `tabLead`.creation BETWEEN %(from_date)s AND %(to_date)s
 			{conditions}
+			{permission_cond}
 		ORDER BY
-			`tabLead`.creation asc """.format(conditions=get_conditions(filters)), filters, as_dict=1)
+			`tabLead`.creation asc """.format(conditions=get_conditions(filters), permission_cond=get_match_cond_for_reports("Lead")), filters, as_dict=1)
 
 def get_conditions(filters) :
 	conditions = []

@@ -28,7 +28,7 @@ class TestProject(unittest.TestCase):
 
 		template = make_project_template("Test Project Template - No Parent and Dependend Tasks", [task1])
 		project = get_project(project_name, template)
-		tasks = frappe.get_all('Task', ['subject','exp_end_date','depends_on_tasks'], dict(project=project.name), order_by='creation asc')
+		tasks = frappe.get_all_with_user_permissions('Task', ['subject','exp_end_date','depends_on_tasks'], dict(project=project.name), order_by='creation asc')
 
 		self.assertEqual(tasks[0].subject, 'Test Template Task with No Parent and Dependency')
 		self.assertEqual(getdate(tasks[0].exp_end_date), calculate_end_date(project, 5, 3))
@@ -57,7 +57,7 @@ class TestProject(unittest.TestCase):
 
 		template = make_project_template("Test Project Template  - Tasks with Parent-Child Relation", [task1, task2, task3])
 		project = get_project(project_name, template)
-		tasks = frappe.get_all('Task', ['subject','exp_end_date','depends_on_tasks', 'name', 'parent_task'], dict(project=project.name), order_by='creation asc')
+		tasks = frappe.get_all_with_user_permissions('Task', ['subject','exp_end_date','depends_on_tasks', 'name', 'parent_task'], dict(project=project.name), order_by='creation asc')
 
 		self.assertEqual(tasks[0].subject, 'Test Template Task Parent')
 		self.assertEqual(getdate(tasks[0].exp_end_date), calculate_end_date(project, 1, 10))
@@ -87,7 +87,7 @@ class TestProject(unittest.TestCase):
 
 		template = make_project_template("Test Project with Template - Dependent Tasks", [task1, task2])
 		project = get_project(project_name, template)
-		tasks = frappe.get_all('Task', ['subject','exp_end_date','depends_on_tasks', 'name'], dict(project=project.name), order_by='creation asc')
+		tasks = frappe.get_all_with_user_permissions('Task', ['subject','exp_end_date','depends_on_tasks', 'name'], dict(project=project.name), order_by='creation asc')
 
 		self.assertEqual(tasks[1].subject, 'Test Template Task with Dependency')
 		self.assertEqual(getdate(tasks[1].exp_end_date), calculate_end_date(project, 2, 2))

@@ -395,7 +395,7 @@ class TestWorkOrder(unittest.TestCase):
 		ste.submit()
 		stock_entries.append(ste)
 
-		job_cards = frappe.get_all('Job Card', filters = {'work_order': work_order.name}, order_by='creation asc')
+		job_cards = frappe.get_all_with_user_permissions('Job Card', filters = {'work_order': work_order.name}, order_by='creation asc')
 		self.assertEqual(len(job_cards), len(bom.operations))
 
 		for i, job_card in enumerate(job_cards):

@@ -4,6 +4,7 @@
 from __future__ import unicode_literals
 
 import frappe
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import cint
 
 
@@ -35,8 +36,9 @@ def get_item_list(wo_list, filters):
 					bom.name = bom_item.parent
 					and bom_item.item_code = %(item_code)s
 					and bom.name = %(bom)s
+					{perm_cond}
 				GROUP BY
-					bom_item.item_code""",
+					bom_item.item_code""".format(perm_cond=get_match_cond_for_reports("BOM", "bom")),
 			{"bom": wo_details.bom_no, "warehouse": wo_item_details.source_warehouse,
 				"filterhouse": filters.warehouse, "item_code": wo_item_details.item_code}, as_dict=1)
 
@@ -74,7 +76,7 @@ def get_item_list(wo_list, filters):
 	return out
 
 def get_work_orders():
-	out =  frappe.get_all("Work Order", filters={"docstatus": 1, "status": ( "!=","Completed")},
+	out =  frappe.get_all_with_user_permissions("Work Order", filters={"docstatus": 1, "status": ( "!=","Completed")},
 		fields=["name","status", "bom_no", "qty", "produced_qty"], order_by='name')
 
 	return out

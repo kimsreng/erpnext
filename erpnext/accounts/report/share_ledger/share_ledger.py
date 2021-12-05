@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 import frappe
 from frappe import _
 from frappe import permissions
-from frappe.desk.reportview import get_match_cond
+from frappe.desk.reportview import get_match_cond_for_reports
 
 
 def execute(filters=None):
@@ -61,5 +61,5 @@ def get_all_transfers(date, shareholder):
 	return frappe.db.sql("""SELECT * FROM `tabShare Transfer`
 		WHERE ((DATE(date) <= %(date)s AND from_shareholder = %(shareholder)s {condition})
 		OR (DATE(date) <= %(date)s AND to_shareholder = %(shareholder)s {condition})) {permission_cond}
-		ORDER BY date""".format(condition=condition, permission_cond=get_match_cond("Share Transfer")),
+		ORDER BY date""".format(condition=condition, permission_cond=get_match_cond_for_reports("Share Transfer")),
 		{'date': date, 'shareholder': shareholder}, as_dict=1)

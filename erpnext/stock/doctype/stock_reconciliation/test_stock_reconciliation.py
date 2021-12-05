@@ -182,7 +182,7 @@ class TestStockReconciliation(ERPNextTestCase):
 		sr.save()
 		sr.submit()
 
-		sle_entries = frappe.get_all('Stock Ledger Entry', filters= {'voucher_no': sr.name},
+		sle_entries = frappe.get_all_with_user_permissions('Stock Ledger Entry', filters= {'voucher_no': sr.name},
 			fields = ['name', 'incoming_rate'])
 
 		self.assertEqual(len(sle_entries), 1)
@@ -462,7 +462,7 @@ def create_stock_reconciliation(**args):
 	sr.set_posting_time = 1
 	sr.company = args.company or "_Test Company"
 	sr.expense_account = args.expense_account or \
-		("Stock Adjustment - _TC" if frappe.get_all("Stock Ledger Entry") else "Temporary Opening - _TC")
+		("Stock Adjustment - _TC" if frappe.get_all_with_user_permissions("Stock Ledger Entry") else "Temporary Opening - _TC")
 	sr.cost_center = args.cost_center \
 		or frappe.get_cached_value("Company", sr.company, "cost_center") \
 		or "_Test Cost Center - _TC"
@@ -490,7 +490,7 @@ def set_valuation_method(item_code, valuation_method):
 
 	frappe.db.set_value("Item", item_code, "valuation_method", valuation_method)
 
-	for warehouse in frappe.get_all("Warehouse", filters={"company": "_Test Company"}, fields=["name", "is_group"]):
+	for warehouse in frappe.get_all_with_user_permissions("Warehouse", filters={"company": "_Test Company"}, fields=["name", "is_group"]):
 		if not warehouse.is_group:
 			update_entries_after({
 				"item_code": item_code,

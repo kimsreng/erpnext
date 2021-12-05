@@ -76,7 +76,7 @@ class StockSettings(Document):
 
 
 def clean_all_descriptions():
-	for item in frappe.get_all('Item', ['name', 'description']):
+	for item in frappe.get_all_with_user_permissions('Item', ['name', 'description']):
 		if item.description:
 			clean_description = clean_html(item.description)
 		if item.description != clean_description:

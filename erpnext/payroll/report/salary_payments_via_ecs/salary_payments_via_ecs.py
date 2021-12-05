@@ -7,6 +7,7 @@ import frappe
 from frappe import _
 
 import erpnext
+from frappe.desk.reportview import get_match_cond_for_reports
 
 
 def execute(filters=None):
@@ -105,7 +106,7 @@ def get_data(filters):
 		fields += ["ifsc_code", "micr_code"]
 
 
-	employee_details = frappe.get_list("Employee", fields = fields)
+	employee_details = frappe.get_all_with_user_permissions("Employee", fields = fields)
 	employee_data_dict = {}
 
 	for d in employee_details:
@@ -124,7 +125,7 @@ def get_data(filters):
 
 	entry = frappe.db.sql(""" select employee, employee_name, gross_pay
 		from `tabSalary Slip`
-		where docstatus = 1 %s """
+		where docstatus = 1 %s  {permission_cond}""".format(permission_cond=get_match_cond_for_reports("Salary Slip"))
 		%(conditions), as_dict =1)
 
 	for d in entry:

@@ -5,7 +5,7 @@ from erpnext.regional.italy.setup import make_custom_fields
 
 
 def execute():
-	company = frappe.get_all('Company', filters = {'country': 'Italy'})
+	company = frappe.get_all_with_user_permissions('Company', filters = {'country': 'Italy'})
 
 	if not company:
 		return

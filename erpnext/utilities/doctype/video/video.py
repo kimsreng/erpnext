@@ -136,7 +136,7 @@ def batch_update_youtube_data():
 					comment_count = %(comment_count)s
 				WHERE youtube_video_id = %(video_id)s""", stats)
 
-	video_list = frappe.get_all("Video", fields=["youtube_video_id"])
+	video_list = frappe.get_all_with_user_permissions("Video", fields=["youtube_video_id"])
 	if len(video_list) > 50:
 		# Update in batches of 50
 		start, end = 0, 50

@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
-from frappe.desk.reportview import get_match_cond
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import add_to_date
 
 from erpnext.accounts.report.financial_statements import get_columns, get_data, get_period_list
@@ -20,7 +20,7 @@ def get_mapper_for(mappers, position):
 
 
 def get_mappers_from_db():
-	return frappe.get_all(
+	return frappe.get_all_with_user_permissions(
 		'Cash Flow Mapper',
 		fields=[
 			'section_name', 'section_header', 'section_leader', 'section_subtotal',
@@ -405,7 +405,7 @@ def _get_account_type_based_data(filters, account_names, period_list, accumulate
 					and account in ( SELECT name FROM tabAccount WHERE name IN (%s)
 					OR parent_account IN (%s))
 					{permission_cond}
-			""".format(permission_cond=get_match_cond("GL Entry`")), (company, start, end, accounts, accounts))
+			""".format(permission_cond=get_match_cond_for_reports("GL Entry`")), (company, start, end, accounts, accounts))
 		else:
 			gl_sum = frappe.db.sql_list("""
 				select sum(credit) - sum(debit)
@@ -415,7 +415,7 @@ def _get_account_type_based_data(filters, account_names, period_list, accumulate
 					and account in ( SELECT name FROM tabAccount WHERE name IN (%s)
 					OR parent_account IN (%s))
 					{permission_cond}
-			""".format(permission_cond=get_match_cond("GL Entry`")), (company, start_date if accumulated_values else period['from_date'],
+			""".format(permission_cond=get_match_cond_for_reports("GL Entry`")), (company, start_date if accumulated_values else period['from_date'],
 				period['to_date'], accounts, accounts))
 
 		if gl_sum and gl_sum[0]:

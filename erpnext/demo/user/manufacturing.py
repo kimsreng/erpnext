@@ -18,7 +18,7 @@ def work():
 	if random.random() < 0.3: return
 
 	frappe.set_user(frappe.db.get_global('demo_manufacturing_user'))
-	if not frappe.get_all('Sales Order'): return
+	if not frappe.get_all_with_user_permissions('Sales Order'): return
 
 	ppt = frappe.new_doc("Production Plan")
 	ppt.company = erpnext.get_default_company()
@@ -57,7 +57,7 @@ def work():
 		for pro in query_report.run("Work Orders in Progress")["result"][:how_many("Stock Entry for FG")]:
 			make_stock_entry_from_pro(pro[0], "Manufacture")
 
-	for bom in frappe.get_all('BOM', fields=['item'], filters = {'with_operations': 1}):
+	for bom in frappe.get_all_with_user_permissions('BOM', fields=['item'], filters = {'with_operations': 1}):
 		pro_order = make_wo_order_test_record(item=bom.item, qty=2,
 			source_warehouse="Stores - WPL", wip_warehouse = "Work in Progress - WPL",
 			fg_warehouse = "Stores - WPL", company = erpnext.get_default_company(),
@@ -92,12 +92,12 @@ def make_stock_entry_from_pro(pro_id, purpose):
 		frappe.db.rollback()
 
 def submit_job_cards():
-	work_orders = frappe.get_all("Work Order", ["name", "creation"], {"docstatus": 1, "status": "Not Started"})
+	work_orders = frappe.get_all_with_user_permissions("Work Order", ["name", "creation"], {"docstatus": 1, "status": "Not Started"})
 	work_order = random.choice(work_orders)
 	# for work_order in work_orders:
 	start_date = work_order.creation
 	work_order = frappe.get_doc("Work Order", work_order.name)
-	job = frappe.get_all("Job Card", ["name", "operation", "work_order"],
+	job = frappe.get_all_with_user_permissions("Job Card", ["name", "operation", "work_order"],
 		{"docstatus": 0, "work_order": work_order.name})
 
 	if not job: return

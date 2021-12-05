@@ -4,6 +4,7 @@
 from __future__ import unicode_literals
 
 import frappe
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import flt
 
 
@@ -42,8 +43,7 @@ def get_columns():
 
 def get_item_details():
 	item_map = {}
-	for item in frappe.db.sql("""SELECT name, item_name, description, stock_uom
-								from `tabItem`""", as_dict=1):
+	for item in frappe.get_all_with_user_permissions("Item", fields=["name", "item_name","description","stock_uom"]):
 		item_map.setdefault(item.name, item)
 	return item_map
 
@@ -54,7 +54,7 @@ def get_item_warehouse_quantity_map():
 					 FROM tabBin AS bi, (SELECT pb.new_item_code as parent, b.item_code, b.qty, w.name
 										 FROM `tabProduct Bundle Item` b, `tabWarehouse` w,
 											  `tabProduct Bundle` pb
-										 where b.parent = pb.name) AS b
+										 where b.parent = pb.name {product_bdl_permission}) AS b
 					 WHERE bi.item_code = b.item_code
 						   AND bi.warehouse = b.name
 					 GROUP BY b.parent, b.item_code, bi.warehouse
@@ -63,13 +63,13 @@ def get_item_warehouse_quantity_map():
 					 FROM (SELECT pb.new_item_code as parent, b.item_code, b.qty, w.name
 						   FROM `tabProduct Bundle Item` b, `tabWarehouse` w,
 								`tabProduct Bundle` pb
-						   where b.parent = pb.name) AS b
+						   where b.parent = pb.name {product_bdl_permission}) AS b
 					 WHERE NOT EXISTS(SELECT *
 									  FROM `tabBin` AS bi
 									  WHERE bi.item_code = b.item_code
 											AND bi.warehouse = b.name)) AS r
 			   GROUP BY parent, warehouse
-			   HAVING MIN(qty) != 0"""
+			   HAVING MIN(qty) != 0""".format(product_bdl_permission=get_match_cond_for_reports("Product Bundle", "pb"))
 	result = frappe.db.sql(query, as_dict=1)
 	last_sbom = ""
 	sbom_map = {}

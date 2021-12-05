@@ -452,7 +452,7 @@ class TestItem(ERPNextTestCase):
 		self.assertEqual(variant.manufacturer_part_no, '007')
 
 	def test_stock_exists_against_template_item(self):
-		stock_item = frappe.get_all('Stock Ledger Entry', fields = ["item_code"], limit=1)
+		stock_item = frappe.get_all_with_user_permissions('Stock Ledger Entry', fields = ["item_code"], limit=1)
 		if stock_item:
 			item_code = stock_item[0].item_code
 

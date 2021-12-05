@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import flt
 
 
@@ -30,6 +31,8 @@ def get_rows(filters):
 		frappe.msgprint(msg)
 		return []
 
+	if conditions: conditions = f" AND {conditions}"
+
 	sql = """
 			SELECT
 				*
@@ -46,11 +49,10 @@ def get_rows(filters):
 						`tabSalary Slip Timesheet` as sst join `tabTimesheet` on tabTimesheet.name = sst.time_sheet
 						join `tabSales Invoice Timesheet` as sit on sit.time_sheet = tabTimesheet.name
 						join `tabSales Invoice` as si on si.name = sit.parent and si.status != "Cancelled"
-						join `tabSalary Slip` as ss on ss.name = sst.parent and ss.status != "Cancelled" """.format(standard_working_hours)
-	if conditions:
-		sql += """
-				WHERE
-					{0}) as t""".format(conditions)
+						join `tabSalary Slip` as ss on ss.name = sst.parent and ss.status != "Cancelled" 
+					WHERE 1=1 {permission_cond} {1}
+				) as t""".format(standard_working_hours, conditions, permission_cond=get_match_cond_for_reports("Timesheet"))
+
 	return frappe.db.sql(sql,filters, as_dict=True)
 
 def calculate_cost_and_profit(data):

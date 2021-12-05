@@ -10,7 +10,7 @@ def execute():
 	frappe.reload_doc('stock', 'doctype', 'quality_inspection_template')
 	frappe.reload_doc('stock', 'doctype', 'item')
 
-	for data in frappe.get_all('Item Quality Inspection Parameter',
+	for data in frappe.get_all_with_user_permissions('Item Quality Inspection Parameter',
 		fields = ["distinct parent"], filters = {'parenttype': 'Item'}):
 		qc_doc = frappe.new_doc("Quality Inspection Template")
 		qc_doc.quality_inspection_template_name = 'QIT/%s' % data.parent

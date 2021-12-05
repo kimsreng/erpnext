@@ -32,7 +32,7 @@ def get_last_interaction(contact=None, lead=None):
 			""".format(query_condition), values, as_dict=1)  # nosec
 
 	if lead:
-		last_communication = frappe.get_all('Communication', filters={
+		last_communication = frappe.get_all_with_user_permissions('Communication', filters={
 			'reference_doctype': 'Lead',
 			'reference_name': lead,
 			'sent_or_received': 'Received'
@@ -46,7 +46,7 @@ def get_last_interaction(contact=None, lead=None):
 	}
 
 def get_last_issue_from_customer(customer_name):
-	issues = frappe.get_all('Issue', {
+	issues = frappe.get_all_with_user_permissions('Issue', {
 		'customer': customer_name
 	}, ['name', 'subject', 'customer'], order_by='`creation` DESC', limit=1)
 
@@ -59,7 +59,7 @@ def get_scheduled_employees_for_popup(communication_medium):
 	now_time = frappe.utils.nowtime()
 	weekday = frappe.utils.get_weekday()
 
-	available_employee_groups = frappe.get_all("Communication Medium Timeslot", filters={
+	available_employee_groups = frappe.get_all_with_user_permissions("Communication Medium Timeslot", filters={
 		'day_of_week': weekday,
 		'parent': communication_medium,
 		'from_time': ['<=', now_time],
@@ -68,7 +68,7 @@ def get_scheduled_employees_for_popup(communication_medium):
 
 	available_employee_groups = tuple([emp.employee_group for emp in available_employee_groups])
 
-	employees = frappe.get_all('Employee Group Table', filters={
+	employees = frappe.get_all_with_user_permissions('Employee Group Table', filters={
 		'parent': ['in', available_employee_groups]
 	}, fields=['user_id'])
 

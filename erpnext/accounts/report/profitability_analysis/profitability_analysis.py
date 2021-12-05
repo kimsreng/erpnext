@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
-from frappe.desk.reportview import get_match_cond
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import cstr, flt
 
 from erpnext.accounts.report.financial_statements import (
@@ -32,9 +32,9 @@ def get_accounts_data(based_on, company):
 			select name, parent_cost_center as parent_account, cost_center_name as account_name, lft, rgt
 			from `tabCost Center` where company=%(company)s {permission_cond}
 			order by name
-			""".format(company=company, permission_cond=get_match_cond("Cost Center")),{"company": company}, as_dict=True)
+			""".format(company=company, permission_cond=get_match_cond_for_reports("Cost Center")),{"company": company}, as_dict=True)
 	elif based_on == 'project':
-		return frappe.get_all('Project', fields = ["name"], filters = {'company': company}, order_by = 'name')
+		return frappe.get_all_with_user_permissions('Project', fields = ["name"], filters = {'company': company}, order_by = 'name')
 	else:
 		filters = {}
 		doctype = frappe.unscrub(based_on)
@@ -43,7 +43,7 @@ def get_accounts_data(based_on, company):
 		if has_company:
 			filters.update({'company': company})
 
-		return frappe.get_all(doctype, fields = ["name"], filters = filters, order_by = 'name')
+		return frappe.get_all_with_user_permissions(doctype, fields = ["name"], filters = filters, order_by = 'name')
 
 def get_data(accounts, filters, based_on):
 	if not accounts:
@@ -217,7 +217,7 @@ def set_gl_entries_by_account(company, from_date, to_date, based_on, gl_entries_
 		and {based_on} is not null
 		{permission_cond}
 		order by {based_on}, posting_date
-		""".format(additional_conditions="\n".join(additional_conditions), based_on= based_on, permission_cond=get_match_cond("GL Entry")),
+		""".format(additional_conditions="\n".join(additional_conditions), based_on= based_on, permission_cond=get_match_cond_for_reports("GL Entry")),
 		{
 			"company": company,
 			"from_date": from_date,

@@ -56,7 +56,7 @@ class LoanSecurityPledge(Document):
 		else:
 			loan_security_type = self.securities[0].loan_security_type
 
-		ltv_ratio_map = frappe._dict(frappe.get_all("Loan Security Type",
+		ltv_ratio_map = frappe._dict(frappe.get_all_with_user_permissions("Loan Security Type",
 			fields=["name", "loan_to_value_ratio"], as_list=1))
 
 		ltv_ratio = ltv_ratio_map.get(loan_security_type)

@@ -22,7 +22,7 @@ def setup_item():
 		item.update(i)
 		if hasattr(item, 'item_defaults') and item.item_defaults[0].default_warehouse:
 			item.item_defaults[0].company = data.get("Retail").get('company_name')
-			warehouse = frappe.get_all('Warehouse', filters={'warehouse_name': item.item_defaults[0].default_warehouse}, limit=1)
+			warehouse = frappe.get_all_with_user_permissions('Warehouse', filters={'warehouse_name': item.item_defaults[0].default_warehouse}, limit=1)
 			if warehouse:
 				item.item_defaults[0].default_warehouse = warehouse[0].name
 		item.insert()

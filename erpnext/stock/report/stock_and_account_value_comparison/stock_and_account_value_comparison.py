@@ -51,7 +51,7 @@ def get_stock_ledger_data(report_filters, filters):
 
 		filters["warehouse"] = ("in", warehouses)
 
-	return frappe.get_all("Stock Ledger Entry", filters=filters,
+	return frappe.get_all_with_user_permissions("Stock Ledger Entry", filters=filters,
 		fields = ["name", "voucher_type", "voucher_no",
 			"sum(stock_value_difference) as stock_value", "posting_date", "posting_time"],
 		group_by = "voucher_type, voucher_no",
@@ -70,7 +70,7 @@ def get_gl_data(report_filters, filters):
 	if filters.get("warehouse"):
 		del filters["warehouse"]
 
-	gl_entries = frappe.get_all("GL Entry", filters=filters,
+	gl_entries = frappe.get_all_with_user_permissions("GL Entry", filters=filters,
 		fields = ["name", "voucher_type", "voucher_no",
 			"sum(debit_in_account_currency) - sum(credit_in_account_currency) as account_value"],
 		group_by = "voucher_type, voucher_no")

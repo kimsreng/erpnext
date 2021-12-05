@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import cstr, flt, formatdate, getdate
 
 from erpnext.accounts.report.financial_statements import (
@@ -67,17 +68,17 @@ def get_data(filters):
 
 	if group_by == "asset_category":
 		fields = ["asset_category", "gross_purchase_amount", "opening_accumulated_depreciation"]
-		assets_record = frappe.db.get_all("Asset", filters=conditions, fields=fields, group_by=group_by)
+		assets_record = frappe.get_all_with_user_permissions("Asset", filters=conditions, fields=fields, group_by=group_by)
 
 	elif group_by == "location":
 		fields = ["location", "gross_purchase_amount", "opening_accumulated_depreciation"]
-		assets_record = frappe.db.get_all("Asset", filters=conditions, fields=fields, group_by=group_by)
+		assets_record = frappe.get_all_with_user_permissions("Asset", filters=conditions, fields=fields, group_by=group_by)
 
 	else:
 		fields = ["name as asset_id", "asset_name", "status", "department", "cost_center", "purchase_receipt",
 			"asset_category", "purchase_date", "gross_purchase_amount", "location",
 			"available_for_use_date", "purchase_invoice", "opening_accumulated_depreciation"]
-		assets_record = frappe.db.get_all("Asset", filters=conditions, fields=fields)
+		assets_record = frappe.get_all_with_user_permissions("Asset", filters=conditions, fields=fields)
 
 	for asset in assets_record:
 		asset_value = asset.gross_purchase_amount - flt(asset.opening_accumulated_depreciation) \
@@ -137,14 +138,16 @@ def get_finance_book_value_map(filters):
 	date = filters.to_date if filters.filter_based_on == "Date Range" else filters.year_end_date
 
 	return frappe._dict(frappe.db.sql(''' Select
-		parent, SUM(depreciation_amount)
-		FROM `tabDepreciation Schedule`
+		ds.parent, SUM(depreciation_amount)
+		FROM `tabDepreciation Schedule` ds
+		INNER JOIN `tabAsset` ON ds.parent = `tabAsset`.name
 		WHERE
-			parentfield='schedules'
+			ds.parentfield='schedules'
 			AND schedule_date<=%s
 			AND journal_entry IS NOT NULL
 			AND ifnull(finance_book, '')=%s
-		GROUP BY parent''', (date, cstr(filters.finance_book or ''))))
+			{permission_cond}
+		GROUP BY ds.parent'''.format(permission_cond=get_match_cond_for_reports("Asset")), (date, cstr(filters.finance_book or ''))))
 
 def get_purchase_receipt_supplier_map():
 	return frappe._dict(frappe.db.sql(''' Select
@@ -154,7 +157,9 @@ def get_purchase_receipt_supplier_map():
 			pri.parent = pr.name
 			AND pri.is_fixed_asset=1
 			AND pr.docstatus=1
-			AND pr.is_return=0'''))
+			AND pr.is_return=0
+			{permission_cond}
+			'''.format(permission_cond=get_match_cond_for_reports("Purchase Receipt", "pr"))))
 
 def get_purchase_invoice_supplier_map():
 	return frappe._dict(frappe.db.sql(''' Select
@@ -164,7 +169,9 @@ def get_purchase_invoice_supplier_map():
 			pii.parent = pi.name
 			AND pii.is_fixed_asset=1
 			AND pi.docstatus=1
-			AND pi.is_return=0'''))
+			AND pi.is_return=0
+			{permission_cond}
+			'''.format(permission_cond=get_match_cond_for_reports("Purchase Invoice", "pi"))))
 
 def get_columns(filters):
 	if filters.get("group_by") in ["Asset Category", "Location"]:

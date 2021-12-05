@@ -426,7 +426,7 @@ class PayrollEntry(Document):
 
 	def get_count_employee_attendance(self, employee, start_date):
 		marked_days = 0
-		attendances = frappe.get_all("Attendance",
+		attendances = frappe.get_all_with_user_permissions("Attendance",
 			fields = ["count(*)"],
 			filters = {
 				"employee": employee,

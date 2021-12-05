@@ -138,7 +138,7 @@ def create_donation(donor, payment):
 
 
 def get_donor(email):
-	donors = frappe.get_all('Donor',
+	donors = frappe.get_all_with_user_permissions('Donor',
 		filters={'email': email},
 		order_by='creation desc')
 

@@ -12,7 +12,7 @@ from frappe.model.document import Document
 class WaterAnalysis(Document):
 	@frappe.whitelist()
 	def load_contents(self):
-		docs = frappe.get_all("Agriculture Analysis Criteria", filters={'linked_doctype':'Water Analysis'})
+		docs = frappe.get_all_with_user_permissions("Agriculture Analysis Criteria", filters={'linked_doctype':'Water Analysis'})
 		for doc in docs:
 			self.append('water_analysis_criteria', {'title': str(doc.name)})
 

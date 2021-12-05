@@ -45,7 +45,7 @@ class TestStudentLeaveApplication(unittest.TestCase):
 		leave_application = create_leave_application(from_date=today, to_date= add_days(today, 1), submit=0)
 
 		# holiday list validation
-		company = get_default_company() or frappe.get_all('Company')[0].name
+		company = get_default_company() or frappe.get_all_with_user_permissions('Company')[0].name
 		frappe.db.set_value('Company', company, 'default_holiday_list', '')
 		self.assertRaises(frappe.ValidationError, leave_application.save)
 
@@ -60,7 +60,7 @@ class TestStudentLeaveApplication(unittest.TestCase):
 		self.assertIsNone(frappe.db.exists('Student Attendance', {'leave_application': leave_application.name, 'date': add_days(today, 1)}))
 
 	def tearDown(self):
-		company = get_default_company() or frappe.get_all('Company')[0].name
+		company = get_default_company() or frappe.get_all_with_user_permissions('Company')[0].name
 		frappe.db.set_value('Company', company, 'default_holiday_list', '_Test Holiday List')
 
 
@@ -113,6 +113,6 @@ def create_holiday_list():
 			]
 		)).insert()
 
-	company = get_default_company() or frappe.get_all('Company')[0].name
+	company = get_default_company() or frappe.get_all_with_user_permissions('Company')[0].name
 	frappe.db.set_value('Company', company, 'default_holiday_list', holiday_list)
 	return holiday_list

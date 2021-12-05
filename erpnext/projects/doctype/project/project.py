@@ -398,7 +398,7 @@ def create_duplicate_project(prev_doc, project_name):
 	project.insert()
 
 	# fetch all the task linked with the old project
-	task_list = frappe.get_all("Task", filters={
+	task_list = frappe.get_all_with_user_permissions("Task", filters={
 		'project': prev_doc.get('name')
 	}, fields=['name'])
 
@@ -414,7 +414,7 @@ def create_duplicate_project(prev_doc, project_name):
 def get_projects_for_collect_progress(frequency, fields):
 	fields.extend(["name"])
 
-	return frappe.get_all("Project", fields = fields,
+	return frappe.get_all_with_user_permissions("Project", fields = fields,
 		filters = {'collect_progress': 1, 'frequency': frequency, 'status': 'Open'})
 
 def send_project_update_email_to_users(project):
@@ -445,9 +445,9 @@ def send_project_update_email_to_users(project):
 	)
 
 def collect_project_status():
-	for data in frappe.get_all("Project Update",
+	for data in frappe.get_all_with_user_permissions("Project Update",
 		{'date': today(), 'sent': 0}):
-		replies = frappe.get_all('Communication',
+		replies = frappe.get_all_with_user_permissions('Communication',
 			fields=['content', 'text_content', 'sender'],
 			filters=dict(reference_doctype="Project Update",
 				reference_name=data.name,
@@ -474,7 +474,7 @@ def collect_project_status():
 def send_project_status_email_to_users():
 	yesterday = add_days(today(), -1)
 
-	for d in frappe.get_all("Project Update",
+	for d in frappe.get_all_with_user_permissions("Project Update",
 		{'date': yesterday, 'sent': 0}):
 		doc = frappe.get_doc("Project Update", d.name)
 
@@ -544,7 +544,7 @@ def set_project_status(project, status):
 	project = frappe.get_doc('Project', project)
 	frappe.has_permission(doc = project, throw = True)
 
-	for task in frappe.get_all('Task', dict(project = project.name)):
+	for task in frappe.get_all_with_user_permissions('Task', dict(project = project.name)):
 		frappe.db.set_value('Task', task.name, 'status', status)
 
 	project.status = status

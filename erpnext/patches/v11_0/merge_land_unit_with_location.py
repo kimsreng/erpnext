@@ -33,7 +33,7 @@ def execute():
 		frappe.get_doc({"doctype": "Location", "is_group": True, "location_name": "All Land Units"}).insert(ignore_permissions=True)
 
 	if frappe.db.table_exists('Land Unit'):
-		land_units = frappe.get_all('Land Unit', fields=['*'], order_by='lft')
+		land_units = frappe.get_all_with_user_permissions('Land Unit', fields=['*'], order_by='lft')
 
 		for land_unit in land_units:
 			if not frappe.db.exists('Location', land_unit.get('land_unit_name')):

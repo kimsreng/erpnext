@@ -68,7 +68,7 @@ class TestCompensatoryLeaveRequest(unittest.TestCase):
 		compensatory_leave_request.submit()
 
 		filters = dict(transaction_name=compensatory_leave_request.leave_allocation)
-		leave_ledger_entry = frappe.get_all('Leave Ledger Entry', fields='*', filters=filters)
+		leave_ledger_entry = frappe.get_all_with_user_permissions('Leave Ledger Entry', fields='*', filters=filters)
 
 		self.assertEqual(len(leave_ledger_entry), 1)
 		self.assertEqual(leave_ledger_entry[0].employee, compensatory_leave_request.employee)
@@ -77,7 +77,7 @@ class TestCompensatoryLeaveRequest(unittest.TestCase):
 
 		# check reverse leave ledger entry on cancellation
 		compensatory_leave_request.cancel()
-		leave_ledger_entry = frappe.get_all('Leave Ledger Entry', fields='*', filters=filters, order_by = 'creation desc')
+		leave_ledger_entry = frappe.get_all_with_user_permissions('Leave Ledger Entry', fields='*', filters=filters, order_by = 'creation desc')
 
 		self.assertEqual(len(leave_ledger_entry), 2)
 		self.assertEqual(leave_ledger_entry[0].employee, compensatory_leave_request.employee)

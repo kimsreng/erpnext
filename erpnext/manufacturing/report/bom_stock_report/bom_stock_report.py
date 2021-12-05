@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 
 
 def execute(filters=None):
@@ -73,11 +74,12 @@ def get_bom_stock(filters):
 				{conditions}
 			WHERE
 				bom_item.parent = {bom} and bom_item.parenttype='BOM'
-
+				{permission_cond}
 			GROUP BY bom_item.item_code""".format(
 				qty_field=qty_field,
 				table=table,
 				conditions=conditions,
 				bom=frappe.db.escape(bom),
+				permission_cond=get_match_cond_for_reports("BOM", "bom"),
 				qty_to_produce=qty_to_produce or 1)
 			)

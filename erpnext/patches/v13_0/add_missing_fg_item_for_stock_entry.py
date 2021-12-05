@@ -26,7 +26,7 @@ def execute():
 
 	fields = ['name', 'production_item']
 
-	work_orders = [d.name for d in frappe.get_all('Work Order', filters = filters, fields=fields)]
+	work_orders = [d.name for d in frappe.get_all_with_user_permissions('Work Order', filters = filters, fields=fields)]
 
 	if not work_orders:
 		return

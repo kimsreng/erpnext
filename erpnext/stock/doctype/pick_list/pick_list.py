@@ -209,7 +209,7 @@ def get_available_item_locations_for_serialized_item(item_code, from_warehouses,
 	if from_warehouses:
 		filters.warehouse = ['in', from_warehouses]
 
-	serial_nos = frappe.get_all('Serial No',
+	serial_nos = frappe.get_all_with_user_permissions('Serial No',
 		fields=['name', 'warehouse'],
 		filters=filters,
 		limit=required_qty,
@@ -303,7 +303,7 @@ def get_available_item_locations_for_other_item(item_code, from_warehouses, requ
 	if from_warehouses:
 		filters.warehouse = ['in', from_warehouses]
 
-	item_locations = frappe.get_all('Bin',
+	item_locations = frappe.get_all_with_user_permissions('Bin',
 		fields=['warehouse', 'actual_qty as qty'],
 		filters=filters,
 		limit=required_qty,

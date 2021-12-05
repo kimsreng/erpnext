@@ -121,7 +121,7 @@ class Opportunity(TransactionBase):
 
 	def has_active_quotation(self):
 		if not self.with_items:
-			return frappe.get_all('Quotation',
+			return frappe.get_all_with_user_permissions('Quotation',
 				{
 					'opportunity': self.name,
 					'status': ("not in", ['Lost', 'Closed']),
@@ -136,7 +136,7 @@ class Opportunity(TransactionBase):
 
 	def has_ordered_quotation(self):
 		if not self.with_items:
-			return frappe.get_all('Quotation',
+			return frappe.get_all_with_user_permissions('Quotation',
 				{
 					'opportunity': self.name,
 					'status': 'Ordered',

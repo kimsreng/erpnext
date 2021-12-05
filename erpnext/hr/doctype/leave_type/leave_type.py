@@ -12,7 +12,7 @@ from frappe.utils import today
 class LeaveType(Document):
 	def validate(self):
 		if self.is_lwp:
-			leave_allocation = frappe.get_all("Leave Allocation", filters={
+			leave_allocation = frappe.get_all_with_user_permissions("Leave Allocation", filters={
 				'leave_type': self.name,
 				'from_date': ("<=", today()),
 				'to_date': (">=", today())

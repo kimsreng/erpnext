@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import flt
 
 from erpnext.accounts.report.financial_statements import get_period_list
@@ -117,7 +118,8 @@ def get_vehicle_log_data(filters):
 			and log.docstatus = 1
 			and date between %(start_date)s and %(end_date)s
 			{0}
-		ORDER BY date""".format(conditions), values, as_dict=1)
+			{permission_cond}
+		ORDER BY date""".format(conditions, permission_cond=get_match_cond_for_reports("Vehicle")), values, as_dict=1)
 
 	for row in data:
 		row['service_expense'] = get_service_expense(row.log_name)

@@ -8,7 +8,7 @@ import frappe
 
 def execute():
 	frappe.reload_doc('core', 'doctype', 'has_role')
-	company = frappe.get_all('Company', filters = {'country': 'India'})
+	company = frappe.get_all_with_user_permissions('Company', filters = {'country': 'India'})
 
 	if not company:
 		frappe.db.sql("""

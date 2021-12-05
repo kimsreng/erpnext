@@ -30,7 +30,7 @@ def setup_workstation():
 		frappe.get_doc({
 			"doctype": "Workstation",
 			"workstation_name": w,
-			"holiday_list": frappe.get_all("Holiday List")[0].name,
+			"holiday_list": frappe.get_all_with_user_permissions("Holiday List")[0].name,
 			"hour_rate_consumable": int(random.random() * 20),
 			"hour_rate_electricity": int(random.random() * 10),
 			"hour_rate_labour": int(random.random() * 40),
@@ -73,7 +73,7 @@ def setup_item():
 		item.update(i)
 		if hasattr(item, 'item_defaults') and item.item_defaults[0].default_warehouse:
 			item.item_defaults[0].company = data.get("Manufacturing").get('company_name')
-			warehouse = frappe.get_all('Warehouse', filters={'warehouse_name': item.item_defaults[0].default_warehouse}, limit=1)
+			warehouse = frappe.get_all_with_user_permissions('Warehouse', filters={'warehouse_name': item.item_defaults[0].default_warehouse}, limit=1)
 			if warehouse:
 				item.item_defaults[0].default_warehouse = warehouse[0].name
 		item.insert()

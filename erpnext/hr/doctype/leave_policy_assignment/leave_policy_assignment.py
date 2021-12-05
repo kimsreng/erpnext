@@ -30,7 +30,7 @@ class LeavePolicyAssignment(Document):
 			self.effective_from = frappe.db.get_value("Employee", self.employee, "date_of_joining")
 
 	def validate_policy_assignment_overlap(self):
-		leave_policy_assignments = frappe.get_all("Leave Policy Assignment", filters = {
+		leave_policy_assignments = frappe.get_all_with_user_permissions("Leave Policy Assignment", filters = {
 			"employee": self.employee,
 			"name": ("!=", self.name),
 			"docstatus": 1,
@@ -170,7 +170,7 @@ def create_assignment_for_multiple_employees(employees, data):
 
 def get_leave_type_details():
 	leave_type_details = frappe._dict()
-	leave_types = frappe.get_all("Leave Type",
+	leave_types = frappe.get_all_with_user_permissions("Leave Type",
 		fields=["name", "is_lwp", "is_earned_leave", "is_compensatory",
 			"is_carry_forward", "expire_carry_forwarded_leaves_after_days", "earned_leave_frequency", "rounding"])
 	for d in leave_types:

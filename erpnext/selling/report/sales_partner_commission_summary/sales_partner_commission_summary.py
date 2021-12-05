@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _, msgprint
+from frappe.desk.reportview import get_match_cond_for_reports
 
 
 def execute(filters=None):
@@ -89,8 +90,10 @@ def get_entries(filters):
 			`tab{1}`
 		WHERE
 			{2} and docstatus = 1 and sales_partner is not null
-			and sales_partner != '' order by name desc, sales_partner
-		""".format(date_field, filters.get('doctype'), conditions), filters, as_dict=1)
+			and sales_partner != '' 
+			{permission_cond}
+			order by name desc, sales_partner
+		""".format(date_field, filters.get('doctype'), conditions, permission_cond=get_match_cond_for_reports(filters.get('doctype'))), filters, as_dict=1)
 
 	return entries
 

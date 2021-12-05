@@ -20,7 +20,7 @@ def execute():
 	if standard_tax_exemption_amount_exists:
 		select_fields = "name, start_date, end_date, standard_tax_exemption_amount"
 
-	for company in frappe.get_all("Company"):
+	for company in frappe.get_all_with_user_permissions("Company"):
 		payroll_periods =  frappe.db.sql("""
 			SELECT
 				{0}
@@ -71,7 +71,7 @@ def execute():
 		return
 
 	migrated = []
-	proofs = frappe.get_all("Employee Tax Exemption Proof Submission",
+	proofs = frappe.get_all_with_user_permissions("Employee Tax Exemption Proof Submission",
 		filters = {'docstatus': 1},
 		fields =['payroll_period', 'employee', 'company', 'income_from_other_sources']
 	)
@@ -92,7 +92,7 @@ def execute():
 	if not frappe.db.table_exists("Employee Tax Exemption Declaration"):
 		return
 
-	declerations = frappe.get_all("Employee Tax Exemption Declaration",
+	declerations = frappe.get_all_with_user_permissions("Employee Tax Exemption Declaration",
 		filters = {'docstatus': 1},
 		fields =['payroll_period', 'employee', 'company', 'income_from_other_sources']
 	)

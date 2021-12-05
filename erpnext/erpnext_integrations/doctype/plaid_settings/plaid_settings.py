@@ -263,7 +263,7 @@ def automatic_synchronization():
 
 @frappe.whitelist()
 def enqueue_synchronization():
-	plaid_accounts = frappe.get_all("Bank Account",
+	plaid_accounts = frappe.get_all_with_user_permissions("Bank Account",
 		filters={"integration_id": ["!=", ""]},
 		fields=["name", "bank"])
 

@@ -287,7 +287,7 @@ class SalesInvoice(SellingController):
 		# since POS Invoice extends Sales Invoice, we explicitly check if doctype is Sales Invoice
 		if self.doctype == "Sales Invoice" and self.is_consolidated:
 			invoice_or_credit_note = "consolidated_credit_note" if self.is_return else "consolidated_invoice"
-			pos_closing_entry = frappe.get_all(
+			pos_closing_entry = frappe.get_all_with_user_permissions(
 				"POS Invoice Merge Log",
 				filters={ invoice_or_credit_note: self.name },
 				pluck="pos_closing_entry"
@@ -1026,7 +1026,7 @@ class SalesInvoice(SellingController):
 		self.delete_depreciation_entry_made_after_sale(asset)
 
 	def modify_depreciation_schedule_for_asset_repairs(self, asset):
-		asset_repairs = frappe.get_all(
+		asset_repairs = frappe.get_all_with_user_permissions(
 			'Asset Repair',
 			filters = {'asset': asset.name},
 			fields = ['name', 'increase_in_asset_life']
@@ -1600,7 +1600,7 @@ def validate_inter_company_party(doctype, party, company, inter_company_referenc
 			frappe.throw(_("Invalid Company for Inter Company Transaction."))
 
 	elif frappe.db.get_value(partytype, {"name": party, internal: 1}, "name") == party:
-		companies = frappe.get_all("Allowed To Transact With", fields=["company"], filters={"parenttype": partytype, "parent": party})
+		companies = frappe.get_all_with_user_permissions("Allowed To Transact With", fields=["company"], filters={"parenttype": partytype, "parent": party})
 		companies = [d.company for d in companies]
 		if not company in companies:
 			frappe.throw(_("{0} not allowed to transact with {1}. Please change the Company.").format(partytype, company))
@@ -1934,7 +1934,7 @@ def update_pr_items(doc, sales_item_map, purchase_item_map, parent_child_map, wa
 		item.purchase_order = parent_child_map.get(sales_item_map.get(item.delivery_note_item))
 
 def get_delivery_note_details(internal_reference):
-	si_item_details = frappe.get_all('Delivery Note Item', fields=['name', 'so_detail'],
+	si_item_details = frappe.get_all_with_user_permissions('Delivery Note Item', fields=['name', 'so_detail'],
 		filters={'parent': internal_reference})
 
 	return {d.name: d.so_detail for d in si_item_details if d.so_detail}
@@ -1943,7 +1943,7 @@ def get_sales_invoice_details(internal_reference):
 	dn_item_map = {}
 	so_item_map = {}
 
-	si_item_details = frappe.get_all('Sales Invoice Item', fields=['name', 'so_detail',
+	si_item_details = frappe.get_all_with_user_permissions('Sales Invoice Item', fields=['name', 'so_detail',
 		'dn_detail'], filters={'parent': internal_reference})
 
 	for d in si_item_details:
@@ -1959,7 +1959,7 @@ def get_pd_details(doctype, sd_detail_map, sd_detail_field):
 	accepted_warehouse_map = {}
 	parent_child_map = {}
 
-	pd_item_details = frappe.get_all(doctype,
+	pd_item_details = frappe.get_all_with_user_permissions(doctype,
 		fields=[sd_detail_field, 'name', 'warehouse', 'parent'], filters={sd_detail_field: ('in', list(sd_detail_map.values()))})
 
 	for d in pd_item_details:

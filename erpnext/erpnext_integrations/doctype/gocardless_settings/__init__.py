@@ -63,7 +63,7 @@ def authenticate_signature(r):
 
 def get_webhook_keys():
 	def _get_webhook_keys():
-		webhook_keys = [d.webhooks_secret for d in frappe.get_all("GoCardless Settings", fields=["webhooks_secret"],) if d.webhooks_secret]
+		webhook_keys = [d.webhooks_secret for d in frappe.get_all_with_user_permissions("GoCardless Settings", fields=["webhooks_secret"],) if d.webhooks_secret]
 
 		return webhook_keys
 

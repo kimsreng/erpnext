@@ -62,7 +62,7 @@ def get_party_tax_withholding_details(inv, tax_withholding_category=None):
 
 	# Get others suppliers with the same PAN No
 	if pan_no:
-		parties = frappe.get_all(party_type, filters={ 'pan': pan_no }, pluck='name')
+		parties = frappe.get_all_with_user_permissions(party_type, filters={ 'pan': pan_no }, pluck='name')
 
 	if not parties:
 		parties.append(party)
@@ -226,7 +226,7 @@ def get_invoice_vouchers(parties, tax_details, company, party_type='Supplier'):
 			'tax_withholding_category': tax_details.get('tax_withholding_category')
 		})
 
-	invoices = frappe.get_all(doctype, filters=filters, pluck="name") or [""]
+	invoices = frappe.get_all_with_user_permissions(doctype, filters=filters, pluck="name") or [""]
 
 	journal_entries = frappe.db.sql("""
 		SELECT j.name
@@ -262,7 +262,7 @@ def get_advance_vouchers(parties, company=None, from_date=None, to_date=None, pa
 	if from_date and to_date:
 		filters['posting_date'] = ['between', (from_date, to_date)]
 
-	return frappe.get_all('GL Entry', filters=filters, distinct=1, pluck='voucher_no') or [""]
+	return frappe.get_all_with_user_permissions('GL Entry', filters=filters, distinct=1, pluck='voucher_no') or [""]
 
 def get_deducted_tax(taxable_vouchers, tax_details):
 	# check if TDS / TCS account is already charged on taxable vouchers
@@ -403,7 +403,7 @@ def get_debit_note_amount(suppliers, from_date, to_date, company=None):
 	if company:
 		filters['company'] = company
 
-	return frappe.get_all('Purchase Invoice', filters, fields)[0].get('net_total') or 0.0
+	return frappe.get_all_with_user_permissions('Purchase Invoice', filters, fields)[0].get('net_total') or 0.0
 
 def get_ltds_amount(current_amount, deducted_amount, certificate_limit, rate, tax_details):
 	if current_amount < (certificate_limit - deducted_amount):

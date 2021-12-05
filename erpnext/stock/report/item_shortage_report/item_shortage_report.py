@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 
 
 def execute(filters=None):
@@ -52,7 +53,8 @@ def get_data(conditions, filters):
 			AND warehouse.name = bin.warehouse
 			AND bin.item_code=item.name
 			{0}
-		ORDER BY bin.projected_qty;""".format(conditions), filters, as_dict=1)
+			{permission_cond}
+		ORDER BY bin.projected_qty;""".format(conditions, permission_cond=get_match_cond_for_reports("Item", "item")), filters, as_dict=1)
 
 	return data
 

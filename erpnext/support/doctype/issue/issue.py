@@ -217,7 +217,7 @@ class Issue(Document):
 		# Replicate linked Communications
 		# TODO: get all communications in timeline before this, and modify them to append them to new doc
 		comm_to_split_from = frappe.get_doc("Communication", communication_id)
-		communications = frappe.get_all("Communication",
+		communications = frappe.get_all_with_user_permissions("Communication",
 			filters={"reference_doctype": "Issue",
 				"reference_name": comm_to_split_from.reference_name,
 				"creation": (">=", comm_to_split_from.creation)})
@@ -544,7 +544,7 @@ def set_first_response_time(communication, method):
 			issue.db_set("first_response_time", first_response_time)
 
 def is_first_response(issue):
-	responses = frappe.get_all('Communication', filters = {'reference_name': issue.name, 'sent_or_received': 'Sent'})
+	responses = frappe.get_all_with_user_permissions('Communication', filters = {'reference_name': issue.name, 'sent_or_received': 'Sent'})
 	if len(responses) == 1:
 		return True
 	return False

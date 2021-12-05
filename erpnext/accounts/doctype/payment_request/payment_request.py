@@ -110,7 +110,7 @@ class PaymentRequest(Document):
 		controller.request_for_payment(**payment_record)
 
 	def get_request_amount(self):
-		data_of_completed_requests = frappe.get_all("Integration Request", filters={
+		data_of_completed_requests = frappe.get_all_with_user_permissions("Integration Request", filters={
 			'reference_doctype': self.doctype,
 			'reference_docname': self.name,
 			'status': 'Completed'
@@ -268,7 +268,7 @@ class PaymentRequest(Document):
 
 	def check_if_payment_entry_exists(self):
 		if self.status == "Paid":
-			if frappe.get_all("Payment Entry Reference",
+			if frappe.get_all_with_user_permissions("Payment Entry Reference",
 				filters={"reference_name": self.reference_name, "docstatus": ["<", 2]},
 				fields=["parent"],
 				limit=1):
@@ -459,7 +459,7 @@ def get_payment_gateway_account(args):
 def get_print_format_list(ref_doctype):
 	print_format_list = ["Standard"]
 
-	print_format_list.extend([p.name for p in frappe.get_all("Print Format",
+	print_format_list.extend([p.name for p in frappe.get_all_with_user_permissions("Print Format",
 		filters={"doc_type": ref_doctype})])
 
 	return {

@@ -67,7 +67,7 @@ def get_current_student():
 	if email in ('Administrator', 'Guest'):
 		return None
 	try:
-		student_id = frappe.get_all("Student", {"student_email_id": email}, ["name"])[0].name
+		student_id = frappe.get_all_with_user_permissions("Student", {"student_email_id": email}, ["name"])[0].name
 		return frappe.get_doc("Student", student_id)
 	except (IndexError, frappe.DoesNotExistError):
 		return None
@@ -80,7 +80,7 @@ def get_portal_programs():
 	Returns:
 		list of dictionary: List of all programs and to be displayed on the portal along with access rights
 	"""
-	published_programs = frappe.get_all("Program", filters={"is_published": True})
+	published_programs = frappe.get_all_with_user_permissions("Program", filters={"is_published": True})
 	if not published_programs:
 		return None
 
@@ -120,9 +120,9 @@ def get_enrollment(master, document, student):
 		string: Enrollment Name if exists else returns empty string
 	"""
 	if master == 'program':
-		enrollments = frappe.get_all("Program Enrollment", filters={'student':student, 'program': document, 'docstatus': 1})
+		enrollments = frappe.get_all_with_user_permissions("Program Enrollment", filters={'student':student, 'program': document, 'docstatus': 1})
 	if master == 'course':
-		enrollments = frappe.get_all("Course Enrollment", filters={'student':student, 'course': document})
+		enrollments = frappe.get_all_with_user_permissions("Course Enrollment", filters={'student':student, 'course': document})
 
 	if enrollments:
 		return enrollments[0].name
@@ -366,14 +366,14 @@ def get_or_create_course_enrollment(course, program):
 		return frappe.get_doc('Course Enrollment', course_enrollment)
 
 def check_content_completion(content_name, content_type, enrollment_name):
-	activity = frappe.get_all("Course Activity", filters={'enrollment': enrollment_name, 'content_type': content_type, 'content': content_name})
+	activity = frappe.get_all_with_user_permissions("Course Activity", filters={'enrollment': enrollment_name, 'content_type': content_type, 'content': content_name})
 	if activity:
 		return True
 	else:
 		return False
 
 def check_quiz_completion(quiz, enrollment_name):
-	attempts = frappe.get_all("Quiz Activity",
+	attempts = frappe.get_all_with_user_permissions("Quiz Activity",
 		filters={
 			'enrollment': enrollment_name,
 			'quiz': quiz.name

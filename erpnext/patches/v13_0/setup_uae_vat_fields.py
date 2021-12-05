@@ -7,7 +7,7 @@ from erpnext.regional.united_arab_emirates.setup import setup
 
 
 def execute():
-	company = frappe.get_all('Company', filters = {'country': 'United Arab Emirates'})
+	company = frappe.get_all_with_user_permissions('Company', filters = {'country': 'United Arab Emirates'})
 	if not company:
 		return
 

@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import flt, getdate
 from six import iteritems
 
@@ -150,7 +151,8 @@ class EmployeeHoursReport:
 			AND tt.start_date BETWEEN '{0}' AND '{1}'
 			AND tt.end_date BETWEEN '{0}' AND '{1}'
 			{2}
-		'''.format(self.filters.from_date, self.filters.to_date, additional_filters))
+			{permission_cond}
+		'''.format(self.filters.from_date, self.filters.to_date, additional_filters, permission_cond=get_match_cond_for_reports("Timesheet", "tt")))
 
 	def generate_stats_by_employee(self):
 		self.stats_by_employee = frappe._dict()

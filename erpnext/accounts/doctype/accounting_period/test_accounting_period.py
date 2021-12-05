@@ -32,7 +32,7 @@ class TestAccountingPeriod(unittest.TestCase):
 		self.assertRaises(ClosedAccountingPeriod, doc.submit)
 
 	def tearDown(self):
-		for d in frappe.get_all("Accounting Period"):
+		for d in frappe.get_all_with_user_permissions("Accounting Period"):
 			frappe.delete_doc("Accounting Period", d.name)
 
 def create_accounting_period(**args):

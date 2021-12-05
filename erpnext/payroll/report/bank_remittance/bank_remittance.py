@@ -4,7 +4,7 @@
 from __future__ import unicode_literals
 
 import frappe
-from frappe import _, get_all
+from frappe import _, get_all_with_user_permissions
 
 
 def execute(filters=None):
@@ -99,7 +99,7 @@ def execute(filters=None):
 	return columns, data
 
 def get_bank_accounts():
-	accounts = [d.name for d in get_all("Account", filters={"account_type": "Bank"})]
+	accounts = [d.name for d in get_all_with_user_permissions("Account", filters={"account_type": "Bank"})]
 	return accounts
 
 def get_payroll_entries(accounts, filters):
@@ -114,7 +114,7 @@ def get_payroll_entries(accounts, filters):
 	if filters.from_date:
 		payroll_filter.append(('posting_date', '>', filters.from_date))
 
-	entries = get_all("Payroll Entry", payroll_filter, ["name", "payment_account"])
+	entries = get_all_with_user_permissions("Payroll Entry", payroll_filter, ["name", "payment_account"])
 
 	payment_accounts = [d.payment_account for d in entries]
 	entries = set_company_account(payment_accounts, entries)
@@ -122,7 +122,7 @@ def get_payroll_entries(accounts, filters):
 
 def get_salary_slips(payroll_entries):
 	payroll  = [d.name for d in payroll_entries]
-	salary_slips = get_all("Salary Slip", filters = [("payroll_entry", "IN", payroll)],
+	salary_slips = get_all_with_user_permissions("Salary Slip", filters = [("payroll_entry", "IN", payroll)],
 		fields = ["modified", "net_pay", "bank_name", "bank_account_no", "payroll_entry", "employee", "employee_name", "status"]
 	)
 
@@ -141,7 +141,7 @@ def get_salary_slips(payroll_entries):
 
 def get_emp_bank_ifsc_code(salary_slips):
 	emp_names = [d.employee for d in salary_slips]
-	ifsc_codes = get_all("Employee", [("name", "IN", emp_names)], ["ifsc_code", "name"])
+	ifsc_codes = get_all_with_user_permissions("Employee", [("name", "IN", emp_names)], ["ifsc_code", "name"])
 
 	ifsc_codes_map = {}
 	for code in ifsc_codes:
@@ -153,7 +153,7 @@ def get_emp_bank_ifsc_code(salary_slips):
 	return salary_slips
 
 def set_company_account(payment_accounts, payroll_entries):
-	company_accounts = get_all("Bank Account", [("account", "in", payment_accounts)], ["account", "bank_account_no"])
+	company_accounts = ("Bank Account", [("account", "in", payment_accounts)], ["account", "bank_account_no"])
 	company_accounts_map = {}
 	for acc in company_accounts:
 		company_accounts_map[acc.account] = acc

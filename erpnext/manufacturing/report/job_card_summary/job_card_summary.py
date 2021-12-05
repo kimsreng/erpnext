@@ -30,7 +30,7 @@ def get_data(filters):
 		if filters.get(field):
 			query_filters[field] = ("in", filters.get(field))
 
-	data = frappe.get_all("Job Card",
+	data = frappe.get_all_with_user_permissions("Job Card",
 		fields= fields, filters=query_filters)
 
 	if not data: return []
@@ -43,7 +43,7 @@ def get_data(filters):
 	}
 
 	job_card_time_details = {}
-	for job_card_data in frappe.get_all("Job Card Time Log",
+	for job_card_data in frappe.get_all_with_user_permissions("Job Card Time Log",
 		fields=["min(from_time) as from_time", "max(to_time) as to_time", "parent"],
 		filters=job_card_time_filter, group_by="parent", debug=1):
 		job_card_time_details[job_card_data.parent] = job_card_data

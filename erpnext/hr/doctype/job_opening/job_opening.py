@@ -74,7 +74,7 @@ def get_job_openings(doctype, txt=None, filters=None, limit_start=0, limit_page_
 			'description': ['like', '%{0}%'.format(txt)]
 		})
 
-	return frappe.get_all(doctype,
+	return frappe.get_all_with_user_permissions(doctype,
 		filters,
 		fields,
 		start=limit_start,

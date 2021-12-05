@@ -23,13 +23,13 @@ class TestPlaidSettings(unittest.TestCase):
 		pass
 
 	def tearDown(self):
-		for bt in frappe.get_all("Bank Transaction"):
+		for bt in frappe.get_all_with_user_permissions("Bank Transaction"):
 			doc = frappe.get_doc("Bank Transaction", bt.name)
 			doc.cancel()
 			doc.delete()
 
 		for doctype in ("Bank Account", "Bank Account Type", "Bank Account Subtype"):
-			for d in frappe.get_all(doctype):
+			for d in frappe.get_all_with_user_permissions(doctype):
 				frappe.delete_doc(doctype, d.name, force=True)
 
 	def test_plaid_disabled(self):
@@ -155,4 +155,4 @@ class TestPlaidSettings(unittest.TestCase):
 
 		new_bank_transaction(transactions)
 
-		self.assertTrue(len(frappe.get_all("Bank Transaction")) == 1)
+		self.assertTrue(len(frappe.get_all_with_user_permissions("Bank Transaction")) == 1)

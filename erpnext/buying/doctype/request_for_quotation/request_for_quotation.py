@@ -395,7 +395,7 @@ def get_item_from_material_requests_based_on_supplier(source_name, target_doc = 
 @frappe.whitelist()
 def get_supplier_tag():
 	filters = {"document_type": "Supplier"}
-	tags = list(set(tag.tag for tag in frappe.get_all("Tag Link", filters=filters, fields=["tag"]) if tag))
+	tags = list(set(tag.tag for tag in frappe.get_all_with_user_permissions("Tag Link", filters=filters, fields=["tag"]) if tag))
 
 	return tags
 

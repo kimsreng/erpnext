@@ -210,6 +210,6 @@ def get_parents_data(filters, partner_doctype):
 	if filters.get("fiscal_year"):
 		filters_dict["fiscal_year"] = filters.get("fiscal_year")
 
-	return frappe.get_all('Target Detail',
+	return frappe.get_all_with_user_permissions('Target Detail',
 		filters = filters_dict,
 		fields = ["parent", "item_group", target_qty_amt_field, "fiscal_year", "distribution_id"])

@@ -764,7 +764,7 @@ def update_regional_tax_settings(country, company):
 		for key in ['cgst_account', 'sgst_account', 'igst_account']:
 			existing_account_list.append(account.get(key))
 
-	gst_accounts = frappe._dict(frappe.get_all("Account",
+	gst_accounts = frappe._dict(frappe.get_all_with_user_permissions("Account",
 		{'company': company, 'account_name': ('in', input_account_names +
 			output_account_names + rcm_accounts)}, ['account_name', 'name'], as_list=1))
 

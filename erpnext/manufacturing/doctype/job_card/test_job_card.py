@@ -38,7 +38,7 @@ class TestJobCard(unittest.TestCase):
 
 	def test_job_card(self):
 
-		job_cards = frappe.get_all('Job Card',
+		job_cards = frappe.get_all_with_user_permissions('Job Card',
 			filters = {'work_order': self.work_order.name}, fields = ["operation_id", "name"])
 
 		if job_cards:
@@ -53,7 +53,7 @@ class TestJobCard(unittest.TestCase):
 			frappe.delete_doc("Job Card", d.name)
 
 	def test_job_card_with_different_work_station(self):
-		job_cards = frappe.get_all('Job Card',
+		job_cards = frappe.get_all_with_user_permissions('Job Card',
 			filters = {'work_order': self.work_order.name},
 			fields = ["operation_id", "workstation", "name", "for_quantity"])
 

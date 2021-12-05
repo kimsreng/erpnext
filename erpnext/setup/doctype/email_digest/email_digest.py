@@ -695,7 +695,7 @@ class EmailDigest(Document):
 		date_field = 'posting_date' if doc_type in ['Sales Invoice', 'Purchase Invoice'] \
 			else 'transaction_date'
 
-		return frappe.get_all(doc_type,
+		return frappe.get_all_with_user_permissions(doc_type,
 			filters={
 				date_field: ['between', (from_date, to_date)],
 				'status': ['not in', ('Cancelled')],

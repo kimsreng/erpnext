@@ -28,7 +28,7 @@ class TestBankTransaction(unittest.TestCase):
 
 	@classmethod
 	def tearDownClass(cls):
-		for bt in frappe.get_all("Bank Transaction"):
+		for bt in frappe.get_all_with_user_permissions("Bank Transaction"):
 			doc = frappe.get_doc("Bank Transaction", bt.name)
 			if doc.docstatus == 1:
 				doc.cancel()

@@ -75,7 +75,7 @@ class LeaveAllocation(Document):
 			create_leave_ledger_entry(self, args, True)
 
 	def get_existing_leave_count(self):
-		ledger_entries = frappe.get_all("Leave Ledger Entry",
+		ledger_entries = frappe.get_all_with_user_permissions("Leave Ledger Entry",
 								filters={
 									"transaction_type": "Leave Allocation",
 									"transaction_name": self.name,
@@ -256,7 +256,7 @@ def get_carry_forwarded_leaves(employee, leave_type, date, carry_forward=None):
 
 def get_unused_leaves(employee, leave_type, from_date, to_date):
 	''' Returns unused leaves between the given period while skipping leave allocation expiry '''
-	leaves = frappe.get_all("Leave Ledger Entry", filters={
+	leaves = frappe.get_all_with_user_permissions("Leave Ledger Entry", filters={
 		'employee': employee,
 		'leave_type': leave_type,
 		'from_date': ('>=', from_date),

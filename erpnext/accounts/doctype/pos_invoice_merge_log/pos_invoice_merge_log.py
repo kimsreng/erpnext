@@ -256,7 +256,7 @@ def consolidate_pos_invoices(pos_invoices=None, closing_entry=None):
 		create_merge_logs(invoice_by_customer, closing_entry)
 
 def unconsolidate_pos_invoices(closing_entry):
-	merge_logs = frappe.get_all(
+	merge_logs = frappe.get_all_with_user_permissions(
 		'POS Invoice Merge Log',
 		filters={ 'pos_closing_entry': closing_entry.name },
 		pluck='name'

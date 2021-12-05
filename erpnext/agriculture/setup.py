@@ -7,7 +7,7 @@ from erpnext.setup.utils import insert_record
 
 
 def setup_agriculture():
-	if frappe.get_all('Agriculture Analysis Criteria'):
+	if frappe.get_all_with_user_permissions('Agriculture Analysis Criteria'):
 		# already setup
 		return
 	create_agriculture_data()

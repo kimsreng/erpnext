@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _, msgprint
+from frappe.desk.reportview import get_match_cond_for_reports
 
 
 def execute(filters=None):
@@ -102,5 +103,6 @@ def get_advances(filters):
 	return frappe.db.sql("""select name, employee, paid_amount, status, advance_amount, claimed_amount, company,
 		posting_date, purpose
 		from `tabEmployee Advance`
-		where docstatus<2 %s order by posting_date, name desc""" %
-		conditions, filters, as_dict=1)
+		where docstatus<2 %s {permission_cond}
+		order by posting_date, name desc
+		""".format(permission_cond=get_match_cond_for_reports("Employee Advance")) % conditions, filters, as_dict=1)

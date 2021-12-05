@@ -39,7 +39,7 @@ class JobOffer(Document):
 
 	def get_job_offer(self, from_date, to_date):
 		''' Returns job offer created during a time period '''
-		return frappe.get_all("Job Offer", filters={
+		return frappe.get_all_with_user_permissions("Job Offer", filters={
 				"offer_date": ['between', (from_date, to_date)],
 				"designation": self.designation,
 				"company": self.company,

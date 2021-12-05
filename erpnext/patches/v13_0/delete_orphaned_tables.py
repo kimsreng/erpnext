@@ -14,7 +14,7 @@ def execute():
         child_doctypes = get_child_doctypes_whose_parent_doctypes_were_affected()
 
         for doctype in child_doctypes:
-            docs = frappe.get_all(doctype, fields=['name', 'parent', 'parenttype', 'creation'])
+            docs = frappe.get_all_with_user_permissions(doctype, fields=['name', 'parent', 'parenttype', 'creation'])
 
             for doc in docs:
                 if not frappe.db.exists(doc['parenttype'], doc['parent']):
@@ -24,11 +24,11 @@ def execute():
                     frappe.db.delete(doctype, {'name': doc['name']})
 
 def has_deleted_company_transactions():
-    return frappe.get_all('Transaction Deletion Record')
+    return frappe.get_all_with_user_permissions('Transaction Deletion Record')
 
 def get_child_doctypes_whose_parent_doctypes_were_affected():
     parent_doctypes = get_affected_doctypes()
-    child_doctypes = frappe.get_all(
+    child_doctypes = frappe.get_all_with_user_permissions(
         'DocField',
         filters={
             'fieldtype': 'Table',
@@ -39,7 +39,7 @@ def get_child_doctypes_whose_parent_doctypes_were_affected():
 
 def get_affected_doctypes():
     affected_doctypes = []
-    tdr_docs = frappe.get_all('Transaction Deletion Record', pluck="name")
+    tdr_docs = frappe.get_all_with_user_permissions('Transaction Deletion Record', pluck="name")
 
     for tdr in tdr_docs:
         tdr_doc = frappe.get_doc("Transaction Deletion Record", tdr)

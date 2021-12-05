@@ -52,7 +52,7 @@ class TestProgram(unittest.TestCase):
 
 	def tearDown(self):
 		for dt in ["Program", "Course", "Topic", "Article"]:
-			for entry in frappe.get_all(dt):
+			for entry in frappe.get_all_with_user_permissions(dt):
 				frappe.delete_doc(dt, entry.program)
 
 def make_program(name):

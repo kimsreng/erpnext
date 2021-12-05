@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 
 
 def execute(filters=None):
@@ -83,10 +84,16 @@ def get_item_price_qty_data(filters):
 	conditions = ""
 	if filters.get("item_code"):
 		conditions += "where a.item_code=%(item_code)s"
+	
+	if conditions:
+		conditions += get_match_cond_for_reports("Item Price", "a")
+	else:
+		conditions = "WHERE 1=1 {permission_cond}".format(permission_cond=get_match_cond_for_reports("Item Price", "a"))
 
 	item_results = frappe.db.sql("""select a.item_code, a.item_name, a.name as price_list_name,
 		a.brand as brand, b.warehouse as warehouse, b.actual_qty as actual_qty
-		from `tabItem Price` a left join `tabBin` b
+		from `tabItem Price` a 
+		left join `tabBin` b
 		ON a.item_code = b.item_code
 		{conditions}"""
 		.format(conditions=conditions), filters, as_dict=1)
@@ -138,7 +145,7 @@ def get_price_map(price_list_names, buying=0, selling=0):
 	else:
 		filters["selling"] = 1
 
-	pricing_details = frappe.get_all("Item Price",
+	pricing_details = frappe.get_all_with_user_permissions("Item Price",
 		fields = ["name", "price_list", "price_list_rate"], filters=filters)
 
 	for d in pricing_details:

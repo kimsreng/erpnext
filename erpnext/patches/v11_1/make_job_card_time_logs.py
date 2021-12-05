@@ -12,7 +12,7 @@ def execute():
     if (frappe.db.table_exists("Job Card")
         and frappe.get_meta("Job Card").has_field("actual_start_date")):
         time_logs = []
-        for d in frappe.get_all('Job Card',
+        for d in frappe.get_all_with_user_permissions('Job Card',
             fields = ["actual_start_date", "actual_end_date", "time_in_mins", "name", "for_quantity"],
             filters = {'docstatus': ("<", 2)}):
             if d.actual_start_date:

@@ -82,7 +82,7 @@ def make_company(company_name, abbr):
 
 def set_sa_vat_accounts():
 	if not frappe.db.exists("South Africa VAT Settings", "_Test Company SA VAT"):
-		vat_accounts = frappe.get_all(
+		vat_accounts = frappe.get_all_with_user_permissions(
 			"Account",
 			fields=["name"],
 			filters = {

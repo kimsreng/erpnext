@@ -80,7 +80,7 @@ def work():
 
 def make_payment_entries(ref_doctype, report):
 
-	outstanding_invoices = frappe.get_all(ref_doctype, fields=["name"],
+	outstanding_invoices = frappe.get_all_with_user_permissions(ref_doctype, fields=["name"],
 		filters={
 			"company": erpnext.get_default_company(),
 			"outstanding_amount": (">", 0.0)
@@ -110,7 +110,7 @@ def make_payment_entries(ref_doctype, report):
 def make_pos_invoice():
 	make_sales_order()
 
-	for data in frappe.get_all('Sales Order', fields=["name"],
+	for data in frappe.get_all_with_user_permissions('Sales Order', fields=["name"],
 		filters = [["per_billed", "<", "100"]]):
 		si = frappe.get_doc(make_sales_invoice(data.name))
 		si.is_pos =1

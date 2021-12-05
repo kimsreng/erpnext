@@ -6,7 +6,7 @@ import frappe
 def execute():
 	frappe.reload_doc("accounts", "doctype", "tax_category")
 	frappe.reload_doc("stock", "doctype", "item_manufacturer")
-	company = frappe.get_all('Company', filters = {'country': 'India'})
+	company = frappe.get_all_with_user_permissions('Company', filters = {'country': 'India'})
 	if not company:
 		return
 	if frappe.db.exists("Custom Field", "Company-bank_remittance_section"):

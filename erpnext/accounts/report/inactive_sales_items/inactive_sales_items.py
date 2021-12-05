@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
-from frappe.desk.reportview import get_match_cond
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import cint
 
 
@@ -118,7 +118,7 @@ def get_sales_details(filters):
 		from `tab{doctype}` s, `tab{doctype} Item` si
 		where s.name = si.parent and s.docstatus = 1 {permission_cond}
 		order by days_since_last_order """ #nosec
-		.format(date_field = date_field, doctype = doctype, permission_cond=get_match_cond(doctype, "s")), 
+		.format(date_field = date_field, doctype = doctype, permission_cond=get_match_cond_for_reports(doctype, "s")), 
 		as_dict=1)
 
 	for d in sales_data:

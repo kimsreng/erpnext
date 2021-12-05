@@ -16,7 +16,7 @@ def execute(filters=None):
 
 def get_data(filters):
 	conditions = get_conditions(filters)
-	tasks = frappe.get_all("Task",
+	tasks = frappe.get_all_with_user_permissions("Task",
 			filters = conditions,
 			fields = ["name", "subject", "exp_start_date", "exp_end_date",
 					"status", "priority", "completed_on", "progress"],

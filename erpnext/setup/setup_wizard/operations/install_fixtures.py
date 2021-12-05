@@ -476,7 +476,7 @@ def install_defaults(args=None):
 
 def set_global_defaults(args):
 	global_defaults = frappe.get_doc("Global Defaults", "Global Defaults")
-	current_fiscal_year = frappe.get_all("Fiscal Year")[0]
+	current_fiscal_year = frappe.get_all_with_user_permissions("Fiscal Year")[0]
 
 	global_defaults.update({
 		'current_fiscal_year': current_fiscal_year.name,

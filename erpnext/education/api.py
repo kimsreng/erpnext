@@ -266,7 +266,7 @@ def get_result(student, assessment_plan):
 	:param Student: Student
 	:param Assessment Plan: Assessment Plan
 	"""
-	results = frappe.get_all("Assessment Result", filters={"student": student,
+	results = frappe.get_all_with_user_permissions("Assessment Result", filters={"student": student,
 		"assessment_plan": assessment_plan, "docstatus": ("!=", 2)})
 	if results:
 		return frappe.get_doc("Assessment Result", results[0])
@@ -283,7 +283,7 @@ def get_grade(grading_scale, percentage):
 	"""
 	grading_scale_intervals = {}
 	if not hasattr(frappe.local, 'grading_scale'):
-		grading_scale = frappe.get_all("Grading Scale Interval", fields=["grade_code", "threshold"], filters={"parent": grading_scale})
+		grading_scale = frappe.get_all_with_user_permissions("Grading Scale Interval", fields=["grade_code", "threshold"], filters={"parent": grading_scale})
 		frappe.local.grading_scale = grading_scale
 	for d in frappe.local.grading_scale:
 		grading_scale_intervals.update({d.threshold:d.grade_code})
@@ -341,7 +341,7 @@ def submit_assessment_results(assessment_plan, student_group):
 
 
 def get_assessment_result_doc(student, assessment_plan):
-	assessment_result = frappe.get_all("Assessment Result", filters={"student": student,
+	assessment_result = frappe.get_all_with_user_permissions("Assessment Result", filters={"student": student,
 			"assessment_plan": assessment_plan, "docstatus": ("!=", 2)})
 	if assessment_result:
 		doc = frappe.get_doc("Assessment Result", assessment_result[0])

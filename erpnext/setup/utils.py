@@ -119,7 +119,7 @@ def get_exchange_rate(from_currency, to_currency, transaction_date=None, args=No
 def enable_all_roles_and_domains():
 	""" enable all roles and domain for testing """
 	# add all roles to users
-	domains = frappe.get_all("Domain")
+	domains = frappe.get_all_with_user_permissions("Domain")
 	if not domains:
 		return
 

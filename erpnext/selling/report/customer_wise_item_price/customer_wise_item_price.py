@@ -65,7 +65,7 @@ def get_data(filters=None):
 	customer_details = get_customer_details(filters)
 
 	items = get_selling_items(filters)
-	item_stock_map = frappe.get_all("Bin", fields=["item_code", "sum(actual_qty) AS available"], group_by="item_code")
+	item_stock_map = frappe.get_all_with_user_permissions("Bin", fields=["item_code", "sum(actual_qty) AS available"], group_by="item_code")
 	item_stock_map = {item.item_code: item.available for item in item_stock_map}
 
 	for item in items:
@@ -99,6 +99,6 @@ def get_selling_items(filters):
 	else:
 		item_filters = {"is_sales_item": 1, "disabled": 0}
 
-	items = frappe.get_all("Item", filters=item_filters, fields=["item_code", "item_name"], order_by="item_name")
+	items = frappe.get_all_with_user_permissions("Item", filters=item_filters, fields=["item_code", "item_name"], order_by="item_name")
 
 	return items

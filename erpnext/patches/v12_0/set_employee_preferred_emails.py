@@ -2,7 +2,7 @@ import frappe
 
 
 def execute():
-	employees = frappe.get_all("Employee",
+	employees = frappe.get_all_with_user_permissions("Employee",
 		filters={"prefered_email": ""},
 		fields=["name", "prefered_contact_email", "company_email", "personal_email", "user_id"])
 

@@ -129,7 +129,7 @@ class LoanApplication(Document):
 @frappe.whitelist()
 def create_loan(source_name, target_doc=None, submit=0):
 	def update_accounts(source_doc, target_doc, source_parent):
-		account_details = frappe.get_all("Loan Type",
+		account_details = frappe.get_all_with_user_permissions("Loan Type",
 			fields=["mode_of_payment", "payment_account","loan_account", "interest_income_account", "penalty_income_account"],
 			filters = {'name': source_doc.loan_type})[0]
 

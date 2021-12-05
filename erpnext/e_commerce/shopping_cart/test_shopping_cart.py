@@ -217,7 +217,7 @@ class TestShoppingCart(unittest.TestCase):
 		frappe.set_user("test_contact_customer@example.com")
 
 	def clear_existing_quotations(self):
-		quotations = frappe.get_all("Quotation", filters={
+		quotations = frappe.get_all_with_user_permissions("Quotation", filters={
 			"party_name": get_party().name,
 			"order_type": "Shopping Cart",
 			"docstatus": 0

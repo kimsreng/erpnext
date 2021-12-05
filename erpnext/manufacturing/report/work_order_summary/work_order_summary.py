@@ -34,7 +34,7 @@ def get_data(filters):
 	query_filters["planned_start_date"] = (">=", filters.get("from_date"))
 	query_filters["planned_end_date"] = ("<=", filters.get("to_date"))
 
-	data = frappe.get_all("Work Order",
+	data = frappe.get_all_with_user_permissions("Work Order",
 		fields= fields, filters=query_filters, order_by="planned_start_date asc")
 
 	res = []

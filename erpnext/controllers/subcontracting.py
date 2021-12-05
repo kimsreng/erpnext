@@ -153,7 +153,7 @@ class Subcontracting():
 		filters = [['Stock Entry', 'docstatus', '=', 1], ['Stock Entry', 'purpose', '=', 'Send to Subcontractor'],
 			['Stock Entry', 'purchase_order', 'in', self.purchase_orders]]
 
-		return frappe.get_all('Stock Entry', fields = fields, filters=filters)
+		return frappe.get_all_with_user_permissions('Stock Entry', fields = fields, filters=filters)
 
 	def __get_received_items(self, doctype):
 		fields = []
@@ -166,10 +166,10 @@ class Subcontracting():
 		if doctype == 'Purchase Invoice':
 			filters.append(['Purchase Invoice', 'update_stock', "=", 1])
 
-		return frappe.get_all(f'{doctype}', fields = fields, filters = filters)
+		return frappe.get_all_with_user_permissions(f'{doctype}', fields = fields, filters = filters)
 
 	def __get_consumed_items(self, doctype, pr_items):
-		return frappe.get_all('Purchase Receipt Item Supplied',
+		return frappe.get_all_with_user_permissions('Purchase Receipt Item Supplied',
 			fields = ['serial_no', 'rm_item_code', 'reference_name', 'batch_no', 'consumed_qty', 'main_item_code'],
 			filters = {'docstatus': 1, 'reference_name': ('in', list(pr_items)), 'parenttype': doctype})
 
@@ -183,7 +183,7 @@ class Subcontracting():
 		self.qty_to_be_received = defaultdict(float)
 
 		if self.doctype != 'Purchase Order' and self.backflush_based_on != 'BOM' and self.purchase_orders:
-			for row in frappe.get_all('Purchase Order Item',
+			for row in frappe.get_all_with_user_permissions('Purchase Order Item',
 				fields = ['item_code', '(qty - received_qty) as qty', 'parent', 'name'],
 				filters = {'docstatus': 1, 'parent': ('in', self.purchase_orders)}):
 
@@ -201,7 +201,7 @@ class Subcontracting():
 		filters = [[doctype, 'parent', '=', bom_no], [doctype, 'docstatus', '=', 1],
 			['BOM', 'item', '=', item_code], [doctype, 'sourced_by_supplier', '=', 0]]
 
-		return frappe.get_all('BOM', fields = fields, filters=filters, order_by = f'`tab{doctype}`.`idx`') or []
+		return frappe.get_all_with_user_permissions('BOM', fields = fields, filters=filters, order_by = f'`tab{doctype}`.`idx`') or []
 
 	def __remove_changed_rows(self):
 		if not self.__changed_name:
@@ -348,7 +348,7 @@ class Subcontracting():
 		fields = ['main_item_code', 'rm_item_code', 'parent', 'supplied_qty', 'name']
 		filters = {'docstatus': 1, 'parent': ('in', self.purchase_orders)}
 
-		for row in frappe.get_all('Purchase Order Item Supplied', fields = fields, filters=filters, order_by='idx'):
+		for row in frappe.get_all_with_user_permissions('Purchase Order Item Supplied', fields = fields, filters=filters, order_by='idx'):
 			key = (row.rm_item_code, row.main_item_code, row.parent)
 			consumed_qty = itemwise_consumed_qty.get(key, 0)
 

@@ -362,7 +362,7 @@ class GSTR3BReport(Document):
 				self.report_dict["inter_sup"]["uin_details"].append(value)
 
 	def get_company_gst_details(self):
-		gst_details =  frappe.get_all("Address",
+		gst_details =  frappe.get_all_with_user_permissions("Address",
 			fields=["gstin", "gst_state", "gst_state_number"],
 			filters={
 				"name":self.company_address
@@ -382,7 +382,7 @@ class GSTR3BReport(Document):
 		}
 
 		account_heads = {}
-		gst_settings_accounts = frappe.get_all("GST Account",
+		gst_settings_accounts = frappe.get_all_with_user_permissions("GST Account",
 			filters={'company': self.company, 'is_reverse_charge_account': 0},
 			fields=["cgst_account", "sgst_account", "igst_account", "cess_account"])
 

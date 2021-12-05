@@ -324,7 +324,7 @@ class SalarySlip(TransactionBase):
 			self.payment_days = 0
 
 	def get_unmarked_days(self):
-		marked_days = frappe.get_all("Attendance", filters = {
+		marked_days = frappe.get_all_with_user_permissions("Attendance", filters = {
 					"attendance_date": ["between", [self.start_date, self.end_date]],
 					"employee": self.employee,
 					"docstatus": 1
@@ -414,7 +414,7 @@ class SalarySlip(TransactionBase):
 		daily_wages_fraction_for_half_day = \
 			flt(frappe.get_single_value("Payroll Settings", "daily_wages_fraction_for_half_day")) or 0.5
 
-		leave_types = frappe.get_all("Leave Type",
+		leave_types = frappe.get_all_with_user_permissions("Leave Type",
 			or_filters=[["is_ppl", "=", 1], ["is_lwp", "=", 1]],
 			fields =["name", "is_lwp", "is_ppl", "fraction_of_daily_salary_per_leave", "include_holiday"])
 
@@ -560,7 +560,7 @@ class SalarySlip(TransactionBase):
 		data.update(self.as_dict())
 
 		# set values for components
-		salary_components = frappe.get_all("Salary Component", fields=["salary_component_abbr"])
+		salary_components = frappe.get_all_with_user_permissions("Salary Component", fields=["salary_component_abbr"])
 		for sc in salary_components:
 			data.setdefault(sc.salary_component_abbr, 0)
 
@@ -643,7 +643,7 @@ class SalarySlip(TransactionBase):
 				other_deduction_components.append(d.salary_component)
 
 		if not tax_components:
-			tax_components = [d.name for d in frappe.get_all("Salary Component", filters={"variable_based_on_taxable_salary": 1})
+			tax_components = [d.name for d in frappe.get_all_with_user_permissions("Salary Component", filters={"variable_based_on_taxable_salary": 1})
 				if d.name not in other_deduction_components]
 
 		for d in tax_components:
@@ -1001,7 +1001,7 @@ class SalarySlip(TransactionBase):
 		return total_exemption_amount
 
 	def get_income_form_other_sources(self, payroll_period):
-		return frappe.get_all("Employee Other Income",
+		return frappe.get_all_with_user_permissions("Employee Other Income",
 			filters={
 				"employee": self.employee,
 				"payroll_period": payroll_period.name,
@@ -1112,7 +1112,7 @@ class SalarySlip(TransactionBase):
 			self.total_loan_repayment += payment.total_payment
 
 	def get_loan_details(self):
-		return frappe.get_all("Loan",
+		return frappe.get_all_with_user_permissions("Loan",
 			fields=["name", "interest_income_account", "loan_account", "loan_type"],
 			filters = {
 				"applicant": self.employee,

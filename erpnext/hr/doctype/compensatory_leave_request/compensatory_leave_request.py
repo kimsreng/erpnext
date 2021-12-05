@@ -36,7 +36,7 @@ class CompensatoryLeaveRequest(Document):
 			frappe.throw(_("Leave Type is madatory"))
 
 	def validate_attendance(self):
-		attendance = frappe.get_all('Attendance',
+		attendance = frappe.get_all_with_user_permissions('Attendance',
 			filters={
 				'attendance_date': ['between', (self.work_from_date, self.work_end_date)],
 				'status': 'Present',

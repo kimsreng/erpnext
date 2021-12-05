@@ -191,7 +191,7 @@ def verify_transaction(**kwargs):
 	)
 
 def get_completed_integration_requests_info(reference_doctype, reference_docname, checkout_id):
-	output_of_other_completed_requests = frappe.get_all("Integration Request", filters={
+	output_of_other_completed_requests = frappe.get_all_with_user_permissions("Integration Request", filters={
 		'name': ['!=', checkout_id],
 		'reference_doctype': reference_doctype,
 		'reference_docname': reference_docname,

@@ -17,7 +17,7 @@ def execute():
 	frappe.reload_doc('stock', 'doctype', 'item_default')
 	frappe.reload_doc('setup', 'doctype', 'item_group')
 
-	companies = frappe.get_all("Company")
+	companies = frappe.get_all_with_user_permissions("Company")
 	item_groups = frappe.db.sql("""select name, default_income_account, default_expense_account,\
 		default_cost_center from `tabItem Group`""", as_dict=True)
 

@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils.data import comma_and
 
 
@@ -86,11 +87,12 @@ def get_bom_stock(filters):
 
 			WHERE
 				bom_item.parent = '{bom}' and bom_item.parenttype='BOM'
-
-			GROUP BY bom_item.item_code""".format(qty_field=qty_field, table=table, conditions=conditions, bom=bom), as_dict=1)
+				{permission_cond}
+			GROUP BY bom_item.item_code
+			""".format(qty_field=qty_field, table=table, conditions=conditions, bom=bom, permission_cond=get_match_cond_for_reports(table, "bom_item")), as_dict=1)
 
 def get_manufacturer_records():
-	details = frappe.get_list('Item Manufacturer', fields = ["manufacturer", "manufacturer_part_no", "parent"])
+	details = frappe.get_all_with_user_permissions('Item Manufacturer', fields = ["manufacturer", "manufacturer_part_no", "parent"])
 	manufacture_details = frappe._dict()
 	for detail in details:
 		dic = manufacture_details.setdefault(detail.get('parent'), {})

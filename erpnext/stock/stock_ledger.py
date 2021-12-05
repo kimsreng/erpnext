@@ -7,6 +7,7 @@ import json
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.model.meta import get_field_precision
 from frappe.utils import cint, cstr, flt, get_link_to_form, getdate, now
 from six import iteritems
@@ -597,7 +598,7 @@ class update_entries_after(object):
 
 	def get_incoming_value_for_serial_nos(self, sle, serial_nos):
 		# get rate from serial nos within same company
-		all_serial_nos = frappe.get_all("Serial No",
+		all_serial_nos = frappe.get_all_with_user_permissions("Serial No",
 			fields=["purchase_rate", "name", "company"],
 			filters = {'name': ('in', serial_nos)})
 
@@ -888,8 +889,9 @@ def get_stock_ledger_entries(previous_sle, operator=None,
 		where item_code = %%(item_code)s
 		and is_cancelled = 0
 		%(conditions)s
+		{permission_cond}
 		order by timestamp(posting_date, posting_time) %(order)s, creation %(order)s
-		%(limit)s %(for_update)s""" % {
+		%(limit)s %(for_update)s""".format(permission_cond=get_match_cond_for_reports("Stock Ledger Entry")) % {
 			"conditions": conditions,
 			"limit": limit or "",
 			"for_update": for_update and "for update" or "",

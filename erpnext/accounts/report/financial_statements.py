@@ -17,7 +17,7 @@ from frappe import _
 from frappe.utils import add_days, add_months, cint, cstr, flt, formatdate, get_first_day, getdate
 from past.builtins import cmp
 from six import itervalues
-from frappe.desk.reportview import get_match_cond
+from frappe.desk.reportview import get_match_cond_for_reports
 
 from erpnext.accounts.doctype.accounting_dimension.accounting_dimension import (
 	get_accounting_dimensions,
@@ -114,7 +114,7 @@ def get_period_list(from_fiscal_year, to_fiscal_year, period_start_date, period_
 
 
 def get_fiscal_year_data(from_fiscal_year, to_fiscal_year):
-	cond = get_match_cond("Fiscal Year")
+	cond = get_match_cond_for_reports("Fiscal Year")
 	agent = frappe.get_agent(frappe.session.user)
 	if agent:
 		from_fiscal_year = remove_abbr_from_text(from_fiscal_year, agent)
@@ -173,7 +173,7 @@ def get_data(
 	company_currency = get_appropriate_currency(company, filters)
 
 	gl_entries_by_account = {}
-	permission_cond = get_match_cond("Account")
+	permission_cond = get_match_cond_for_reports("Account")
 	for root in frappe.db.sql("""select lft, rgt from tabAccount
 			where root_type=%s and ifnull(parent_account, '') = ''{0}""".format(permission_cond), root_type, as_dict=1):
 
@@ -324,7 +324,7 @@ def add_total_row(out, root_type, balance_must_be, period_list, company_currency
 
 
 def get_accounts(company, root_type):
-	permission_cond = get_match_cond("Account")
+	permission_cond = get_match_cond_for_reports("Account")
 	return frappe.db.sql("""
 		select name, account_number, parent_account, lft, rgt, root_type, report_type, account_name, include_in_gross, account_type, is_group, lft, rgt
 		from `tabAccount`
@@ -384,7 +384,7 @@ def set_gl_entries_by_account(
 
 	additional_conditions = get_additional_conditions(from_date, ignore_closing_entries, filters)
 
-	acc_permission_cond = get_match_cond("Account")
+	acc_permission_cond = get_match_cond_for_reports("Account")
 	accounts = frappe.db.sql_list("""select name from `tabAccount`
 		where lft >= %s and rgt <= %s and company = %s{0}""".format(acc_permission_cond), (root_lft, root_rgt, company))
 
@@ -408,7 +408,7 @@ def set_gl_entries_by_account(
 				gl_filters.update({
 					key: value
 				})
-		gl_permission_cond = get_match_cond("GL Entry")
+		gl_permission_cond = get_match_cond_for_reports("GL Entry")
 		distributed_cost_center_query = ""
 		if filters and filters.get('cost_center'):
 			distributed_cost_center_query = """
@@ -508,7 +508,7 @@ def get_cost_centers_with_children(cost_centers):
 	for d in cost_centers:
 		if frappe.db.exists("Cost Center", d):
 			lft, rgt = frappe.db.get_value("Cost Center", d, ["lft", "rgt"])
-			children = frappe.get_all("Cost Center", filters={"lft": [">=", lft], "rgt": ["<=", rgt]})
+			children = frappe.get_all_with_user_permissions("Cost Center", filters={"lft": [">=", lft], "rgt": ["<=", rgt]})
 			all_cost_centers += [c.name for c in children]
 		else:
 			frappe.throw(_("Cost Center: {0} does not exist").format(d))

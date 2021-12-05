@@ -467,7 +467,7 @@ def get_returned_serial_nos(child_doc, parent_doc):
 	filters = [[parent_doc.doctype, "return_against", "=", parent_doc.name], [parent_doc.doctype, "is_return", "=", 1],
 		[child_doc.doctype, return_ref_field, "=", child_doc.name], [parent_doc.doctype, "docstatus", "=", 1]]
 
-	for row in frappe.get_all(parent_doc.doctype, fields = fields, filters=filters):
+	for row in frappe.get_all_with_user_permissions(parent_doc.doctype, fields = fields, filters=filters):
 		serial_nos.extend(get_serial_nos(row.serial_no))
 
 	return serial_nos

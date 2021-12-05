@@ -158,7 +158,7 @@ class TestLeaveAllocation(unittest.TestCase):
 		leave_allocation = create_leave_allocation()
 		leave_allocation.submit()
 
-		leave_ledger_entry = frappe.get_all('Leave Ledger Entry', fields='*', filters=dict(transaction_name=leave_allocation.name))
+		leave_ledger_entry = frappe.get_all_with_user_permissions('Leave Ledger Entry', fields='*', filters=dict(transaction_name=leave_allocation.name))
 
 		self.assertEqual(len(leave_ledger_entry), 1)
 		self.assertEqual(leave_ledger_entry[0].employee, leave_allocation.employee)

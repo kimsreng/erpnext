@@ -271,7 +271,7 @@ def get_batches(item_code, warehouse, qty=1, throw=False, serial_no=None):
 	cond = ''
 	if serial_no and frappe.get_cached_value('Item', item_code, 'has_batch_no'):
 		serial_nos = get_serial_nos(serial_no)
-		batch = frappe.get_all("Serial No",
+		batch = frappe.get_all_with_user_permissions("Serial No",
 			fields = ["distinct batch_no"],
 			filters= {
 				"item_code": item_code,

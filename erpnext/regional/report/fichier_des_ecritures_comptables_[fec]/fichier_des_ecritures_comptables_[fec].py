@@ -110,7 +110,7 @@ def get_result_as_list(data, filters):
 	result = []
 
 	company_currency = frappe.get_cached_value('Company',  filters.company,  "default_currency")
-	accounts = frappe.get_all("Account", filters={"Company": filters.company}, fields=["name", "account_number"])
+	accounts = frappe.get_all_with_user_permissions("Account", filters={"Company": filters.company}, fields=["name", "account_number"])
 
 	for d in data:
 

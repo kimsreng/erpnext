@@ -20,7 +20,7 @@ def run_projects(current_date):
 		close_tasks(current_date)
 
 def make_timesheet_for_projects(current_date	):
-	for data in frappe.get_all("Task", ["name", "project"], {"status": "Open", "exp_end_date": ("<", current_date)}):
+	for data in frappe.get_all_with_user_permissions("Task", ["name", "project"], {"status": "Open", "exp_end_date": ("<", current_date)}):
 		employee = get_random("Employee")
 		ts = make_timesheet(employee, simulate = True, billable = 1, company = erpnext.get_default_company(),
 			activity_type=get_random("Activity Type"), project=data.project, task =data.name)
@@ -30,7 +30,7 @@ def make_timesheet_for_projects(current_date	):
 			frappe.db.commit()
 
 def close_tasks(current_date):
-	for task in frappe.get_all("Task", ["name"], {"status": "Open", "exp_end_date": ("<", current_date)}):
+	for task in frappe.get_all_with_user_permissions("Task", ["name"], {"status": "Open", "exp_end_date": ("<", current_date)}):
 		task = frappe.get_doc("Task", task.name)
 		task.status = "Completed"
 		task.save()

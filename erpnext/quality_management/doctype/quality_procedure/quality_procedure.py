@@ -66,7 +66,7 @@ def get_children(doctype, parent=None, parent_quality_procedure=None, is_root=Fa
 				for d in parent_procedure.processes if d.procedure
 			]
 	else:
-		return frappe.get_all(doctype, fields=['name as value', 'is_group as expandable'],
+		return frappe.get_all_with_user_permissions(doctype, fields=['name as value', 'is_group as expandable'],
 			filters = dict(parent_quality_procedure = parent), order_by='name asc')
 
 @frappe.whitelist()

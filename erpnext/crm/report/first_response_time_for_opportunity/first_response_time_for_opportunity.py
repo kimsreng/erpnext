@@ -4,6 +4,7 @@
 from __future__ import unicode_literals
 
 import frappe
+from frappe.desk.reportview import get_match_cond_for_reports
 
 
 def execute(filters=None):
@@ -30,8 +31,9 @@ def execute(filters=None):
 		WHERE
 			date(creation) between %s and %s
 			and first_response_time > 0
+			{permission_cond}
 		GROUP BY creation_date
 		ORDER BY creation_date desc
-	''', (filters.from_date, filters.to_date))
+	'''.format(permission_cond=get_match_cond_for_reports("Opportunity")), (filters.from_date, filters.to_date))
 
 	return columns, data

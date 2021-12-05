@@ -67,7 +67,7 @@ def make_employee(user, company=None, **kwargs):
 			"user_id": user,
 			"date_of_birth": "1990-05-08",
 			"date_of_joining": "2013-01-01",
-			"department": frappe.get_all("Department", fields="name")[0].name,
+			"department": frappe.get_all_with_user_permissions("Department", fields="name")[0].name,
 			"gender": "Female",
 			"company_email": user,
 			"prefered_contact_email": "Company Email",

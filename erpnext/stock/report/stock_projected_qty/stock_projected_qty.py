@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import flt, today
 
 from erpnext.accounts.doctype.pos_invoice.pos_invoice import get_pos_reserved_qty
@@ -110,11 +111,16 @@ def get_bin_list(filters):
 			conditions.append(" exists (select name from `tabWarehouse` wh \
 				where wh.lft >= %s and wh.rgt <= %s and bin.warehouse = wh.name)"%(warehouse_details.lft,
 				warehouse_details.rgt))
+	conditions = " where " + " and ".join(conditions) if conditions else ""
+	if conditions:
+		conditions += get_match_cond_for_reports("Bin", "bin")
+	else:
+		conditions = " Where 1=1 {}".format(get_match_cond_for_reports("Bin", "bin"))
 
 	bin_list = frappe.db.sql("""select item_code, warehouse, actual_qty, planned_qty, indented_qty,
 		ordered_qty, reserved_qty, reserved_qty_for_production, reserved_qty_for_sub_contract, projected_qty
 		from tabBin bin {conditions} order by item_code, warehouse
-		""".format(conditions=" where " + " and ".join(conditions) if conditions else ""), as_dict=1)
+		""".format(conditions=conditions), as_dict=1)
 
 	return bin_list
 
@@ -137,14 +143,19 @@ def get_item_map(item_code, include_uom):
 		where item.is_stock_item = 1
 		and item.disabled=0
 		{condition}
+		{permission_cond}
 		and (item.end_of_life > %(today)s or item.end_of_life is null or item.end_of_life='0000-00-00')
 		and exists (select name from `tabBin` bin where bin.item_code=item.name)"""\
-		.format(cf_field=cf_field, cf_join=cf_join, condition=condition),
+		.format(cf_field=cf_field, cf_join=cf_join, condition=condition, permission_cond=get_match_cond_for_reports("Item", "item")),
 		{"today": today(), "include_uom": include_uom}, as_dict=True)
 
 	condition = ""
 	if item_code:
 		condition = 'where parent={0}'.format(frappe.db.escape(item_code, percent=False))
+	if condition:
+		condition += get_match_cond_for_reports("Bin", "bin")
+	else:
+		condition = " Where 1=1 {}".format(get_match_cond_for_reports("Item Reorder"))
 
 	reorder_levels = frappe._dict()
 	for ir in frappe.db.sql("""select * from `tabItem Reorder` {condition}""".format(condition=condition), as_dict=1):

@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _, scrub
-from frappe.desk.reportview import get_match_cond
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import getdate, nowdate
 from six import iteritems, itervalues
 
@@ -179,7 +179,7 @@ class PartyLedgerSummaryReport(object):
 				and gle.posting_date <= %(to_date)s {conditions}
 				{permission_cond}
 			order by gle.posting_date
-		""".format(join=join, join_field=join_field, conditions=conditions, permission_cond = get_match_cond("GL Entry", "gle")), self.filters, as_dict=True)
+		""".format(join=join, join_field=join_field, conditions=conditions, permission_cond = get_match_cond_for_reports("GL Entry", "gle")), self.filters, as_dict=True)
 
 	def prepare_conditions(self):
 		conditions = [""]
@@ -235,7 +235,7 @@ class PartyLedgerSummaryReport(object):
 
 	def get_return_invoices(self):
 		doctype = "Sales Invoice" if self.filters.party_type == "Customer" else "Purchase Invoice"
-		self.return_invoices = [d.name for d in frappe.get_all(doctype, filters={"is_return": 1, "docstatus": 1,
+		self.return_invoices = [d.name for d in frappe.get_all_with_user_permissions(doctype, filters={"is_return": 1, "docstatus": 1,
 			"posting_date": ["between", [self.filters.from_date, self.filters.to_date]]})]
 
 	def get_party_adjustment_amounts(self):
@@ -262,7 +262,7 @@ class PartyLedgerSummaryReport(object):
 					and gle.posting_date between %(from_date)s and %(to_date)s and gle.docstatus < 2 {conditions}					
 				)
 				{permission_cond}
-		""".format(conditions=conditions, income_or_expense=income_or_expense, permission_cond = get_match_cond("GL Entry")), self.filters, as_dict=True)
+		""".format(conditions=conditions, income_or_expense=income_or_expense, permission_cond = get_match_cond_for_reports("GL Entry")), self.filters, as_dict=True)
 
 		self.party_adjustment_details = {}
 		self.party_adjustment_accounts = set()

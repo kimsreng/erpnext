@@ -67,7 +67,7 @@ def get_loyalty_program_details(customer, loyalty_program=None, expiry_date=None
 			return frappe._dict({"loyalty_programs": None})
 
 	if not company:
-		company = frappe.db.get_default("company") or frappe.get_all("Company")[0].name
+		company = frappe.db.get_default("company") or frappe.get_all_with_user_permissions("Company")[0].name
 
 	loyalty_program = frappe.get_doc("Loyalty Program", loyalty_program)
 	lp_details.update({"loyalty_program": loyalty_program.name})

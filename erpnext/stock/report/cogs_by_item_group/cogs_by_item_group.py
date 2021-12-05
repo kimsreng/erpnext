@@ -89,7 +89,7 @@ def get_filtered_entries(filters: Filters) -> FilteredEntries:
 
 def get_stock_value_difference_list(filtered_entries: FilteredEntries) -> SVDList:
 	voucher_nos = [fe.get('voucher_no') for fe in filtered_entries]
-	svd_list = frappe.get_list(
+	svd_list = frappe.get_all_with_user_permissions(
 		'Stock Ledger Entry', fields=['item_code','stock_value_difference'],
 		filters=[('voucher_no', 'in', voucher_nos)]
 	)
@@ -169,7 +169,7 @@ def assign_item_groups_to_svd_list(svd_list: SVDList) -> None:
 
 def get_item_groups_map(svd_list: SVDList) -> Dict[str, str]:
 	item_codes = set(i['item_code'] for i in svd_list)
-	ig_list = frappe.get_list(
+	ig_list = frappe.get_all_with_user_permissions(
 		'Item', fields=['item_code','item_group'],
 		filters=[('item_code', 'in', item_codes)]
 	)
@@ -177,7 +177,7 @@ def get_item_groups_map(svd_list: SVDList) -> Dict[str, str]:
 
 
 def get_item_groups_dict() -> ItemGroupsDict:
-	item_groups_list = frappe.get_all("Item Group", fields=("name", "is_group", "lft", "rgt"))
+	item_groups_list = frappe.get_all_with_user_permissions("Item Group", fields=("name", "is_group", "lft", "rgt"))
 	return {(i['lft'],i['rgt']):{'name':i['name'], 'is_group':i['is_group']}
 		for i in item_groups_list}
 

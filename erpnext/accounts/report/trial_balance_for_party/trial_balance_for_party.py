@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
-from frappe.desk.reportview import get_match_cond
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import cint, flt
 
 from erpnext.accounts.report.trial_balance.trial_balance import validate_filters
@@ -32,7 +32,7 @@ def get_data(filters, show_party_name):
 		party_name_field = 'name'
 
 	party_filters = {"name": filters.get("party")} if filters.get("party") else {}
-	parties = frappe.get_all(filters.get("party_type"), fields = ["name", party_name_field],
+	parties = frappe.get_all_with_user_permissions(filters.get("party_type"), fields = ["name", party_name_field],
 		filters = party_filters, order_by="name")
 	company_currency = frappe.get_cached_value('Company',  filters.company,  "default_currency")
 	opening_balances = get_opening_balances(filters)
@@ -113,7 +113,7 @@ def get_opening_balances(filters):
 			and (posting_date < %(from_date)s or ifnull(is_opening, 'No') = 'Yes')
 			{account_filter}
 			{permission_cond}
-		group by party""".format(account_filter=account_filter, permission_cond=get_match_cond("GL Entry")), {
+		group by party""".format(account_filter=account_filter, permission_cond=get_match_cond_for_reports("GL Entry")), {
 			"company": filters.company,
 			"from_date": filters.from_date,
 			"party_type": filters.party_type
@@ -141,7 +141,7 @@ def get_balances_within_period(filters):
 			and ifnull(is_opening, 'No') = 'No'
 			{account_filter}
 			{permission_cond}
-		group by party""".format(account_filter=account_filter, permission_cond=get_match_cond("GL Entry")), {
+		group by party""".format(account_filter=account_filter, permission_cond=get_match_cond_for_reports("GL Entry")), {
 			"company": filters.company,
 			"from_date": filters.from_date,
 			"to_date": filters.to_date,

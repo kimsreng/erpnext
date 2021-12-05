@@ -37,7 +37,7 @@ class TestTransactionDeletionRecord(unittest.TestCase):
 	def test_deletion_is_successful(self):
 		create_task('Dunder Mifflin Paper Co')
 		create_transaction_deletion_request('Dunder Mifflin Paper Co')
-		tasks_containing_company = frappe.get_all('Task',
+		tasks_containing_company = frappe.get_all_with_user_permissions('Task',
 		filters = {
 			'company' : 'Dunder Mifflin Paper Co'
 		})

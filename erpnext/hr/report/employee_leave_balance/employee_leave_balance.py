@@ -7,6 +7,7 @@ from itertools import groupby
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import add_days
 
 from erpnext.hr.doctype.leave_application.leave_application import (
@@ -73,13 +74,13 @@ def get_columns():
 	return columns
 
 def get_data(filters):
-	leave_types = frappe.db.get_list('Leave Type', pluck='name', order_by='name')
+	leave_types = frappe.get_all_with_user_permissions('Leave Type', pluck='name', order_by='name')
 	conditions = get_conditions(filters)
 
 	user = frappe.session.user
 	department_approver_map = get_department_leave_approver_map(filters.get('department'))
 
-	active_employees = frappe.get_list('Employee',
+	active_employees = frappe.get_all_with_user_permissions('Employee',
 		filters=conditions,
 		fields=['name', 'employee_name', 'department', 'user_id', 'leave_approver'])
 
@@ -144,7 +145,7 @@ def get_conditions(filters):
 def get_department_leave_approver_map(department=None):
 
 	# get current department and all its child
-	department_list = frappe.get_list('Department',
+	department_list = frappe.get_all_with_user_permissions('Department',
 						filters={
 							'disabled': 0
 						},
@@ -156,7 +157,7 @@ def get_department_leave_approver_map(department=None):
 						pluck='name'
 					)
 	# retrieve approvers list from current department and from its subsequent child departments
-	approver_list = frappe.get_all('Department Approver',
+	approver_list = frappe.get_all_with_user_permissions('Department Approver',
 						filters={
 							'parentfield': 'leave_approvers',
 							'parent': ('in', department_list)
@@ -190,7 +191,8 @@ def get_allocated_and_expired_leaves(from_date, to_date, employee, leave_type):
 			AND (from_date between %(from_date)s AND %(to_date)s
 				OR to_date between %(from_date)s AND %(to_date)s
 				OR (from_date < %(from_date)s AND to_date > %(to_date)s))
-	""", {
+			{permision_cond}
+	""".format(permission_cond=get_match_cond_for_reports("Leave Ledger Entry")), {
 		"from_date": from_date,
 		"to_date": to_date,
 		"employee": employee,

@@ -7,6 +7,7 @@ import frappe
 from frappe import _
 
 import erpnext
+from frappe.desk.reportview import get_match_cond_for_reports
 
 
 def execute(filters=None):
@@ -96,10 +97,9 @@ def get_data(filters):
 	data = []
 
 	if erpnext.get_region() == "India":
-		employee_pan_dict = frappe._dict(frappe.db.sql(""" select employee, pan_number from `tabEmployee`"""))
+		employee_pan_dict = frappe._dict(frappe.get_all_with_user_permissions("Employee", fields=["employee", "pan_number"], as_list=True))
 
-	component_types = frappe.db.sql(""" select name from `tabSalary Component`
-		where is_income_tax_component = 1 """)
+	component_types = frappe.get_all_with_user_permissions("Salary Component", filters={"is_income_tax_component": 1}, pluck="name")
 
 	component_types = [comp_type[0] for comp_type in component_types]
 
@@ -115,7 +115,8 @@ def get_data(filters):
 		and ded.parenttype = 'Salary Slip'
 		and sal.docstatus = 1 %s
 		and ded.salary_component in (%s)
-	""" % (conditions , ", ".join(['%s']*len(component_types))), tuple(component_types), as_dict=1)
+		{permission_cond}
+	""".format(permission_cond=get_match_cond_for_reports("Salary Slip", "sal")) % (conditions , ", ".join(['%s']*len(component_types))), tuple(component_types), as_dict=1)
 
 	for d in entry:
 

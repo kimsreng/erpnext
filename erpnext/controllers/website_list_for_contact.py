@@ -109,7 +109,7 @@ def get_list_for_transactions(doctype, txt, filters, limit_start, limit_page_len
 		if meta.get_field('items'):
 			if meta.get_field('items').options:
 				child_doctype = meta.get_field('items').options
-				for item in frappe.get_all(child_doctype, {"item_name": ['like', "%" + txt + "%"]}):
+				for item in frappe.get_all_with_user_permissions(child_doctype, {"item_name": ['like', "%" + txt + "%"]}):
 					child = frappe.get_doc(child_doctype, item.name)
 					or_filters.append([doctype, "name", "=", child.parent])
 

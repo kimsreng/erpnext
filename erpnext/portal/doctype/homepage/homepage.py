@@ -16,7 +16,7 @@ class Homepage(Document):
 		delete_page_cache('home')
 
 	def setup_items(self):
-		for d in frappe.get_all('Website Item', fields=['name', 'item_name', 'description', 'image', 'route'],
+		for d in frappe.get_all_with_user_permissions('Website Item', fields=['name', 'item_name', 'description', 'image', 'route'],
 			filters={'published': 1}, limit=3):
 
 			doc = frappe.get_doc('Website Item', d.name)

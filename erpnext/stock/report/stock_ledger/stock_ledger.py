@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import cint, flt
 
 from erpnext.stock.doctype.serial_no.serial_no import get_serial_nos
@@ -147,9 +148,12 @@ def get_stock_ledger_entries(filters, items):
 				AND is_cancelled = 0 AND posting_date BETWEEN %(from_date)s AND %(to_date)s
 				{sle_conditions}
 				{item_conditions_sql}
+				{permission_cond}
 		ORDER BY
 			posting_date asc, posting_time asc, creation asc
-		""".format(sle_conditions=get_sle_conditions(filters), item_conditions_sql=item_conditions_sql),
+		""".format(sle_conditions=get_sle_conditions(filters), 
+		item_conditions_sql=item_conditions_sql, 
+		permission_cond=get_match_cond_for_reports("Stock Ledger Entry", "sle")),
 		filters, as_dict=1)
 
 	return sl_entries
@@ -167,8 +171,8 @@ def get_items(filters):
 
 	items = []
 	if conditions:
-		items = frappe.db.sql_list("""select name from `tabItem` item where {}"""
-			.format(" and ".join(conditions)), filters)
+		items = frappe.db.sql_list("""select name from `tabItem` item where {} {permission_cond}"""
+			.format(" and ".join(conditions), permission_cond=get_match_cond_for_reports("Item", "item")), filters)
 	return items
 
 

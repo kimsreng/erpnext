@@ -784,7 +784,7 @@ def get_default_bank_cash_account(company, account_type=None, mode_of_payment=No
 		if account_type=="Bank":
 			account = frappe.get_cached_value('Company',  company,  "default_bank_account")
 			if not account:
-				account_list = frappe.get_all("Account", filters = {"company": company,
+				account_list = frappe.get_all_with_user_permissions("Account", filters = {"company": company,
 					"account_type": "Bank", "is_group": 0})
 				if len(account_list) == 1:
 					account = account_list[0].name
@@ -792,7 +792,7 @@ def get_default_bank_cash_account(company, account_type=None, mode_of_payment=No
 		elif account_type=="Cash":
 			account = frappe.get_cached_value('Company',  company,  "default_cash_account")
 			if not account:
-				account_list = frappe.get_all("Account", filters = {"company": company,
+				account_list = frappe.get_all_with_user_permissions("Account", filters = {"company": company,
 					"account_type": "Cash", "is_group": 0})
 				if len(account_list) == 1:
 					account = account_list[0].name

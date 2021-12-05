@@ -99,7 +99,7 @@ class EmployeeAdvance(Document):
 
 @frappe.whitelist()
 def get_pending_amount(employee, posting_date):
-	employee_due_amount = frappe.get_all("Employee Advance", \
+	employee_due_amount = frappe.get_all_with_user_permissions("Employee Advance", \
 		filters = {"employee":employee, "docstatus":1, "posting_date":("<=", posting_date)}, \
 		fields = ["advance_amount", "paid_amount"])
 	return sum([(emp.advance_amount - emp.paid_amount) for emp in employee_due_amount])

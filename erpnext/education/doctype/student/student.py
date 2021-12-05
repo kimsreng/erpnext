@@ -86,7 +86,7 @@ class Student(Document):
 
 	def get_all_course_enrollments(self):
 		"""Returns a list of course enrollments linked with the current student"""
-		course_enrollments = frappe.get_all("Course Enrollment", filters={"student": self.name}, fields=['course', 'name'])
+		course_enrollments = frappe.get_all_with_user_permissions("Course Enrollment", filters={"student": self.name}, fields=['course', 'name'])
 		if not course_enrollments:
 			return None
 		else:
@@ -95,7 +95,7 @@ class Student(Document):
 
 	def get_program_enrollments(self):
 		"""Returns a list of course enrollments linked with the current student"""
-		program_enrollments = frappe.get_all("Program Enrollment", filters={"student": self.name}, fields=['program'])
+		program_enrollments = frappe.get_all_with_user_permissions("Program Enrollment", filters={"student": self.name}, fields=['program'])
 		if not program_enrollments:
 			return None
 		else:

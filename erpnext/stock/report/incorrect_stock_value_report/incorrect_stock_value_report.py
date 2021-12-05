@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import add_days, getdate, today
 from six import iteritems
 
@@ -26,7 +27,7 @@ def execute(filters=None):
 def get_unsync_date(filters):
 	date = filters.from_date
 	if not date:
-		date = frappe.db.sql(""" SELECT min(posting_date) from `tabStock Ledger Entry`""")
+		date = frappe.db.sql(""" SELECT min(posting_date) from `tabStock Ledger Entry` WHERE 1=1 {permission_cond}""".format(permission_cond=get_match_cond_for_reports("Stock Ledger Entry")))
 		date = date[0][0]
 
 	if not date:
@@ -60,8 +61,9 @@ def get_data(report_filters):
 				posting_date
 				= %s and company = %s
 				and is_cancelled = 0
+				{permission_cond}
 			ORDER BY timestamp(posting_date, posting_time) asc, creation asc
-		''', (from_date, report_filters.company), as_dict=1)
+		'''.format(permission_cond=get_match_cond_for_reports("Stock Ledger Entry")), (from_date, report_filters.company), as_dict=1)
 
 	for d in data:
 		voucher_wise_dict.setdefault((d.item_code, d.warehouse), []).append(d)

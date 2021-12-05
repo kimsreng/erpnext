@@ -816,7 +816,7 @@ def make_inter_company_delivery_note(source_name, target_doc=None):
 	return make_inter_company_transaction("Purchase Receipt", source_name, target_doc)
 
 def get_item_account_wise_additional_cost(purchase_document):
-	landed_cost_vouchers = frappe.get_all("Landed Cost Purchase Receipt", fields=["parent"],
+	landed_cost_vouchers = frappe.get_all_with_user_permissions("Landed Cost Purchase Receipt", fields=["parent"],
 		filters = {"receipt_document": purchase_document, "docstatus": 1})
 
 	if not landed_cost_vouchers:

@@ -130,7 +130,7 @@ def get_child_groups_for_website(item_group_name, immediate=False):
 	if immediate:
 		filters["parent_item_group"] = item_group_name
 
-	return frappe.get_all(
+	return frappe.get_all_with_user_permissions(
 		"Item Group",
 		filters=filters,
 		fields=["name", "route"]
@@ -140,7 +140,7 @@ def get_child_item_groups(item_group_name):
 	item_group = frappe.get_cached_value("Item Group",
 		item_group_name, ["lft", "rgt"], as_dict=1)
 
-	child_item_groups = [d.name for d in frappe.get_all('Item Group',
+	child_item_groups = [d.name for d in frappe.get_all_with_user_permissions('Item Group',
 		filters= {'lft': ('>=', item_group.lft),'rgt': ('<=', item_group.rgt)})]
 
 	return child_item_groups or {}

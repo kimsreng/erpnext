@@ -41,7 +41,7 @@ class TestStockLedgerEntry(ERPNextTestCase):
 			qty=50,
 			rate=100,
 			company=company,
-			expense_account = "Stock Adjustment - _TC" if frappe.get_all("Stock Ledger Entry") else "Temporary Opening - _TC",
+			expense_account = "Stock Adjustment - _TC" if frappe.get_all_with_user_permissions("Stock Ledger Entry") else "Temporary Opening - _TC",
 			posting_date='2020-04-10',
 			posting_time='14:00'
 		)
@@ -53,7 +53,7 @@ class TestStockLedgerEntry(ERPNextTestCase):
 			qty=10,
 			rate=200,
 			company=company,
-			expense_account="Stock Adjustment - _TC" if frappe.get_all("Stock Ledger Entry") else "Temporary Opening - _TC",
+			expense_account="Stock Adjustment - _TC" if frappe.get_all_with_user_permissions("Stock Ledger Entry") else "Temporary Opening - _TC",
 			posting_date='2020-04-20',
 			posting_time='14:00'
 		)
@@ -65,7 +65,7 @@ class TestStockLedgerEntry(ERPNextTestCase):
 			target="Finished Goods - _TC",
 			company=company,
 			qty=10,
-			expense_account="Stock Adjustment - _TC" if frappe.get_all("Stock Ledger Entry") else "Temporary Opening - _TC",
+			expense_account="Stock Adjustment - _TC" if frappe.get_all_with_user_permissions("Stock Ledger Entry") else "Temporary Opening - _TC",
 			posting_date='2020-04-30',
 			posting_time='14:00'
 		)
@@ -97,7 +97,7 @@ class TestStockLedgerEntry(ERPNextTestCase):
 			qty=50,
 			rate=150,
 			company=company,
-			expense_account ="Stock Adjustment - _TC" if frappe.get_all("Stock Ledger Entry") else "Temporary Opening - _TC",
+			expense_account ="Stock Adjustment - _TC" if frappe.get_all_with_user_permissions("Stock Ledger Entry") else "Temporary Opening - _TC",
 			posting_date='2020-04-12',
 			posting_time='14:00'
 		)

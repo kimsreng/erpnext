@@ -20,7 +20,7 @@ class FindItemBot(BotParser):
 
 			if items:
 				out = []
-				warehouses = frappe.get_all("Warehouse")
+				warehouses = frappe.get_all_with_user_permissions("Warehouse")
 				for item in items:
 					found = False
 					for warehouse in warehouses:

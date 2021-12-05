@@ -46,7 +46,7 @@ class TransactionDeletionRecord(Document):
 
 	def delete_lead_addresses(self):
 		"""Delete addresses to which leads are linked"""
-		leads = frappe.get_all('Lead', filters={'company': self.company})
+		leads = frappe.get_all_with_user_permissions('Lead', filters={'company': self.company})
 		leads = ["'%s'" % row.get("name") for row in leads]
 		addresses = []
 		if leads:
@@ -95,7 +95,7 @@ class TransactionDeletionRecord(Document):
 							self.update_naming_series(naming_series, docfield['parent'])
 
 	def get_doctypes_to_be_ignored_list(self):
-		singles = frappe.get_all('DocType', filters = {'issingle': 1}, pluck = 'name')
+		singles = frappe.get_all_with_user_permissions('DocType', filters = {'issingle': 1}, pluck = 'name')
 		doctypes_to_be_ignored_list = singles
 		for doctype in self.doctypes_to_be_ignored:
 			doctypes_to_be_ignored_list.append(doctype.doctype_name)
@@ -103,7 +103,7 @@ class TransactionDeletionRecord(Document):
 		return doctypes_to_be_ignored_list
 
 	def get_doctypes_with_company_field(self, doctypes_to_be_ignored_list):
-		docfields = frappe.get_all('DocField',
+		docfields = frappe.get_all_with_user_permissions('DocField',
 			filters = {
 				'fieldtype': 'Link',
 				'options': 'Company',
@@ -113,7 +113,7 @@ class TransactionDeletionRecord(Document):
 		return docfields
 
 	def get_all_child_doctypes(self):
-		return frappe.get_all('DocType', filters = {'istable': 1}, pluck = 'name')
+		return frappe.get_all_with_user_permissions('DocType', filters = {'istable': 1}, pluck = 'name')
 
 	def get_number_of_docs_linked_with_specified_company(self, doctype, company_fieldname):
 		return frappe.db.count(doctype, {company_fieldname : self.company})
@@ -126,11 +126,11 @@ class TransactionDeletionRecord(Document):
 			})
 
 	def delete_child_tables(self, doctype, company_fieldname):
-		parent_docs_to_be_deleted = frappe.get_all(doctype, {
+		parent_docs_to_be_deleted = frappe.get_all_with_user_permissions(doctype, {
 			company_fieldname : self.company
 		}, pluck = 'name')
 
-		child_tables = frappe.get_all('DocField', filters = {
+		child_tables = frappe.get_all_with_user_permissions('DocField', filters = {
 			'fieldtype': 'Table',
 			'parent': doctype
 		}, pluck = 'options')
@@ -165,10 +165,10 @@ class TransactionDeletionRecord(Document):
 				company_fieldname), (doctype, self.company))
 
 	def delete_communications(self, doctype, company_fieldname):
-		reference_docs = frappe.get_all(doctype, filters={company_fieldname:self.company})
+		reference_docs = frappe.get_all_with_user_permissions(doctype, filters={company_fieldname:self.company})
 		reference_doc_names = [r.name for r in reference_docs]
 
-		communications = frappe.get_all('Communication', filters={'reference_doctype':doctype,'reference_name':['in', reference_doc_names]})
+		communications = frappe.get_all_with_user_permissions('Communication', filters={'reference_doctype':doctype,'reference_name':['in', reference_doc_names]})
 		communication_names = [c.name for c in communications]
 
 		frappe.delete_doc('Communication', communication_names, ignore_permissions=True)

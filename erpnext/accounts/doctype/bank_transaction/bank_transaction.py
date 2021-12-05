@@ -78,7 +78,7 @@ class BankTransaction(StatusUpdater):
 			"clearance_date", clearance_date)
 
 def get_reconciled_bank_transactions(payment_entry):
-	reconciled_bank_transactions = frappe.get_all(
+	reconciled_bank_transactions = frappe.get_all_with_user_permissions(
 		'Bank Transaction Payments',
 		filters = {
 			'payment_entry': payment_entry.payment_entry

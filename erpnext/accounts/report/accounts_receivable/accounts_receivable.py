@@ -7,7 +7,7 @@ from collections import OrderedDict
 
 import frappe
 from frappe import _, scrub
-from frappe.desk.reportview import get_match_cond
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import cint, cstr, flt, getdate, nowdate
 
 from erpnext.accounts.doctype.accounting_dimension.accounting_dimension import (
@@ -526,7 +526,7 @@ class ReceivablePayableReport(object):
 		if self.filters.get(party_field):
 			filters.update({party_field: self.filters.get(party_field)})
 		self.return_entries = frappe._dict(
-			frappe.get_all(doctype, filters, ['name', 'return_against'], as_list=1)
+			frappe.get_all_with_user_permissions(doctype, filters, ['name', 'return_against'], as_list=1)
 		)
 
 	def set_ageing(self, row):
@@ -599,7 +599,7 @@ class ReceivablePayableReport(object):
 				and party_type=%s
 				and (party is not null and party != '') {permission_cond}
 				{1} {2} {3}"""
-			.format(select_fields, date_condition, conditions, order_by, remarks=remarks, permission_cond=get_match_cond("GL Entry")), values, as_dict=True)
+			.format(select_fields, date_condition, conditions, order_by, remarks=remarks, permission_cond=get_match_cond_for_reports("GL Entry")), values, as_dict=True)
 
 	def get_sales_invoices_or_customers_based_on_sales_person(self):
 		if self.filters.get("sales_person"):
@@ -611,7 +611,7 @@ class ReceivablePayableReport(object):
 				from `tabSales Team` steam
 				where parenttype in ('Customer', 'Sales Invoice') {permission_cond}
 					and exists(select name from `tabSales Person` where lft >= %s and rgt <= %s and name = steam.sales_person)
-			""".format(permission_cond=get_match_cond("Sales Team", "steam")), (lft, rgt), as_dict=1)
+			""".format(permission_cond=get_match_cond_for_reports("Sales Team", "steam")), (lft, rgt), as_dict=1)
 
 			self.sales_person_records = frappe._dict()
 			for d in records:
@@ -664,7 +664,7 @@ class ReceivablePayableReport(object):
 
 		# get GL with "receivable" or "payable" account_type
 		account_type = "Receivable" if self.party_type == "Customer" else "Payable"
-		accounts = [d.name for d in frappe.get_all("Account",
+		accounts = [d.name for d in frappe.get_all_with_user_permissions("Account",
 			filters={"account_type": account_type, "company": self.filters.company})]
 
 		if accounts:

@@ -12,7 +12,7 @@ def execute():
 	frappe.reload_doc('assets', 'doctype', 'location')
 	frappe.reload_doc('stock', 'doctype', 'warehouse')
 
-	for d in frappe.get_all('Warehouse',
+	for d in frappe.get_all_with_user_permissions('Warehouse',
 		fields = ['warehouse_name', 'is_group', 'parent_warehouse'], order_by="lft asc"):
 		try:
 			loc = frappe.new_doc('Location')

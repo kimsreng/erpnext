@@ -47,7 +47,7 @@ def update_call_log(call_payload, status='Ringing', call_log=None):
 		return call_log
 
 def get_call_log(call_payload):
-	call_log = frappe.get_all('Call Log', {
+	call_log = frappe.get_all_with_user_permissions('Call Log', {
 		'id': call_payload.get('CallSid'),
 	}, limit=1)
 

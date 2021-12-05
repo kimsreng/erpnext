@@ -83,7 +83,7 @@ def get_loan_security_details():
 		loan_security_price_map.setdefault(security.loan_security, security.loan_security_price)
 		lsp_validity_map.setdefault(security.loan_security, security.valid_upto)
 
-	loan_security_details = frappe.get_all('Loan Security', fields=['name as loan_security',
+	loan_security_details = frappe.get_all_with_user_permissions('Loan Security', fields=['name as loan_security',
 		'loan_security_code', 'loan_security_name', 'haircut', 'loan_security_type',
 		'disabled'])
 

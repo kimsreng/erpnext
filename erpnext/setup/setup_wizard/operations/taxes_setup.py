@@ -204,7 +204,7 @@ def get_or_create_account(company_name, account):
 	default_root_type = 'Liability'
 	root_type = account.get('root_type', default_root_type)
 
-	existing_accounts = frappe.get_all('Account',
+	existing_accounts = frappe.get_all_with_user_permissions('Account',
 		filters={
 			'company': company_name,
 			'root_type': root_type
@@ -259,7 +259,7 @@ def get_or_create_tax_group(company_name, root_type):
 
 	# Create a new group account named 'Duties and Taxes' or 'Tax Assets' just
 	# below the root account
-	root_account = frappe.get_all('Account', {
+	root_account = frappe.get_all_with_user_permissions('Account', {
 		'is_group': 1,
 		'root_type': root_type,
 		'company': company_name,

@@ -36,7 +36,7 @@ class TestRouting(unittest.TestCase):
 		for row in routing_doc.operations:
 			self.assertEqual(row.sequence_id, row.idx)
 
-		for data in frappe.get_all("Job Card",
+		for data in frappe.get_all_with_user_permissions("Job Card",
 			filters={"work_order": wo_doc.name}, order_by="sequence_id desc"):
 			job_card_doc = frappe.get_doc("Job Card", data.name)
 			job_card_doc.time_logs[0].completed_qty = 10

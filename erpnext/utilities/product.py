@@ -36,7 +36,7 @@ def get_web_item_qty_in_stock(item_code, item_warehouse_field, warehouse=None):
 
 
 def adjust_qty_for_expired_items(item_code, stock_qty, warehouse):
-	batches = frappe.get_all('Batch', filters=[{'item': item_code}], fields=['expiry_date', 'name'])
+	batches = frappe.get_all_with_user_permissions('Batch', filters=[{'item': item_code}], fields=['expiry_date', 'name'])
 	expired_batches = get_expired_batches(batches)
 	stock_qty = [list(item) for item in stock_qty]
 
@@ -73,11 +73,11 @@ def get_price(item_code, price_list, customer_group, company, qty=1):
 	template_item_code = frappe.db.get_value("Item", item_code, "variant_of")
 
 	if price_list:
-		price = frappe.get_all("Item Price", fields=["price_list_rate", "currency"],
+		price = frappe.get_all_with_user_permissions("Item Price", fields=["price_list_rate", "currency"],
 			filters={"price_list": price_list, "item_code": item_code})
 
 		if template_item_code and not price:
-			price = frappe.get_all("Item Price", fields=["price_list_rate", "currency"],
+			price = frappe.get_all_with_user_permissions("Item Price", fields=["price_list_rate", "currency"],
 				filters={"price_list": price_list, "item_code": template_item_code})
 
 		if price:

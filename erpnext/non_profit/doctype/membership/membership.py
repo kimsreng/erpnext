@@ -206,7 +206,7 @@ def get_member_based_on_subscription(subscription_id, email=None, customer_id=No
 	if customer_id:
 		filters.update({"customer_id": customer_id})
 
-	members = frappe.get_all("Member", filters=filters, order_by="creation desc")
+	members = frappe.get_all_with_user_permissions("Member", filters=filters, order_by="creation desc")
 
 	try:
 		return frappe.get_doc("Member", members[0]["name"])
@@ -401,7 +401,7 @@ def notify_failure(log):
 
 
 def get_plan_from_razorpay_id(plan_id):
-	plan = frappe.get_all("Membership Type", filters={"razorpay_plan_id": plan_id}, order_by="creation desc")
+	plan = frappe.get_all_with_user_permissions("Membership Type", filters={"razorpay_plan_id": plan_id}, order_by="creation desc")
 
 	try:
 		return plan[0]["name"]

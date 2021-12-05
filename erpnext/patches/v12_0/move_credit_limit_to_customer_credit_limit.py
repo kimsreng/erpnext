@@ -20,7 +20,7 @@ def execute():
 def move_credit_limit_to_child_table():
 	''' maps data from old field to the new field in the child table '''
 
-	companies = frappe.get_all("Company", 'name')
+	companies = frappe.get_all_with_user_permissions("Company", 'name')
 	for doctype in ("Customer", "Customer Group"):
 		fields = ""
 		if doctype == "Customer" \

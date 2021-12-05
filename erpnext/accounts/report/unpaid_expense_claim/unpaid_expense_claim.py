@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
-from frappe.desk.reportview import get_match_cond
+from frappe.desk.reportview import get_match_cond_for_reports
 
 
 def execute(filters=None):
@@ -36,4 +36,4 @@ def get_unclaimed_expese_claims(filters):
 		group by ec.name
 		having
 			outstanding_amt > 0
-	""".format(cond=cond, permission_cond=get_match_cond("GL Entry", "gle")), filters, as_list=1)
+	""".format(cond=cond, permission_cond=get_match_cond_for_reports("GL Entry", "gle")), filters, as_list=1)

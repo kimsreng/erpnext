@@ -200,7 +200,7 @@ def get_conditions(filters):
 	return conditions
 
 def get_customer_details():
-	details = frappe.get_all("Customer",
+	details = frappe.get_all_with_user_permissions("Customer",
 		fields=["name", "customer_name", "customer_group"])
 	customer_details = {}
 	for d in details:

@@ -136,7 +136,7 @@ def allow_regional(fn):
 
 def get_last_membership(member):
 	'''Returns last membership if exists'''
-	last_membership = frappe.get_all('Membership', 'name,to_date,membership_type',
+	last_membership = frappe.get_all_with_user_permissions('Membership', 'name,to_date,membership_type',
 		dict(member=member, paid=1), order_by='to_date desc', limit=1)
 
 	if last_membership:

@@ -245,7 +245,7 @@ class TestLandedCostVoucher(ERPNextTestCase):
 		self.assertEqual(lcv.total_taxes_and_charges, 729)
 		self.assertEqual(pr.items[0].landed_cost_voucher_amount, 729)
 
-		gl_entries = frappe.get_all("GL Entry", fields=["account", "credit", "credit_in_account_currency"],
+		gl_entries = frappe.get_all_with_user_permissions("GL Entry", fields=["account", "credit", "credit_in_account_currency"],
 			filters={"voucher_no": pr.name, "account": ("in", ["Shipping Charges USD - TCP1", "Expenses Included In Valuation - TCP1"])})
 
 		expected_gl_entries = {

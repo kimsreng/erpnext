@@ -168,7 +168,7 @@ def make_sales_invoice_for_timesheet(name):
 	frappe.db.commit()
 
 def make_leave_application():
-	allocated_leaves = frappe.get_all("Leave Allocation", fields=['employee', 'leave_type'])
+	allocated_leaves = frappe.get_all_with_user_permissions("Leave Allocation", fields=['employee', 'leave_type'])
 
 	for allocated_leave in allocated_leaves:
 		leave_balance = get_leave_balance_on(allocated_leave.employee, allocated_leave.leave_type, frappe.flags.current_date,
@@ -195,7 +195,7 @@ def make_leave_application():
 
 def mark_attendance():
 	attendance_date = frappe.flags.current_date
-	for employee in frappe.get_all('Employee', fields=['name'], filters = {'status': 'Active'}):
+	for employee in frappe.get_all_with_user_permissions('Employee', fields=['name'], filters = {'status': 'Active'}):
 
 		if not frappe.db.get_value("Attendance", {"employee": employee.name, "attendance_date": attendance_date}):
 			attendance = frappe.get_doc({
@@ -217,7 +217,7 @@ def mark_attendance():
 			frappe.db.commit()
 
 def setup_department_approvers():
-	for d in frappe.get_all('Department', filters={'department_name': ['!=', 'All Departments']}):
+	for d in frappe.get_all_with_user_permissions('Department', filters={'department_name': ['!=', 'All Departments']}):
 		doc = frappe.get_doc('Department', d.name)
 		doc.append("leave_approvers", {'approver': frappe.session.user})
 		doc.append("expense_approvers", {'approver': frappe.session.user})

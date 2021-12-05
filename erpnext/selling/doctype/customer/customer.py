@@ -176,7 +176,7 @@ class Customer(TransactionBase):
 	def create_lead_address_contact(self):
 		if self.lead_name:
 			# assign lead address to customer (if already not set)
-			address_names = frappe.get_all('Dynamic Link', filters={
+			address_names = frappe.get_all_with_user_permissions('Dynamic Link', filters={
 								"parenttype":"Address",
 								"link_doctype":"Lead",
 								"link_name":self.lead_name
@@ -194,7 +194,7 @@ class Customer(TransactionBase):
 				frappe.throw(_("Please mention the Lead Name in Lead {0}").format(self.lead_name))
 
 			if lead.organization_lead:
-				contact_names = frappe.get_all('Dynamic Link', filters={
+				contact_names = frappe.get_all_with_user_permissions('Dynamic Link', filters={
 									"parenttype":"Contact",
 									"link_doctype":"Lead",
 									"link_name":self.lead_name
@@ -351,13 +351,13 @@ def make_opportunity(source_name, target_doc=None):
 	return target_doc
 
 def _set_missing_values(source, target):
-	address = frappe.get_all('Dynamic Link', {
+	address = frappe.get_all_with_user_permissions('Dynamic Link', {
 			'link_doctype': source.doctype,
 			'link_name': source.name,
 			'parenttype': 'Address',
 		}, ['parent'], limit=1)
 
-	contact = frappe.get_all('Dynamic Link', {
+	contact = frappe.get_all_with_user_permissions('Dynamic Link', {
 			'link_doctype': source.doctype,
 			'link_name': source.name,
 			'parenttype': 'Contact',
@@ -374,7 +374,7 @@ def get_loyalty_programs(doc):
 	''' returns applicable loyalty programs for a customer '''
 
 	lp_details = []
-	loyalty_programs = frappe.get_all("Loyalty Program",
+	loyalty_programs = frappe.get_all_with_user_permissions("Loyalty Program",
 		fields=["name", "customer_group", "customer_territory"],
 		filters={"auto_opt_in": 1, "from_date": ["<=", today()],
 			"ifnull(to_date, '2500-01-01')": [">=", today()]})

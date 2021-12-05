@@ -50,7 +50,7 @@ class ProgramEnrollment(Document):
 					get_link_to_form("Academic Term", self.academic_term)))
 
 	def validate_duplication(self):
-		enrollment = frappe.get_all("Program Enrollment", filters={
+		enrollment = frappe.get_all_with_user_permissions("Program Enrollment", filters={
 			"student": self.student,
 			"program": self.program,
 			"academic_year": self.academic_year,

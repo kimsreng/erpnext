@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import flt, getdate
 
 
@@ -51,8 +52,8 @@ def get_item_info(filters):
 		conditions.append("item.brand=%(brand)s")
 
 	return frappe.db.sql("""select name, item_name, description, brand, item_group,
-		safety_stock, lead_time_days from `tabItem` item where {}"""
-		.format(" and ".join(conditions)), filters, as_dict=1)
+		safety_stock, lead_time_days from `tabItem` item where {} {permission_con}
+		""".format(" and ".join(conditions), permission_cond=get_match_cond_for_reports("Item", "item")), filters, as_dict=1)
 
 
 def get_consumed_items(condition):
@@ -78,7 +79,8 @@ def get_consumed_items(condition):
 			actual_qty < 0
 			and voucher_type not in ('Delivery Note', 'Sales Invoice')
 			%s
-		group by item_code""" % condition, as_dict=1)
+			{permission_cond}
+		group by item_code""".format(permission_cond=get_match_cond_for_reports("Stock Ledger Entry", "sle")) % condition, as_dict=1)
 
 	consumed_items_map = {item.item_code : item.consumed_qty for item in consumed_items}
 	return consumed_items_map
@@ -86,14 +88,14 @@ def get_consumed_items(condition):
 def get_delivered_items(condition):
 	dn_items = frappe.db.sql("""select dn_item.item_code, sum(dn_item.stock_qty) as dn_qty
 		from `tabDelivery Note` dn, `tabDelivery Note Item` dn_item
-		where dn.name = dn_item.parent and dn.docstatus = 1 %s
-		group by dn_item.item_code""" % (condition), as_dict=1)
+		where dn.name = dn_item.parent and dn.docstatus = 1 %s {permission_cond}
+		group by dn_item.item_code""".format(permission_cond=get_match_cond_for_reports("Delivery Note", "dn")) % (condition), as_dict=1)
 
 	si_items = frappe.db.sql("""select si_item.item_code, sum(si_item.stock_qty) as si_qty
 		from `tabSales Invoice` si, `tabSales Invoice Item` si_item
 		where si.name = si_item.parent and si.docstatus = 1 and
-		si.update_stock = 1 %s
-		group by si_item.item_code""" % (condition), as_dict=1)
+		si.update_stock = 1 %s {permission_cond}
+		group by si_item.item_code""".format(permission_cond=get_match_cond_for_reports("Sales Invoice", "si")) % (condition), as_dict=1)
 
 	dn_item_map = {}
 	for item in dn_items:

@@ -17,7 +17,7 @@ def get_context(context):
 	context.progress = get_program_progress(context.student.name)
 
 def get_program_progress(student):
-	enrolled_programs = frappe.get_all("Program Enrollment", filters={'student':student}, fields=['program'])
+	enrolled_programs = frappe.get_all_with_user_permissions("Program Enrollment", filters={'student':student}, fields=['program'])
 	student_progress = []
 	for list_item in enrolled_programs:
 		program = frappe.get_doc("Program", list_item.program)

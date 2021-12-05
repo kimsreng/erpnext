@@ -7,6 +7,7 @@ import frappe
 from frappe import _, msgprint
 
 from erpnext import get_company_currency
+from frappe.desk.reportview import get_match_cond_for_reports
 
 
 def execute(filters=None):
@@ -165,8 +166,10 @@ def get_entries(filters):
 			`tab%s` dt, `tab%s Item` dt_item, `tabSales Team` st
 		WHERE
 			st.parent = dt.name and dt.name = dt_item.parent and st.parenttype = %s
-			and dt.docstatus = 1 %s order by st.sales_person, dt.name desc
-		""" %(date_field, qty_field, qty_field, qty_field, filters["doc_type"], filters["doc_type"], '%s', conditions),
+			and dt.docstatus = 1 %s
+			{permission_cond} 
+		order by st.sales_person, dt.name desc
+		""".format(permission_cond=get_match_cond_for_reports(filters["doc_type"], "dt")) %(date_field, qty_field, qty_field, qty_field, filters["doc_type"], filters["doc_type"], '%s', conditions),
 			tuple([filters["doc_type"]] + values), as_dict=1)
 
 	return entries
@@ -206,14 +209,14 @@ def get_items(filters):
 
 	items = []
 	if key:
-		items = frappe.db.sql_list("""select name from tabItem where %s = %s""" %
+		items = frappe.db.sql_list("""select name from tabItem where %s = %s {permission_cond}""".format(permission_cond=get_match_cond_for_reports("Item")) %
 			(key, '%s'), (filters[key]))
 
 	return items
 
 def get_item_details():
 	item_details = {}
-	for d in frappe.db.sql("""SELECT `name`, `item_group`, `brand` FROM `tabItem`""", as_dict=1):
+	for d in frappe.get_all_with_user_permissions("Item", fields=["name", "item_group", "brand"]):
 		item_details.setdefault(d.name, d)
 
 	return item_details

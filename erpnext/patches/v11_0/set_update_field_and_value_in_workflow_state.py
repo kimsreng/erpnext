@@ -10,7 +10,7 @@ def execute():
 		active_workflow = get_workflow_name(doctype)
 		if not active_workflow: continue
 
-		workflow_states = frappe.get_all('Workflow Document State',
+		workflow_states = frappe.get_all_with_user_permissions('Workflow Document State',
 			filters=[['parent', '=', active_workflow]],
 			fields=['*'])
 

@@ -91,7 +91,7 @@ def update_periodic_data(periodic_data, status, period):
 
 def get_data(filters, columns):
 	data = []
-	entry = frappe.get_all("Work Order",
+	entry = frappe.get_all_with_user_permissions("Work Order",
 		fields=["creation", "modified", "actual_start_date", "actual_end_date", "planned_start_date", "planned_end_date", "status"],
 		filters={"docstatus": 1, "company": filters["company"] })
 

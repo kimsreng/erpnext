@@ -18,7 +18,7 @@ def execute(filters=None):
 
 def get_data(report_filters):
 	data = []
-	operations = frappe.get_all("Operation", filters = {"is_corrective_operation": 1})
+	operations = frappe.get_all_with_user_permissions("Operation", filters = {"is_corrective_operation": 1})
 	if operations:
 		operations = [d.name for d in operations]
 		fields = ["production_item as item_code", "item_name", "work_order", "operation",
@@ -26,7 +26,7 @@ def get_data(report_filters):
 
 		filters = get_filters(report_filters, operations)
 
-		job_cards = frappe.get_all("Job Card", fields = fields,
+		job_cards = frappe.get_all_with_user_permissions("Job Card", fields = fields,
 			filters = filters)
 
 		for row in job_cards:
@@ -49,7 +49,7 @@ def get_filters(report_filters, operations):
 
 def update_raw_material_cost(row, filters):
 	row.rm_cost = 0.0
-	for data in frappe.get_all("Job Card Item", fields = ["amount"],
+	for data in frappe.get_all_with_user_permissions("Job Card Item", fields = ["amount"],
 		filters={"parent": row.name, "docstatus": 1}):
 		row.rm_cost += data.amount
 

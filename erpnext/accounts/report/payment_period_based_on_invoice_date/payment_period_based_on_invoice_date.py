@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
-from frappe.desk.reportview import get_match_cond
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import flt, getdate
 
 from erpnext.accounts.report.accounts_receivable.accounts_receivable import ReceivablePayableReport
@@ -201,7 +201,7 @@ def get_entries(filters):
 		voucher_type, voucher_no, party_type, party, posting_date, debit, credit, remarks, against_voucher
 		from `tabGL Entry`
 		where company=%(company)s and voucher_type in ('Journal Entry', 'Payment Entry') {0} {permission_cond}
-	""".format(get_conditions(filters), permission_cond=get_match_cond("GL Entry")), filters, as_dict=1)
+	""".format(get_conditions(filters), permission_cond=get_match_cond_for_reports("GL Entry")), filters, as_dict=1)
 
 def get_invoice_posting_date_map(filters):
 	invoice_details = {}

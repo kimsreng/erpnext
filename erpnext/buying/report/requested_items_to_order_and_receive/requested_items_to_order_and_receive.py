@@ -7,6 +7,7 @@ import copy
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import date_diff, flt, getdate
 
 
@@ -76,10 +77,11 @@ def get_data(filters, conditions):
 			and mr.docstatus = 1
 			and mr.status != "Stopped"
 			{conditions}
+			{permission_cond}
 		group by mr.name, mr_item.item_code
 		having
 			sum(ifnull(mr_item.ordered_qty, 0)) < sum(ifnull(mr_item.stock_qty, 0))
-		order by mr.transaction_date, mr.schedule_date""".format(conditions=conditions), as_dict=1)
+		order by mr.transaction_date, mr.schedule_date""".format(conditions=conditions, permission_cond=get_match_cond_for_reports("Material Request", "mr")), as_dict=1)
 
 	return data
 

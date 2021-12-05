@@ -28,7 +28,7 @@ def get_context(context):
 		context.slideshow_header = doc.header
 		context.slides = doc.slideshow_items
 
-	context.blogs = frappe.get_all('Blog Post',
+	context.blogs = frappe.get_all_with_user_permissions('Blog Post',
 		fields=['title', 'blogger', 'blog_intro', 'route'],
 		filters={
 			'published': 1
@@ -39,7 +39,7 @@ def get_context(context):
 
 	# filter out homepage section which is used as hero section
 	homepage_hero_section = homepage.hero_section_based_on == 'Homepage Section' and homepage.hero_section
-	homepage_sections = frappe.get_all('Homepage Section',
+	homepage_sections = frappe.get_all_with_user_permissions('Homepage Section',
 		filters=[['name', '!=', homepage_hero_section]] if homepage_hero_section else None,
 		order_by='section_order asc'
 	)

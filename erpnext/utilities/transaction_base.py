@@ -39,12 +39,12 @@ class TransactionBase(StatusUpdater):
 			self._add_calendar_event(opts)
 
 	def delete_events(self):
-		participations = frappe.get_all("Event Participants", filters={"reference_doctype": self.doctype, "reference_docname": self.name,
+		participations = frappe.get_all_with_user_permissions("Event Participants", filters={"reference_doctype": self.doctype, "reference_docname": self.name,
 			"parenttype": "Event"}, fields=["name", "parent"])
 
 		if participations:
 			for participation in participations:
-				total_participants = frappe.get_all("Event Participants", filters={"parenttype": "Event", "parent": participation.parent})
+				total_participants = frappe.get_all_with_user_permissions("Event Participants", filters={"parenttype": "Event", "parent": participation.parent})
 
 				if len(total_participants) <= 1:
 					frappe.db.sql("delete from `tabEvent` where name='%s'" % participation.parent)

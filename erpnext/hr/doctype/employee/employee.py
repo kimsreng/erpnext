@@ -237,7 +237,7 @@ class Employee(NestedSet):
 			frappe.msgprint(_("Please enter {0}").format(self.prefered_contact_email))
 
 	def validate_onboarding_process(self):
-		employee_onboarding = frappe.get_all("Employee Onboarding",
+		employee_onboarding = frappe.get_all_with_user_permissions("Employee Onboarding",
 			filters={"job_applicant": self.job_applicant, "docstatus": 1, "boarding_status": ("!=", "Completed")})
 		if employee_onboarding:
 			doc = frappe.get_doc("Employee Onboarding", employee_onboarding[0].name)
@@ -330,7 +330,7 @@ def is_holiday(employee, date=None, raise_exception=True, only_non_weekly=False,
 	if only_non_weekly:
 		filters['weekly_off'] = False
 
-	holidays = frappe.get_all(
+	holidays = frappe.get_all_with_user_permissions(
 		'Holiday',
 		fields=['description'],
 		filters=filters,
@@ -385,7 +385,7 @@ def create_user(employee, user = None, email=None):
 
 def get_all_employee_emails(company):
 	'''Returns list of employee emails either based on user_id or company_email'''
-	employee_list = frappe.get_all('Employee',
+	employee_list = frappe.get_all_with_user_permissions('Employee',
 		fields=['name','employee_name'],
 		filters={
 			'status': 'Active',
@@ -436,7 +436,7 @@ def get_children(doctype, parent=None, company=None, is_root=False, is_tree=Fals
 		filters=filters, order_by='name')
 
 	for employee in employees:
-		is_expandable = frappe.get_all(doctype, filters=[
+		is_expandable = frappe.get_all_with_user_permissions(doctype, filters=[
 			['reports_to', '=', employee.get('value')]
 		])
 		employee.expandable = 1 if is_expandable else 0

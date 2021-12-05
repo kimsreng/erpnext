@@ -11,7 +11,7 @@ def execute(filters=None):
 	columns = get_columns()
 	data = []
 
-	data = frappe.db.get_all("Project", filters=filters, fields=["name", 'status', "percent_complete", "expected_start_date", "expected_end_date", "project_type"], order_by="expected_end_date")
+	data = frappe.get_all_with_user_permissions("Project", filters=filters, fields=["name", 'status', "percent_complete", "expected_start_date", "expected_end_date", "project_type"], order_by="expected_end_date")
 
 	for project in data:
 		project["total_tasks"] = frappe.db.count("Task", filters={"project": project.name})

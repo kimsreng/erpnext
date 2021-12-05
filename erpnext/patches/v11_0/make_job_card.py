@@ -19,7 +19,7 @@ def execute():
 		fieldname = frappe.db.get_value('DocField', {'fieldname': 'production_order', 'parent': 'Timesheet'}, 'fieldname')
 		if not fieldname: return
 
-	for d in frappe.get_all('Timesheet',
+	for d in frappe.get_all_with_user_permissions('Timesheet',
 		filters={fieldname: ['!=', ""], 'docstatus': 0},
 		fields=[fieldname, 'name']):
 		if d[fieldname]:

@@ -11,7 +11,7 @@ def execute():
 	frappe.reload_doc('stock', 'doctype', 'delivery_trip')
 	frappe.reload_doc('stock', 'doctype', 'delivery_stop', force=True)
 
-	for trip in frappe.get_all("Delivery Trip"):
+	for trip in frappe.get_all_with_user_permissions("Delivery Trip"):
 		trip_doc = frappe.get_doc("Delivery Trip", trip.name)
 
 		status = {

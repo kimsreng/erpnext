@@ -57,7 +57,7 @@ def get_columns():
 	return columns
 
 def get_data(warehouse):
-	serial_item_list = frappe.get_all("Item", filters={
+	serial_item_list = frappe.get_all_with_user_permissions("Item", filters={
 		'has_serial_no': True,
 	}, fields=['item_code', 'item_name'])
 

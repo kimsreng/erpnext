@@ -17,7 +17,7 @@ def execute():
 
 	frappe.reload_doctype('User Permission')
 
-	user_permissions = frappe.get_all("User Permission",
+	user_permissions = frappe.get_all_with_user_permissions("User Permission",
 		filters=[['allow', '=', 'Department'], ['applicable_for', 'in', [None] + doctypes_to_skip]],
 		fields=['name', 'applicable_for'])
 

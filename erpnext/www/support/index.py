@@ -18,7 +18,7 @@ def get_context(context):
 		if favorite_articles:
 			for article in favorite_articles:
 				name_list.append(article.name)
-		for record in (frappe.get_all("Help Article",
+		for record in (frappe.get_all_with_user_permissions("Help Article",
 			fields=["title", "content", "route", "category"],
 			filters={"name": ['not in', tuple(name_list)], "published": 1},
 			order_by="creation desc", limit=(6-len(favorite_articles)))):
@@ -64,9 +64,9 @@ def get_favorite_articles(favorite_articles):
 
 def get_help_article_list():
 	help_article_list=[]
-	category_list = frappe.get_all("Help Category", fields="name")
+	category_list = frappe.get_all_with_user_permissions("Help Category", fields="name")
 	for category in category_list:
-		help_articles = frappe.get_all("Help Article", fields="*", filters={"category": category.name, "published": 1}, order_by="modified desc", limit=5)
+		help_articles = frappe.get_all_with_user_permissions("Help Article", fields="*", filters={"category": category.name, "published": 1}, order_by="modified desc", limit=5)
 		if help_articles:
 			help_aricles_per_caetgory = {
 				'category': category,

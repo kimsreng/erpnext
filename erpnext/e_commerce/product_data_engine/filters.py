@@ -38,7 +38,7 @@ class ProductFiltersBuilder:
 
 				# Get link field values attached to published items
 				item_filters['published_in_website'] = 1
-				item_values = frappe.get_all(
+				item_values = frappe.get_all_with_user_permissions(
 					"Item",
 					fields=[df.fieldname],
 					filters=item_filters,
@@ -72,7 +72,7 @@ class ProductFiltersBuilder:
 		meta = frappe.get_meta(link_doctype, cached=True) if link_doctype else None
 		if meta:
 			filters = self.get_link_doctype_filters(meta)
-			link_doctype_values = set(d.name for d in frappe.get_all(link_doctype, filters))
+			link_doctype_values = set(d.name for d in frappe.get_all_with_user_permissions(link_doctype, filters))
 
 		return link_doctype_values if meta else set()
 

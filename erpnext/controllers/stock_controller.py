@@ -57,7 +57,7 @@ class StockController(AccountsController):
 		from erpnext.stock.doctype.serial_no.serial_no import get_serial_nos
 		for d in self.get("items"):
 			if hasattr(d, 'serial_no') and hasattr(d, 'batch_no') and d.serial_no and d.batch_no:
-				serial_nos = frappe.get_all("Serial No",
+				serial_nos = frappe.get_all_with_user_permissions("Serial No",
 					fields=["batch_no", "name", "warehouse"],
 					filters={
 						"name": ("in", get_serial_nos(d.serial_no))
@@ -287,7 +287,7 @@ class StockController(AccountsController):
 		for d in self.items:
 			if not d.batch_no: continue
 
-			serial_nos = [sr.name for sr in frappe.get_all("Serial No",
+			serial_nos = [sr.name for sr in frappe.get_all_with_user_permissions("Serial No",
 				{'batch_no': d.batch_no, 'status': 'Inactive'})]
 
 			if serial_nos:
@@ -296,7 +296,7 @@ class StockController(AccountsController):
 			d.batch_no = None
 			d.db_set("batch_no", None)
 
-		for data in frappe.get_all("Batch",
+		for data in frappe.get_all_with_user_permissions("Batch",
 			{'reference_name': self.name, 'reference_doctype': self.doctype}):
 			frappe.delete_doc("Batch", data.name)
 
@@ -640,7 +640,7 @@ def get_cached_data(args, key):
 		return frappe.local.future_sle[key]
 
 def get_sle_entries_against_voucher(args):
-	return frappe.get_all("Stock Ledger Entry",
+	return frappe.get_all_with_user_permissions("Stock Ledger Entry",
 		filters={"voucher_type": args.voucher_type, "voucher_no": args.voucher_no},
 		fields=["item_code", "warehouse"],
 		order_by="creation asc")

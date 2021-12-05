@@ -103,7 +103,7 @@ def get_data(filters):
 			"applicant": filters.get('applicant')
 		})
 
-	loan_repayments = frappe.get_all("Loan Repayment",
+	loan_repayments = frappe.get_all_with_user_permissions("Loan Repayment",
 		filters = query_filters,
 		fields=["posting_date", "applicant", "name", "against_loan", "payable_amount",
 			"pending_principal_amount", "interest_payable", "penalty_amount", "amount_paid"]

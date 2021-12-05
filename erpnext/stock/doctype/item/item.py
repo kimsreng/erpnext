@@ -403,7 +403,7 @@ class Item(Document):
 	def on_trash(self):
 		frappe.db.sql("""delete from tabBin where item_code=%s""", self.name)
 		frappe.db.sql("delete from `tabItem Price` where item_code=%s", self.name)
-		for variant_of in frappe.get_all("Item", filters={"variant_of": self.name}):
+		for variant_of in frappe.get_all_with_user_permissions("Item", filters={"variant_of": self.name}):
 			frappe.delete_doc("Item", variant_of.name)
 
 	def before_rename(self, old_name, new_name, merge=False):
@@ -479,7 +479,7 @@ class Item(Document):
 			Block merge if both old and new items have website items against them.
 			This is to avoid duplicate website items after merging.
 		"""
-		web_items = frappe.get_all(
+		web_items = frappe.get_all_with_user_permissions(
 			"Website Item",
 			filters={
 				"item_code": ["in", [old_name, new_name]]
@@ -616,13 +616,13 @@ class Item(Document):
 		from collections import defaultdict
 
 		# get all item variants
-		items = [item["name"] for item in frappe.get_all("Item", {"variant_of": self.name})]
+		items = [item["name"] for item in frappe.get_all_with_user_permissions("Item", {"variant_of": self.name})]
 
 		# get all deleted attributes
 		deleted_attribute = list(old_doc_attributes.difference(set(own_attributes)))
 
 		# fetch all attributes of these items
-		item_attributes = frappe.get_all(
+		item_attributes = frappe.get_all_with_user_permissions(
 			"Item Variant Attribute",
 			filters={
 				"parent": ["in", items],
@@ -683,7 +683,7 @@ class Item(Document):
 						_('Cannot change Attributes after stock transaction. Make a new Item and transfer stock to the new Item'))
 
 	def validate_variant_based_on_change(self):
-		if not self.is_new() and (self.variant_of or (self.has_variants and frappe.get_all("Item", {"variant_of": self.name}))):
+		if not self.is_new() and (self.variant_of or (self.has_variants and frappe.get_all_with_user_permissions("Item", {"variant_of": self.name}))):
 			if self.variant_based_on != frappe.db.get_value("Item", self.name, "variant_based_on"):
 				frappe.throw(_("Variant Based On cannot be changed"))
 
@@ -1033,7 +1033,7 @@ def get_item_attribute(parent, attribute_value=""):
 	if not frappe.has_permission("Item"):
 		frappe.throw(_("No Permission"))
 
-	return frappe.get_all("Item Attribute Value", fields = ["attribute_value"],
+	return frappe.get_all_with_user_permissions("Item Attribute Value", fields = ["attribute_value"],
 		filters = {'parent': parent, 'attribute_value': ("like", f"%{attribute_value}%")})
 
 def update_variants(variants, template, publish_progress=True):

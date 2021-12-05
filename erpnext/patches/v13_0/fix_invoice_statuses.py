@@ -30,7 +30,7 @@ def execute():
 		if doctype == "Sales Invoice":
 			fields.append("is_pos")
 
-		invoices_to_update = frappe.get_all(
+		invoices_to_update = frappe.get_all_with_user_permissions(
 			doctype,
 			fields=fields,
 			filters={
@@ -53,7 +53,7 @@ def execute():
 			invoice.name: invoice for invoice in invoices_to_update
 		}
 
-		payment_schedule_items = frappe.get_all(
+		payment_schedule_items = frappe.get_all_with_user_permissions(
 			"Payment Schedule",
 			fields=(
 				"due_date",

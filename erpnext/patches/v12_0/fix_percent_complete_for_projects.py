@@ -3,7 +3,7 @@ from frappe.utils import flt
 
 
 def execute():
-	for project in frappe.get_all("Project", fields=["name", "percent_complete_method"]):
+	for project in frappe.get_all_with_user_permissions("Project", fields=["name", "percent_complete_method"]):
 		total = frappe.db.count('Task', dict(project=project.name))
 		if project.percent_complete_method == "Task Completion" and total > 0:
 			completed = frappe.db.sql("""select count(name) from tabTask where

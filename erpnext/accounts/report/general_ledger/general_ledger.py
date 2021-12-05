@@ -7,7 +7,7 @@ from collections import OrderedDict
 
 import frappe
 from frappe import _, _dict
-from frappe.desk.reportview import get_match_cond
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import cstr, flt, getdate
 from six import iteritems
 
@@ -216,7 +216,7 @@ def get_gl_entries(filters, accounting_dimensions):
 		""".format(
 			dimension_fields=dimension_fields, select_fields=select_fields, conditions=get_conditions(filters), 
 			distributed_cost_center_query=distributed_cost_center_query,
-			order_by_statement=order_by_statement, permission_cond=get_match_cond("GL Entry")
+			order_by_statement=order_by_statement, permission_cond=get_match_cond_for_reports("GL Entry")
 		),
 		filters, as_dict=1)
 
@@ -297,7 +297,7 @@ def get_accounts_with_children(accounts):
 	for d in accounts:
 		if frappe.db.exists("Account", d):
 			lft, rgt = frappe.db.get_value("Account", d, ["lft", "rgt"])
-			children = frappe.get_all("Account", filters={"lft": [">=", lft], "rgt": ["<=", rgt]})
+			children = frappe.get_all_with_user_permissions("Account", filters={"lft": [">=", lft], "rgt": ["<=", rgt]})
 			all_accounts += [c.name for c in children]
 		else:
 			frappe.throw(_("Account: {0} does not exist").format(d))
@@ -446,7 +446,7 @@ def get_accountwise_gle(filters, accounting_dimensions, gl_entries, gle_map):
 	return totals, entries
 
 def get_account_type_map(company):
-	account_type_map = frappe._dict(frappe.get_all('Account', fields=['name', 'account_type'],
+	account_type_map = frappe._dict(frappe.get_all_with_user_permissions('Account', fields=['name', 'account_type'],
 		filters={'company': company}, as_list=1))
 
 	return account_type_map
@@ -470,7 +470,8 @@ def get_result_as_list(data, filters):
 def get_supplier_invoice_details():
 	inv_details = {}
 	for d in frappe.db.sql(""" select name, bill_no from `tabPurchase Invoice`
-		where docstatus = 1 and bill_no is not null and bill_no != '' """, as_dict=1):
+		where docstatus = 1 and bill_no is not null and bill_no != '' {permission_cond}
+		""".format(permission_cond=get_match_cond_for_reports("Purchase Invoice")), as_dict=1):
 		inv_details[d.name] = d.bill_no
 
 	return inv_details

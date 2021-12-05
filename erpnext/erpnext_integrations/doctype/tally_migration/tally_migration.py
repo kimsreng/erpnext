@@ -505,7 +505,7 @@ class TallyMigration(Document):
 		def create_fiscal_years(vouchers):
 			from frappe.utils.data import add_years, getdate
 			earliest_date = getdate(min(voucher["posting_date"] for voucher in vouchers))
-			oldest_year = frappe.get_all("Fiscal Year", fields=["year_start_date", "year_end_date"], order_by="year_start_date")[0]
+			oldest_year = frappe.get_all_with_user_permissions("Fiscal Year", fields=["year_start_date", "year_end_date"], order_by="year_start_date")[0]
 			while earliest_date < oldest_year.year_start_date:
 				new_year = frappe.get_doc({"doctype": "Fiscal Year"})
 				new_year.year_start_date = add_years(oldest_year.year_start_date, -1)

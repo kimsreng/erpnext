@@ -7,7 +7,7 @@ from email_reply_parser import EmailReplyParser
 @frappe.whitelist()
 def get_data(start=0):
 	#frappe.only_for('Employee', 'System Manager')
-	data = frappe.get_all('Communication',
+	data = frappe.get_all_with_user_permissions('Communication',
 		fields=('content', 'text_content', 'sender', 'creation'),
 		filters=dict(reference_doctype='Daily Work Summary'),
 		order_by='creation desc', limit=40, start=start)

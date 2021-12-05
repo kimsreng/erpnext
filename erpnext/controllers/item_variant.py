@@ -115,10 +115,10 @@ def get_attribute_values(item):
 	if not frappe.flags.attribute_values:
 		attribute_values = {}
 		numeric_values = {}
-		for t in frappe.get_all("Item Attribute Value", fields=["parent", "attribute_value"]):
+		for t in frappe.get_all_with_user_permissions("Item Attribute Value", fields=["parent", "attribute_value"]):
 			attribute_values.setdefault(t.parent.lower(), []).append(t.attribute_value)
 
-		for t in frappe.get_all('Item Variant Attribute',
+		for t in frappe.get_all_with_user_permissions('Item Variant Attribute',
 			fields=["attribute", "from_range", "to_range", "increment"],
 			filters={'numeric_values': 1, 'parent': item.variant_of}):
 			numeric_values[t.attribute.lower()] = t
@@ -271,7 +271,7 @@ def copy_attributes_to_variant(item, variant):
 		# don't copy manufacturer values if based on part no
 		exclude_fields += ['manufacturer', 'manufacturer_part_no']
 
-	allow_fields = [d.field_name for d in frappe.get_all("Variant Field", fields = ['field_name'])]
+	allow_fields = [d.field_name for d in frappe.get_all_with_user_permissions("Variant Field", fields = ['field_name'])]
 	if "variant_based_on" not in allow_fields:
 		allow_fields.append("variant_based_on")
 	for field in item.meta.fields:

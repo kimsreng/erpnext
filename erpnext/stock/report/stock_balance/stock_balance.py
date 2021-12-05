@@ -7,6 +7,7 @@ from operator import itemgetter
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import cint, date_diff, flt, getdate
 from six import iteritems
 
@@ -172,7 +173,9 @@ def get_stock_ledger_entries(filters, items):
 			`tabStock Ledger Entry` sle force index (posting_sort_index)
 		where sle.docstatus < 2 %s %s
 		and is_cancelled = 0
-		order by sle.posting_date, sle.posting_time, sle.creation, sle.actual_qty""" % #nosec
+		{permission_cond}
+		order by sle.posting_date, sle.posting_time, sle.creation, sle.actual_qty
+		""".format(permission_cond=get_match_cond_for_reports("Stock Ledger Entry", "sle")) % #nosec
 		(item_conditions_sql, conditions), as_dict=1)
 
 def get_item_warehouse_map(filters, sle):
@@ -251,8 +254,8 @@ def get_items(filters):
 
 	items = []
 	if conditions:
-		items = frappe.db.sql_list("""select name from `tabItem` item where {}"""
-			.format(" and ".join(conditions)), filters)
+		items = frappe.db.sql_list("""select name from `tabItem` item where {} {permission_cond}"""
+			.format(" and ".join(conditions), permission_cond=get_match_cond_for_reports("Item", "item")), filters)
 	return items
 
 def get_item_details(items, sle, filters):
@@ -277,7 +280,8 @@ def get_item_details(items, sle, filters):
 			%s
 		where
 			item.name in (%s)
-	""" % (cf_field, cf_join, ','.join(['%s'] *len(items))), items, as_dict=1)
+			{permission_cond}
+	""".format(permission_cond=get_match_cond_for_reports("Item", "item")) % (cf_field, cf_join, ','.join(['%s'] *len(items))), items, as_dict=1)
 
 	for item in res:
 		item_details.setdefault(item.name, item)
@@ -302,7 +306,7 @@ def get_item_reorder_details(items):
 
 def get_variants_attributes():
 	'''Return all item variant attributes.'''
-	return [i.name for i in frappe.get_all('Item Attribute')]
+	return [i.name for i in frappe.get_all_with_user_permissions('Item Attribute')]
 
 def get_variant_values_for(items):
 	'''Returns variant values for items.'''

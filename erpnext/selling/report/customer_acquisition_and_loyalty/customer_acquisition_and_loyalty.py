@@ -7,6 +7,7 @@ import calendar
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import cint, cstr, getdate
 
 
@@ -120,18 +121,19 @@ def get_data_by_territory(filters, common_columns):
 
 	territory_dict = {}
 	for t in frappe.db.sql('''SELECT name, lft, parent_territory, is_group FROM `tabTerritory` ORDER BY lft''', as_dict=1):
+	# for t in frappe.get_all_with_user_permissions('Territory', fields=["name","lft","parent_territory","is_group"], order_by="lft"):
 		territory_dict.update({
 			t.name: {
 				'parent': t.parent_territory,
 				'is_group': t.is_group
 			}
 		})
-
+	
 	depth_map = frappe._dict()
 	for name, info in territory_dict.items():
 		default = depth_map.get(info['parent']) + 1 if info['parent'] else 0
 		depth_map.setdefault(name, default)
-
+	print(depth_map)
 	data = []
 	for name, indent in depth_map.items():
 		condition = customers_in.get(name)
@@ -172,8 +174,8 @@ def get_customer_stats(filters, tree_view=False):
 	customers_in = {}
 
 	for si in frappe.db.sql('''select territory, posting_date, customer, base_grand_total from `tabSales Invoice`
-		where docstatus=1 and posting_date <= %(to_date)s
-		{company_condition} order by posting_date'''.format(company_condition=company_condition),
+		where docstatus=1 and posting_date <= %(to_date)s {permission_cond}
+		{company_condition} order by posting_date'''.format(company_condition=company_condition, permission_cond=get_match_cond_for_reports("Sales Invoice")),
 		filters, as_dict=1):
 
 		key = si.territory if tree_view else si.posting_date.strftime('%Y-%m')

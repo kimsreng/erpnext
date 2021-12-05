@@ -70,7 +70,7 @@ def update_records(doctype, comp_dict):
 
 def update_instructors(comp_dict):
 	when_then = []
-	emp_details = frappe.get_all("Employee", fields=["name", "company"])
+	emp_details = frappe.get_all_with_user_permissions("Employee", fields=["name", "company"])
 
 	for employee in emp_details:
 		records = comp_dict[employee.company] if employee.company else []

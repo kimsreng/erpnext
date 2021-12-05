@@ -7,6 +7,7 @@ from calendar import monthrange
 
 import frappe
 from frappe import _, msgprint
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import cint, cstr, getdate
 
 status_map = {
@@ -61,7 +62,7 @@ def execute(filters=None):
 
 	leave_list = None
 	if filters.summarized_view:
-		leave_types = frappe.db.sql("""select name from `tabLeave Type`""", as_list=True)
+		leave_types = frappe.get_all_with_user_permissions("Leave Type", pluck="name")
 		leave_list = [d[0] + ":Float:120" for d in leave_types]
 		columns.extend(leave_list)
 		columns.extend([_("Total Late Entries") + ":Float:120", _("Total Early Exits") + ":Float:120"])
@@ -191,11 +192,12 @@ def add_data(employee_map, att_map, filters, holiday_map, conditions, default_ho
 
 		if filters.summarized_view:
 			leave_details = frappe.db.sql("""select leave_type, status, count(*) as count from `tabAttendance`\
-				where leave_type is not NULL %s group by leave_type, status""" % conditions, filters, as_dict=1)
+				where leave_type is not NULL %s {permission_cond} group by leave_type, status
+				""".format(permission_cond=get_match_cond_for_reports("Attendance")) % conditions, filters, as_dict=1)
 
 			time_default_counts = frappe.db.sql("""select (select count(*) from `tabAttendance` where \
-				late_entry = 1 %s) as late_entry_count, (select count(*) from tabAttendance where \
-				early_exit = 1 %s) as early_exit_count""" % (conditions, conditions), filters)
+				late_entry = 1 %s {permission_cond}) as late_entry_count, (select count(*) from tabAttendance where \
+				early_exit = 1 %s {permission_cond}) as early_exit_count""".format(permission_cond=get_match_cond_for_reports("Attendance")) % (conditions, conditions), filters)
 
 			leaves = {}
 			for d in leave_details:
@@ -242,8 +244,8 @@ def get_columns(filters):
 
 def get_attendance_list(conditions, filters):
 	attendance_list = frappe.db.sql("""select employee, day(attendance_date) as day_of_month,
-		status from tabAttendance where docstatus = 1 %s order by employee, attendance_date""" %
-		conditions, filters, as_dict=1)
+		status from tabAttendance where docstatus = 1 %s  {permission_cond} order by employee, attendance_date
+		""".format(permission_cond=get_match_cond_for_reports("Attendance")) % conditions, filters, as_dict=1)
 
 	if not attendance_list:
 		msgprint(_("No attendance record found"), alert=True, indicator="orange")
@@ -271,7 +273,8 @@ def get_conditions(filters):
 def get_employee_details(group_by, company):
 	emp_map = {}
 	query = """select name, employee_name, designation, department, branch, company,
-		holiday_list from `tabEmployee` where company = %s """ % frappe.db.escape(company)
+		holiday_list from `tabEmployee` where company = %s {permission_cond}
+		""".format(permission_cond=get_match_cond_for_reports("Employee")) % frappe.db.escape(company)
 
 	if group_by:
 		group_by = group_by.lower()
@@ -305,13 +308,17 @@ def get_holiday(holiday_list, month):
 	for d in holiday_list:
 		if d:
 			holiday_map.setdefault(d, frappe.db.sql('''select day(holiday_date), weekly_off from `tabHoliday`
-				where parent=%s and month(holiday_date)=%s''', (d, month)))
+				where parent=%s and month(holiday_date)=%s {permission_cond}'''.format(permission_cond=get_match_cond_for_reports("Holiday")), (d, month)))
 
 	return holiday_map
 
 @frappe.whitelist()
 def get_attendance_years():
-	year_list = frappe.db.sql_list("""select distinct YEAR(attendance_date) from tabAttendance ORDER BY YEAR(attendance_date) DESC""")
+	year_list = frappe.db.sql_list("""
+	select distinct YEAR(attendance_date) from tabAttendance 
+	where 1=1 {permission_cond} 
+	ORDER BY YEAR(attendance_date) DESC
+	""".format(permission_cond=get_match_cond_for_reports("Attendance")))
 	if not year_list:
 		year_list = [getdate().year]
 

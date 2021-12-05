@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _, msgprint
-from frappe.desk.reportview import get_match_cond
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import flt
 
 from erpnext.accounts.doctype.accounting_dimension.accounting_dimension import (
@@ -207,7 +207,7 @@ def get_invoices(filters, additional_query_columns):
 		from `tabPurchase Invoice`
 		where docstatus = 1 %s {permission_cond}
 		order by posting_date desc, name desc
-		""".format(additional_query_columns or '', permission_cond=get_match_cond("Purchase Invoice")) % conditions, filters, as_dict=1)
+		""".format(additional_query_columns or '', permission_cond=get_match_cond_for_reports("Purchase Invoice")) % conditions, filters, as_dict=1)
 
 
 def get_invoice_expense_map(invoice_list):

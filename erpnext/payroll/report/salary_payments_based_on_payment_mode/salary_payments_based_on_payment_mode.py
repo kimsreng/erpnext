@@ -10,6 +10,7 @@ import erpnext
 from erpnext.regional.report.provident_fund_deductions.provident_fund_deductions import (
 	get_conditions,
 )
+from frappe.desk.reportview import get_match_cond_for_reports
 
 
 def execute(filters=None):
@@ -52,8 +53,8 @@ def get_columns(filters, mode_of_payments):
 
 def get_payment_modes():
 	mode_of_payments = frappe.db.sql_list("""
-		select distinct mode_of_payment from `tabSalary Slip` where docstatus = 1
-	""")
+		select distinct mode_of_payment from `tabSalary Slip` where docstatus = 1 {permission_cond}
+	""".format(permission_cond=get_match_cond_for_reports("Salary Slip")))
 	return mode_of_payments
 
 def prepare_data(entry):
@@ -77,16 +78,16 @@ def get_data(filters, mode_of_payments):
 	entry = frappe.db.sql("""
 		select branch, mode_of_payment, sum(net_pay) as net_pay, sum(gross_pay) as gross_pay
 		from `tabSalary Slip` sal
-		where docstatus = 1 %s
+		where docstatus = 1 %s {permission_cond}
 		group by branch, mode_of_payment
-		""" % (conditions), as_dict=1)
+		""".format(permission_cond=get_match_cond_for_reports("Salary Slip", "sal")) % (conditions), as_dict=1)
 
 	branch_wise_entries, gross_pay = prepare_data(entry)
 
 	branches = frappe.db.sql_list("""
 		select distinct branch from `tabSalary Slip` sal
-		where docstatus = 1 %s
-	""" % (conditions))
+		where docstatus = 1  {permission_cond} %s
+	""".format(permission_cond=get_match_cond_for_reports("Salary Slip")) % (conditions))
 
 	total_row = {"total": 0, "branch": "Total"}
 

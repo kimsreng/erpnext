@@ -41,7 +41,7 @@ def get_data(filters=None):
 	if filters.status:
 		query_filters['einvoice_status'] = filters.status
 
-	data = frappe.get_all(
+	data = frappe.get_all_with_user_permissions(
 		'Sales Invoice',
 		filters=query_filters,
 		fields=[d.get('fieldname') for d in get_columns()]

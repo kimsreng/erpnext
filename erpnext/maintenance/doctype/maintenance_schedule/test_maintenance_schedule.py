@@ -78,7 +78,7 @@ class TestMaintenanceSchedule(unittest.TestCase):
 		self.assertTrue(ms.schedules[1].completion_status, "Partially Completed")
 
 def get_events(ms):
-	return frappe.get_all("Event Participants", filters={
+	return frappe.get_all_with_user_permissions("Event Participants", filters={
 			"reference_doctype": ms.doctype,
 			"reference_docname": ms.name,
 			"parenttype": "Event"

@@ -33,7 +33,7 @@ def update_itemised_tax_data(doc):
 def export_invoices(filters=None):
 	frappe.has_permission('Sales Invoice', throw=True)
 
-	invoices = frappe.get_all(
+	invoices = frappe.get_all_with_user_permissions(
 		"Sales Invoice",
 		filters=get_conditions(filters),
 		fields=["name", "company_tax_id"]
@@ -344,7 +344,7 @@ def get_e_invoice_attachments(invoices):
 		) for invoice in invoices
 	}
 
-	attachments = frappe.get_all(
+	attachments = frappe.get_all_with_user_permissions(
 		"File",
 		fields=("name", "file_name", "attached_to_name", "is_private"),
 		filters= {

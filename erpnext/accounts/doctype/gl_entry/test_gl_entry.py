@@ -38,7 +38,7 @@ class TestGLEntry(unittest.TestCase):
 
 		je = make_journal_entry("_Test Account Cost for Goods Sold - _TC", "_Test Bank - _TC", 100, submit=True)
 
-		gl_entries = frappe.get_all("GL Entry",
+		gl_entries = frappe.get_all_with_user_permissions("GL Entry",
 			fields=["name", "to_rename"],
 			filters={"voucher_type": "Journal Entry", "voucher_no": je.name},
 			order_by="creation"
@@ -49,7 +49,7 @@ class TestGLEntry(unittest.TestCase):
 
 		rename_gle_sle_docs()
 
-		new_gl_entries = frappe.get_all("GL Entry",
+		new_gl_entries = frappe.get_all_with_user_permissions("GL Entry",
 			fields=["name", "to_rename"],
 			filters={"voucher_type": "Journal Entry", "voucher_no": je.name},
 			order_by="creation"

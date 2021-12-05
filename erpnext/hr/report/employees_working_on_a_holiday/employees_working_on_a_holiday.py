@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 
 
 def execute(filters=None):
@@ -30,7 +31,7 @@ def get_employees(filters):
 	if filters.holiday_list:
 		holiday_filter.append(["parent", "=", filters.holiday_list])
 
-	holidays = frappe.get_all("Holiday", fields=["holiday_date", "description"],
+	holidays = frappe.get_all_with_user_permissions("Holiday", fields=["holiday_date", "description"],
 				filters=holiday_filter)
 
 	holiday_names = {}
@@ -49,7 +50,7 @@ def get_employees(filters):
 		employee_list = frappe.db.sql("""select
 				employee, employee_name, attendance_date, status
 			from tabAttendance
-			where %s"""% cond.format(', '.join(["%s"] * len(holidays_list))),
+			where 1=1 {permission_cond} %s""".format(permission_cond=get_match_cond_for_reports("Attendance"))% cond.format(', '.join(["%s"] * len(holidays_list))),
 				{'holidays_list':holidays_list,
 				 'holidays':filters.holiday_list}, as_list=True)
 

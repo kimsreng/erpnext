@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
-from frappe.desk.reportview import get_match_cond
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import cstr
 
 
@@ -135,7 +135,7 @@ def get_pos_invoice_data(filters):
 							'WHERE a.docstatus = 1'
 							' AND {conditions} '
 							'GROUP BY '
-							'owner, posting_date, warehouse'.format(conditions=conditions, permission_cond=get_match_cond("Sales Invoice")), filters, as_dict=1
+							'owner, posting_date, warehouse'.format(conditions=conditions, permission_cond=get_match_cond_for_reports("Sales Invoice")), filters, as_dict=1
 							)
 	return result
 
@@ -154,7 +154,7 @@ def get_sales_invoice_data(filters):
 			and {conditions}
 			group by
 			a.owner, a.posting_date
-	""".format(conditions=conditions, permission_cond=get_match_cond("Sales Invoice", "a")), filters, as_dict=1)
+	""".format(conditions=conditions, permission_cond=get_match_cond_for_reports("Sales Invoice", "a")), filters, as_dict=1)
 
 
 def get_mode_of_payments(filters):
@@ -193,7 +193,7 @@ def get_invoices(filters):
 	return frappe.db.sql("""select a.name
 		from `tabSales Invoice` a
 		where a.docstatus = 1 and {conditions}{permission_cond}
-		""".format(conditions=conditions, permission_cond=get_match_cond("Sales Invoice", "a")),
+		""".format(conditions=conditions, permission_cond=get_match_cond_for_reports("Sales Invoice", "a")),
 		filters, as_dict=1)
 
 

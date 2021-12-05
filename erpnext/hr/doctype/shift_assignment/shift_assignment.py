@@ -131,7 +131,7 @@ def add_assignments(events, start, end, conditions=None):
 
 def get_shift_type_timing(shift_types):
 	shift_timing_map = {}
-	data = frappe.get_all("Shift Type", filters = {"name": ("IN", shift_types)}, fields = ['name', 'start_time', 'end_time'])
+	data = frappe.get_all_with_user_permissions("Shift Type", filters = {"name": ("IN", shift_types)}, fields = ['name', 'start_time', 'end_time'])
 
 	for d in data:
 		shift_timing_map[d.name] = d

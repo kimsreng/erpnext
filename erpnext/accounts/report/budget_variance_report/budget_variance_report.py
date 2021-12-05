@@ -7,7 +7,7 @@ import datetime
 
 import frappe
 from frappe import _
-from frappe.desk.reportview import get_match_cond
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import flt, formatdate
 from six import iteritems
 
@@ -219,7 +219,7 @@ def get_dimension_target_details(filters):
 		""".format(
 			budget_against=budget_against,
 			cond=cond,
-			permission_cond=get_match_cond("Budget", 'b')
+			permission_cond=get_match_cond_for_reports("Budget", 'b')
 		),
 		tuple(
 			[
@@ -250,7 +250,7 @@ def get_target_distribution_details(filters):
 				{permission_cond}
 			order by
 				md.fiscal_year
-		""".format(permission_cond=get_match_cond("Monthly Distribution", "md")),
+		""".format(permission_cond=get_match_cond_for_reports("Monthly Distribution", "md")),
 		(filters.from_fiscal_year, filters.to_fiscal_year), as_dict=1):
 		target_details.setdefault(d.name, {}).setdefault(
 			d.month, flt(d.percentage_allocation)
@@ -303,7 +303,7 @@ def get_actual_details(name, filters):
 				group by
 					gl.name
 				order by gl.fiscal_year
-		""".format(tab=filters.budget_against, budget_against=budget_against, cond=cond, permission_cond=get_match_cond("GL Entry", "gl")),
+		""".format(tab=filters.budget_against, budget_against=budget_against, cond=cond, permission_cond=get_match_cond_for_reports("GL Entry", "gl")),
 		(filters.from_fiscal_year, filters.to_fiscal_year, name), as_dict=1)
 
 	cc_actual_details = {}
@@ -356,7 +356,7 @@ def get_fiscal_years(filters):
 			where
 				name between %(from_fiscal_year)s and %(to_fiscal_year)s
 				{permission_cond}
-		""".format(permission_cond=get_match_cond("Fiscal Year")),
+		""".format(permission_cond=get_match_cond_for_reports("Fiscal Year")),
 		{
 			"from_fiscal_year": filters["from_fiscal_year"],
 			"to_fiscal_year": filters["to_fiscal_year"]

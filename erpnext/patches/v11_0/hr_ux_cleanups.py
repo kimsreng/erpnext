@@ -9,6 +9,6 @@ def execute():
 
 	# update holiday list
 	frappe.reload_doctype('Holiday List')
-	for holiday_list in frappe.get_all('Holiday List'):
+	for holiday_list in frappe.get_all_with_user_permissions('Holiday List'):
 		holiday_list = frappe.get_doc('Holiday List', holiday_list.name)
 		holiday_list.db_set('total_holidays', len(holiday_list.holidays), update_modified = False)

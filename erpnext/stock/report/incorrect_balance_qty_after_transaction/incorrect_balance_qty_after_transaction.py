@@ -55,7 +55,7 @@ def get_stock_ledger_entries(report_filters):
 		if report_filters.get(field):
 			filters[field] = report_filters.get(field)
 
-	return frappe.get_all('Stock Ledger Entry', fields = fields, filters = filters,
+	return frappe.get_all_with_user_permissions('Stock Ledger Entry', fields = fields, filters = filters,
 		order_by = 'timestamp(posting_date, posting_time) asc, creation asc')
 
 def get_columns():

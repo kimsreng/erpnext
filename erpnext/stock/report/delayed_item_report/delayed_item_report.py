@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import date_diff
 
 
@@ -55,7 +56,8 @@ class DelayedItemReport(object):
 				`tab{child_doc}`.parent = `tab{doctype}`.name and `tab{doctype}`.docstatus = 1 and
 				`tab{doctype}`.posting_date between %(from_date)s and %(to_date)s and
 				`tab{child_doc}`.{so_field} is not null and `tab{child_doc}`.{so_field} != '' {cond}
-		""".format(cond=conditions, doctype=doctype, child_doc=child_doc, so_field=sales_order_field), {
+				{permission_cond}
+		""".format(cond=conditions, doctype=doctype, child_doc=child_doc, so_field=sales_order_field, permission_cond=get_match_cond_for_reports(doctype)), {
 			'from_date': self.filters.get('from_date'),
 			'to_date': self.filters.get('to_date')
 		}, as_dict=1)
@@ -76,7 +78,7 @@ class DelayedItemReport(object):
 			filters = {'parent': ('in', sales_orders), 'name': ('in', sales_order_items)}
 
 		so_data = {}
-		for d in frappe.get_all(doctype, filters = filters,
+		for d in frappe.get_all_with_user_permissions(doctype, filters = filters,
 			fields = ["delivery_date", "parent", "name"]):
 			key = d.name if consolidated else (d.parent, d.name)
 			if key not in so_data:

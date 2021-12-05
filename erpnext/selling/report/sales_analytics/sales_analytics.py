@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _, scrub
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import add_days, add_to_date, flt, getdate
 from six import iteritems
 
@@ -110,11 +111,22 @@ class Analytics(object):
 		else:
 			value_field = "total_qty"
 
-		self.entries = frappe.db.sql(""" select s.order_type as entity, s.{value_field} as value_field, s.{date_field}
-			from `tab{doctype}` s where s.docstatus = 1 and s.company = %s and s.{date_field} between %s and %s
-			and ifnull(s.order_type, '') != '' order by s.order_type
+		self.entries = frappe.db.sql("""
+			select 
+				s.order_type as entity, 
+				s.{value_field} as value_field, 
+				s.{date_field}
+			from `tab{doctype}` s 
+			where 
+				s.docstatus = 1 
+				and s.company = %s 
+				and s.{date_field} between %s 
+				and %s
+				and ifnull(s.order_type, '') != '' 
+				{permission_cond}
+			order by s.order_type
 		"""
-		.format(date_field=self.date_field, value_field=value_field, doctype=self.filters.doc_type),
+		.format(date_field=self.date_field, value_field=value_field, doctype=self.filters.doc_type, permission_cond=get_match_cond_for_reports(self.filters.doc_type, "s")),
 		(self.filters.company, self.filters.from_date, self.filters.to_date), as_dict=1)
 
 		self.get_teams()
@@ -132,7 +144,7 @@ class Analytics(object):
 			entity = "supplier as entity"
 			entity_name = "supplier_name as entity_name"
 
-		self.entries = frappe.get_all(self.filters.doc_type,
+		self.entries = frappe.get_all_with_user_permissions(self.filters.doc_type,
 			fields=[entity, entity_name, value_field, self.date_field],
 			filters={
 				"docstatus": 1,
@@ -153,12 +165,21 @@ class Analytics(object):
 			value_field = 'stock_qty'
 
 		self.entries = frappe.db.sql("""
-			select i.item_code as entity, i.item_name as entity_name, i.stock_uom, i.{value_field} as value_field, s.{date_field}
+			select 
+				i.item_code as entity, 
+				i.item_name as entity_name, 
+				i.stock_uom, 
+				i.{value_field} as value_field, 
+				s.{date_field}
 			from `tab{doctype} Item` i , `tab{doctype}` s
-			where s.name = i.parent and i.docstatus = 1 and s.company = %s
-			and s.{date_field} between %s and %s
+			where 
+				s.name = i.parent 
+				and i.docstatus = 1 
+				and s.company = %s
+				and s.{date_field} between %s and %s
+				{permission_cond}
 		"""
-		.format(date_field=self.date_field, value_field=value_field, doctype=self.filters.doc_type),
+		.format(date_field=self.date_field, value_field=value_field, doctype=self.filters.doc_type, permission_cond=get_match_cond_for_reports(self.filters.doc_type, "s")),
 		(self.filters.company, self.filters.from_date, self.filters.to_date), as_dict=1)
 
 		self.entity_names = {}
@@ -179,7 +200,7 @@ class Analytics(object):
 		else:
 			entity_field = "territory as entity"
 
-		self.entries = frappe.get_all(self.filters.doc_type,
+		self.entries = frappe.get_all_with_user_permissions(self.filters.doc_type,
 			fields=[entity_field, value_field, self.date_field],
 			filters={
 				"docstatus": 1,
@@ -200,7 +221,8 @@ class Analytics(object):
 			from `tab{doctype} Item` i , `tab{doctype}` s
 			where s.name = i.parent and i.docstatus = 1 and s.company = %s
 			and s.{date_field} between %s and %s
-		""".format(date_field=self.date_field, value_field=value_field, doctype=self.filters.doc_type),
+			{permission_cond}
+		""".format(date_field=self.date_field, value_field=value_field, doctype=self.filters.doc_type, permission_cond=get_match_cond_for_reports(self.filters.doc_type, "s")),
 		(self.filters.company, self.filters.from_date, self.filters.to_date), as_dict=1)
 
 		self.get_groups()
@@ -213,7 +235,7 @@ class Analytics(object):
 
 		entity = "project as entity"
 
-		self.entries = frappe.get_all(self.filters.doc_type,
+		self.entries = frappe.get_all_with_user_permissions(self.filters.doc_type,
 			fields=[entity, value_field, self.date_field],
 			filters={
 				"docstatus": 1,
@@ -342,8 +364,8 @@ class Analytics(object):
 		self.depth_map = frappe._dict()
 
 		self.group_entries = frappe.db.sql("""select name, lft, rgt , {parent} as parent
-			from `tab{tree}` order by lft"""
-		.format(tree=self.filters.tree_type, parent=parent), as_dict=1)
+			from `tab{tree}` where 1=1 {permission_cond} order by lft"""
+		.format(tree=self.filters.tree_type, parent=parent, permission_cond=get_match_cond_for_reports(self.filters.tree_type)), as_dict=1)
 
 		for d in self.group_entries:
 			if d.parent:
@@ -354,11 +376,12 @@ class Analytics(object):
 	def get_teams(self):
 		self.depth_map = frappe._dict()
 
-		self.group_entries = frappe.db.sql(""" select * from (select "Order Types" as name, 0 as lft,
-			2 as rgt, '' as parent union select distinct order_type as name, 1 as lft, 1 as rgt, "Order Types" as parent
-			from `tab{doctype}` where ifnull(order_type, '') != '') as b order by lft, name
-		"""
-		.format(doctype=self.filters.doc_type), as_dict=1)
+		self.group_entries = frappe.db.sql(""" 
+			select * from (select "Order Types" as name, 0 as lft,
+							2 as rgt, '' as parent union select distinct order_type as name, 1 as lft, 1 as rgt, "Order Types" as parent
+							from `tab{doctype}` where ifnull(order_type, '') != '' {permission_cond}) as b 
+			order by lft, name
+		""".format(doctype=self.filters.doc_type, permission_cond=get_match_cond_for_reports(self.filters.doc_type)), as_dict=1)
 
 		for d in self.group_entries:
 			if d.parent:
@@ -367,7 +390,7 @@ class Analytics(object):
 				self.depth_map.setdefault(d.name, 0)
 
 	def get_supplier_parent_child_map(self):
-		self.parent_child_map = frappe._dict(frappe.db.sql(""" select name, supplier_group from `tabSupplier`"""))
+		self.parent_child_map = frappe._dict(frappe.get_all_with_user_permissions("Supplier", fields=["name","supplier_group"], as_list=True))
 
 	def get_chart_data(self):
 		length = len(self.columns)

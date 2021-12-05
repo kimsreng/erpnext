@@ -110,7 +110,7 @@ def get_timesheets(filters):
 	if "employee" in filters:
 		record_filters.append(["employee", "=", filters.employee])
 
-	timesheets = frappe.get_all("Timesheet", filters=record_filters, fields=["employee", "employee_name", "name"])
+	timesheets = frappe.get_all_with_user_permissions("Timesheet", filters=record_filters, fields=["employee", "employee_name", "name"])
 	timesheet_map = frappe._dict()
 	for d in timesheets:
 		timesheet_map.setdefault(d.name, d)
@@ -125,7 +125,7 @@ def get_timesheet_details(filters, timesheet_list):
 	if "project" in filters:
 		timesheet_details_filter["project"] = filters.project
 
-	timesheet_details = frappe.get_all(
+	timesheet_details = frappe.get_all_with_user_permissions(
 		"Timesheet Detail",
 		filters = timesheet_details_filter,
 		fields=["from_time", "to_time", "hours", "is_billable", "billing_hours", "billing_rate", "parent"]

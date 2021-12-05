@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import flt
 from six import iteritems
 
@@ -71,7 +72,9 @@ def get_consumed_details(filters):
 		i.stock_uom, sle.actual_qty, sle.stock_value_difference,
 		sle.voucher_no, sle.voucher_type
 		from `tabStock Ledger Entry` sle, `tabItem` i
-		where sle.is_cancelled = 0 and sle.item_code=i.name and sle.actual_qty < 0 %s""" % conditions, values, as_dict=1):
+		where sle.is_cancelled = 0 and sle.item_code=i.name and sle.actual_qty < 0 %s
+		{permission_cond}
+		""".format(permission_cond=get_match_cond_for_reports("Item", "i")) % conditions, values, as_dict=1):
 			consumed_details.setdefault(d.item_code, []).append(d)
 
 	return consumed_details
@@ -84,14 +87,16 @@ def get_suppliers_details(filters):
 		`tabPurchase Receipt` pr, `tabPurchase Receipt Item` pri
 		where pr.name=pri.parent and pr.docstatus=1 and
 		pri.item_code=(select name from `tabItem` where
-			is_stock_item=1 and name=pri.item_code)""", as_dict=1):
+			is_stock_item=1 and name=pri.item_code)
+		{permission_cond}""".format(permission_cond=get_match_cond_for_reports("Purchase Receipt", "pr")), as_dict=1):
 			item_supplier_map.setdefault(d.item_code, []).append(d.supplier)
 
 	for d in frappe.db.sql("""select pr.supplier, pri.item_code from
 		`tabPurchase Invoice` pr, `tabPurchase Invoice Item` pri
 		where pr.name=pri.parent and pr.docstatus=1 and
 		ifnull(pr.update_stock, 0) = 1 and pri.item_code=(select name from `tabItem`
-			where is_stock_item=1 and name=pri.item_code)""", as_dict=1):
+			where is_stock_item=1 and name=pri.item_code)
+		{permission_cond}""".format(permission_cond=get_match_cond_for_reports("Purchase Invoice", "pr")), as_dict=1):
 			if d.item_code not in item_supplier_map:
 				item_supplier_map.setdefault(d.item_code, []).append(d.supplier)
 
@@ -108,4 +113,5 @@ def get_suppliers_details(filters):
 
 def get_material_transfer_vouchers():
 	return frappe.db.sql_list("""select name from `tabStock Entry` where
-		purpose='Material Transfer' and docstatus=1""")
+		purpose='Material Transfer' and docstatus=1 {permission_cond}
+		""".format(permission_cond=get_match_cond_for_reports("Stock Entry")))

@@ -35,7 +35,7 @@ class Fees(AccountsController):
 		if not self.currency:
 			self.currency = erpnext.get_company_currency(self.company)
 		if not (self.receivable_account and self.income_account and self.cost_center):
-			accounts_details = frappe.get_all("Company",
+			accounts_details = frappe.get_all_with_user_permissions("Company",
 				fields=["default_receivable_account", "default_income_account", "cost_center"],
 				filters={"name": self.company})[0]
 		if not self.receivable_account:

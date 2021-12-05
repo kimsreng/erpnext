@@ -25,7 +25,7 @@ def get_warehouse_account_map(company=None):
 			filters['company'] = company
 			frappe.flags.setdefault('warehouse_account_map', {}).setdefault(company, {})
 
-		for d in frappe.get_all('Warehouse',
+		for d in frappe.get_all_with_user_permissions('Warehouse',
 			fields = ["name", "account", "parent_warehouse", "company", "is_group"],
 			filters = filters,
 			order_by="lft, rgt"):

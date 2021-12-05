@@ -262,7 +262,7 @@ class WorkOrder(Document):
 		production_plan = frappe.get_doc('Production Plan', self.production_plan)
 		produced_qty = 0
 		if self.production_plan_item:
-			total_qty = frappe.get_all("Work Order", fields = "sum(produced_qty) as produced_qty",
+			total_qty = frappe.get_all_with_user_permissions("Work Order", fields = "sum(produced_qty) as produced_qty",
 				filters = {'docstatus': 1, 'production_plan': self.production_plan,
 					'production_plan_item': self.production_plan_item}, as_list=1)
 
@@ -348,11 +348,11 @@ class WorkOrder(Document):
 			}))
 
 	def delete_auto_created_batch_and_serial_no(self):
-		for row in frappe.get_all("Serial No", filters = {"work_order": self.name}):
+		for row in frappe.get_all_with_user_permissions("Serial No", filters = {"work_order": self.name}):
 			frappe.delete_doc("Serial No", row.name)
 			self.db_set("serial_no", "")
 
-		for row in frappe.get_all("Batch", filters = {"reference_name": self.name}):
+		for row in frappe.get_all_with_user_permissions("Batch", filters = {"reference_name": self.name}):
 			frappe.delete_doc("Batch", row.name)
 
 	def make_serial_nos(self, args):
@@ -552,7 +552,7 @@ class WorkOrder(Document):
 		holidays = {}
 
 		if holiday_list not in holidays:
-			holiday_list_days = [getdate(d[0]) for d in frappe.get_all("Holiday", fields=["holiday_date"],
+			holiday_list_days = [getdate(d[0]) for d in frappe.get_all_with_user_permissions("Holiday", fields=["holiday_date"],
 				filters={"parent": holiday_list}, order_by="holiday_date", limit_page_length=0, as_list=1)]
 
 			holidays[holiday_list] = holiday_list_days
@@ -585,7 +585,7 @@ class WorkOrder(Document):
 			if actual_end_dates:
 				self.actual_end_date = max(actual_end_dates)
 		else:
-			data = frappe.get_all("Stock Entry",
+			data = frappe.get_all_with_user_permissions("Stock Entry",
 				fields = ["timestamp(posting_date, posting_time) as posting_datetime"],
 				filters = {
 					"work_order": self.name,
@@ -607,7 +607,7 @@ class WorkOrder(Document):
 			self.lead_time = flt(time_diff_in_hours(self.actual_end_date, self.actual_start_date) * 60)
 
 	def delete_job_card(self):
-		for d in frappe.get_all("Job Card", ["name"], {"work_order": self.name}):
+		for d in frappe.get_all_with_user_permissions("Job Card", ["name"], {"work_order": self.name}):
 			frappe.delete_doc("Job Card", d.name)
 
 	def validate_production_item(self):
@@ -786,7 +786,7 @@ class WorkOrder(Document):
 
 		for row in stock_entry_doc.items:
 			if row.batch_no and (row.is_finished_item or row.is_scrap_item):
-				qty = frappe.get_all("Stock Entry Detail", filters = {"batch_no": row.batch_no, "docstatus": 1},
+				qty = frappe.get_all_with_user_permissions("Stock Entry Detail", filters = {"batch_no": row.batch_no, "docstatus": 1},
 					or_filters= {"is_finished_item": 1, "is_scrap_item": 1}, fields = ["sum(qty)"], as_list=1)[0][0]
 
 				frappe.db.set_value("Batch", row.batch_no, "produced_qty", flt(qty))
@@ -797,7 +797,7 @@ def get_bom_operations(doctype, txt, searchfield, start, page_len, filters):
 	if txt:
 		filters['operation'] = ('like', '%%%s%%' % txt)
 
-	return frappe.get_all('BOM Operation',
+	return frappe.get_all_with_user_permissions('BOM Operation',
 		filters = filters, fields = ['operation'], as_list=1)
 
 @frappe.whitelist()
@@ -1025,7 +1025,7 @@ def get_serial_nos_for_job_card(row, wo_doc):
 
 	serial_nos = get_serial_nos(wo_doc.serial_no)
 	used_serial_nos = []
-	for d in frappe.get_all('Job Card', fields=['serial_no'],
+	for d in frappe.get_all_with_user_permissions('Job Card', fields=['serial_no'],
 		filters={'docstatus': ('<', 2), 'work_order': wo_doc.name, 'operation_id': row.name}):
 		used_serial_nos.extend(get_serial_nos(d.serial_no))
 

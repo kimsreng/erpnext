@@ -8,6 +8,7 @@ import copy
 import frappe
 from frappe import _
 from frappe.utils import date_diff, flt, getdate
+from frappe.desk.reportview import get_match_cond_for_reports
 
 
 def execute(filters=None):
@@ -79,9 +80,10 @@ def get_data(conditions, filters):
 			and so.status not in ('Stopped', 'Closed', 'On Hold')
 			and so.docstatus = 1
 			{conditions}
+			{permission_cond}
 		GROUP BY soi.name
 		ORDER BY so.transaction_date ASC
-	""".format(conditions=conditions), filters, as_dict=1)
+	""".format(conditions=conditions, permission_cond=get_match_cond_for_reports("Sales Order", "so")), filters, as_dict=1)
 
 	return data
 

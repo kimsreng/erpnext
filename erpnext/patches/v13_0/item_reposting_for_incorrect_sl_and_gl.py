@@ -60,7 +60,7 @@ def execute():
 	print("Reposting General Ledger Entries...")
 
 	if data:
-		for row in frappe.get_all('Company', filters= {'enable_perpetual_inventory': 1}):
+		for row in frappe.get_all_with_user_permissions('Company', filters= {'enable_perpetual_inventory': 1}):
 			if row.name in company_list:
 				update_gl_entries_after(posting_date, posting_time, company=row.name)
 

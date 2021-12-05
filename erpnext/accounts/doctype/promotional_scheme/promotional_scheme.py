@@ -31,7 +31,7 @@ class PromotionalScheme(Document):
 			frappe.throw(_("Price or product discount slabs are required"))
 
 	def on_update(self):
-		pricing_rules = frappe.get_all(
+		pricing_rules = frappe.get_all_with_user_permissions(
 			'Pricing Rule',
 			fields = ["promotional_scheme_id", "name", "creation"],
 			filters = {
@@ -65,7 +65,7 @@ class PromotionalScheme(Document):
 			frappe.msgprint(_("New {0} pricing rules are created").format(count))
 
 	def on_trash(self):
-		for rule in frappe.get_all('Pricing Rule',
+		for rule in frappe.get_all_with_user_permissions('Pricing Rule',
 			{'promotional_scheme': self.name}):
 			frappe.delete_doc('Pricing Rule', rule.name)
 
@@ -90,7 +90,7 @@ def _get_pricing_rules(doc, child_doc, discount_fields, rules=None):
 		if d.name in rules:
 			for applicable_for_value in args.get(applicable_for):
 				temp_args = args.copy()
-				docname = frappe.get_all(
+				docname = frappe.get_all_with_user_permissions(
 					'Pricing Rule',
 					fields = ["promotional_scheme_id", "name", applicable_for],
 					filters = {

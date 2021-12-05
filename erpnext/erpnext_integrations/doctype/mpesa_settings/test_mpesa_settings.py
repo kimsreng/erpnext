@@ -74,7 +74,7 @@ class TestMpesaSettings(unittest.TestCase):
 		self.assertEqual(pr.payment_gateway, "Mpesa-Payment")
 
 		# submitting payment request creates integration requests with random id
-		integration_req_ids = frappe.get_all("Integration Request", filters={
+		integration_req_ids = frappe.get_all_with_user_permissions("Integration Request", filters={
 			'reference_doctype': pr.doctype,
 			'reference_docname': pr.name,
 		}, pluck="name")
@@ -117,7 +117,7 @@ class TestMpesaSettings(unittest.TestCase):
 		self.assertEqual(pr.payment_gateway, "Mpesa-Payment")
 
 		# submitting payment request creates integration requests with random id
-		integration_req_ids = frappe.get_all("Integration Request", filters={
+		integration_req_ids = frappe.get_all_with_user_permissions("Integration Request", filters={
 			'reference_doctype': pr.doctype,
 			'reference_docname': pr.name,
 		}, pluck="name")
@@ -167,7 +167,7 @@ class TestMpesaSettings(unittest.TestCase):
 		self.assertEqual(pr.payment_gateway, "Mpesa-Payment")
 
 		# submitting payment request creates integration requests with random id
-		integration_req_ids = frappe.get_all("Integration Request", filters={
+		integration_req_ids = frappe.get_all_with_user_permissions("Integration Request", filters={
 			'reference_doctype': pr.doctype,
 			'reference_docname': pr.name,
 		}, pluck="name")
@@ -190,7 +190,7 @@ class TestMpesaSettings(unittest.TestCase):
 		# second integration request fails
 		# now retrying payment request should make only one integration request again
 		pr = pos_invoice.create_payment_request()
-		new_integration_req_ids = frappe.get_all("Integration Request", filters={
+		new_integration_req_ids = frappe.get_all_with_user_permissions("Integration Request", filters={
 			'reference_doctype': pr.doctype,
 			'reference_docname': pr.name,
 			'name': ['not in', integration_req_ids]

@@ -40,11 +40,11 @@ def get_columns(filters=None):
 	return columns
 
 def get_data(filters):
-	daily_summary_emails = frappe.get_all('Daily Work Summary',
+	daily_summary_emails = frappe.get_all_with_user_permissions('Daily Work Summary',
 		fields=["name"],
 		filters=[["creation","Between", filters.range]])
 	daily_summary_emails = [d.get('name') for d in daily_summary_emails]
-	replies = frappe.get_all('Communication',
+	replies = frappe.get_all_with_user_permissions('Communication',
 			fields=['content', 'text_content', 'sender'],
 			filters=[['reference_doctype','=', 'Daily Work Summary'],
 				['reference_name', 'in', daily_summary_emails],

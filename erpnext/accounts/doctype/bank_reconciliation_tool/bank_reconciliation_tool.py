@@ -34,7 +34,7 @@ def get_bank_transactions(bank_account, from_date = None, to_date = None):
 		filters.append(['date', '<=', to_date])
 	if from_date:
 		filters.append(['date', '>=', from_date])
-	transactions = frappe.get_all(
+	transactions = frappe.get_all_with_user_permissions(
 		'Bank Transaction',
 		fields = ['date', 'deposit', 'withdrawal', 'currency',
 		'description', 'name', 'bank_account', 'company',

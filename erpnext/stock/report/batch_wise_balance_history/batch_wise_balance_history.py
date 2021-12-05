@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import frappe
 from frappe import _
 from frappe.utils import cint, flt, getdate
+from frappe.desk.reportview import get_match_cond_for_reports
 
 
 def execute(filters=None):
@@ -70,9 +71,9 @@ def get_stock_ledger_entries(filters):
 	return frappe.db.sql("""
 		select item_code, batch_no, warehouse, posting_date, sum(actual_qty) as actual_qty
 		from `tabStock Ledger Entry`
-		where is_cancelled = 0 and docstatus < 2 and ifnull(batch_no, '') != '' %s
+		where is_cancelled = 0 and docstatus < 2 and ifnull(batch_no, '') != '' %s {permission_cond}
 		group by voucher_no, batch_no, item_code, warehouse
-		order by item_code, warehouse""" %
+		order by item_code, warehouse""".format(permission_cond=get_match_cond_for_reports("Stock Ledger Entry")) %
 		conditions, as_dict=1)
 
 
@@ -106,7 +107,7 @@ def get_item_warehouse_batch_map(filters, float_precision):
 
 def get_item_details(filters):
 	item_map = {}
-	for d in frappe.db.sql("select name, item_name, description, stock_uom from tabItem", as_dict=1):
+	for d in frappe.get_all_with_user_permissions("Item", ["name", "item_name", "description", "stock_uom"]):
 		item_map.setdefault(d.name, d)
 
 	return item_map

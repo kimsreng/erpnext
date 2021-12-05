@@ -97,7 +97,7 @@ def create_interview_feedback(interview, interviewer, skills_ratings):
 def get_skills_rating(interview_round):
 	import random
 
-	skills = frappe.get_all("Expected Skill Set", filters={"parent": interview_round}, fields = ["skill"])
+	skills = frappe.get_all_with_user_permissions("Expected Skill Set", filters={"parent": interview_round}, fields = ["skill"])
 	for d in skills:
 		d["rating"] = random.randint(1, 5)
 	return skills

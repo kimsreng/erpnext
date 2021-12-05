@@ -27,7 +27,7 @@ class TestFinanceBook(unittest.TestCase):
 		jv.submit()
 
 		# check the Finance Book in the GL Entry
-		gl_entries = frappe.get_all("GL Entry", fields=["name", "finance_book"],
+		gl_entries = frappe.get_all_with_user_permissions("GL Entry", fields=["name", "finance_book"],
 			filters={"voucher_type": "Journal Entry", "voucher_no": jv.name})
 
 		for gl_entry in gl_entries:

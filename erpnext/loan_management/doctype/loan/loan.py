@@ -156,7 +156,7 @@ class Loan(AccountsController):
 				self.db_set('maximum_loan_amount', maximum_loan_value)
 
 	def unlink_loan_security_pledge(self):
-		pledges = frappe.get_all('Loan Security Pledge', fields=['name'], filters={'loan': self.name})
+		pledges = frappe.get_all_with_user_permissions('Loan Security Pledge', fields=['name'], filters={'loan': self.name})
 		pledge_list = [d.name for d in pledges]
 		if pledge_list:
 			frappe.db.sql("""UPDATE `tabLoan Security Pledge` SET
@@ -391,8 +391,8 @@ def validate_employee_currency_with_company_currency(applicant, company):
 
 @frappe.whitelist()
 def get_shortfall_applicants():
-	loans = frappe.get_all('Loan Security Shortfall', {'status': 'Pending'}, pluck='loan')
-	applicants = set(frappe.get_all('Loan', {'name': ('in', loans)}, pluck='name'))
+	loans = frappe.get_all_with_user_permissions('Loan Security Shortfall', {'status': 'Pending'}, pluck='loan')
+	applicants = set(frappe.get_all_with_user_permissions('Loan', {'name': ('in', loans)}, pluck='name'))
 
 	return {
 		"value": len(applicants),

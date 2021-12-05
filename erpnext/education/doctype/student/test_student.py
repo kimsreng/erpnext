@@ -22,7 +22,7 @@ class TestStudent(unittest.TestCase):
 	def test_enroll_in_program(self):
 		student = get_student("_test_student@example.com")
 		enrollment = student.enroll_in_program("_Test Program 1")
-		test_enrollment = frappe.get_all("Program Enrollment", filters={"student": student.name, "Program": "_Test Program 1"})
+		test_enrollment = frappe.get_all_with_user_permissions("Program Enrollment", filters={"student": student.name, "Program": "_Test Program 1"})
 		self.assertTrue(len(test_enrollment))
 		self.assertEqual(test_enrollment[0]['name'], enrollment.name)
 		frappe.db.rollback()
@@ -65,7 +65,7 @@ def create_student(student_dict):
 
 def get_student(email):
 	try:
-		student_id = frappe.get_all("Student", {"student_email_id": email}, ["name"])[0].name
+		student_id = frappe.get_all_with_user_permissions("Student", {"student_email_id": email}, ["name"])[0].name
 		return frappe.get_doc("Student", student_id)
 	except IndexError:
 		return None

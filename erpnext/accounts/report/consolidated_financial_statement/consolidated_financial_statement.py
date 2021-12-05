@@ -7,7 +7,7 @@ from collections import defaultdict
 
 import frappe
 from frappe import _
-from frappe.desk.reportview import get_match_cond
+from frappe.desk.reportview import get_match_cond_for_reports
 from frappe.utils import cint, flt, getdate
 
 import erpnext
@@ -131,7 +131,7 @@ def get_opening_balance(account_name, data, company):
 			return row.get('company_wise_opening_bal', {}).get(company, 0.0)
 
 def get_root_account_name(root_type, company):
-	return frappe.get_all(
+	return frappe.get_all_with_user_permissions(
 		'Account',
 		fields=['account_name'],
 		filters = {'root_type': root_type, 'is_group': 1,
@@ -419,7 +419,7 @@ def get_accounts(root_type, filters):
 			parent_account, lft, rgt, root_type, report_type, account_name, account_number
 		from
 			`tabAccount` where company = %s and root_type = %s {permission_cond}
-		""".format(permission_cond=get_match_cond("Account")) , (filters.get('company'), root_type), as_dict=1)
+		""".format(permission_cond=get_match_cond_for_reports("Account")) , (filters.get('company'), root_type), as_dict=1)
 
 def prepare_data(accounts, start_date, end_date, balance_must_be, companies, company_currency, filters):
 	data = []
@@ -487,7 +487,7 @@ def set_gl_entries_by_account(from_date, to_date, root_lft, root_rgt, filters, g
 			from `tabGL Entry` gl, `tabAccount` acc where acc.name = gl.account and gl.company = %(company)s and gl.is_cancelled = 0
 			{additional_conditions} and gl.posting_date <= %(to_date)s and acc.lft >= %(lft)s and acc.rgt <= %(rgt)s {permission_cond}
 			order by gl.account, gl.posting_date
-			""".format(additional_conditions=additional_conditions, permission_cond=get_match_cond("GL Entry", "gl")),
+			""".format(additional_conditions=additional_conditions, permission_cond=get_match_cond_for_reports("GL Entry", "gl")),
 			{
 				"from_date": from_date,
 				"to_date": to_date,

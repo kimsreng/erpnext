@@ -120,7 +120,7 @@ def get_columns():
 
 def get_lab_tests(filters):
 	conditions = get_conditions(filters)
-	data = frappe.get_all(
+	data = frappe.get_all_with_user_permissions(
 		doctype='Lab Test',
 		fields=['name', 'template', 'company', 'patient', 'patient_name', 'practitioner', 'employee', 'status', 'invoiced', 'result_date', 'department'],
 		filters=conditions,

@@ -78,7 +78,7 @@ class CropCycle(Document):
 		output = {}
 
 		for doctype in linked_doctypes:
-			output[doctype] = frappe.get_all(doctype, fields=required_fields)
+			output[doctype] = frappe.get_all_with_user_permissions(doctype, fields=required_fields)
 
 		output['Location'] = []
 

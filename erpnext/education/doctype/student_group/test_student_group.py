@@ -17,7 +17,7 @@ def get_random_group():
 		"group_based_on": "Activity"
 	}).insert()
 
-	student_list = frappe.get_all('Student', limit=5)
+	student_list = frappe.get_all_with_user_permissions('Student', limit=5)
 
 	doc.extend("students", [{"student":d.name, "active": 1} for d in student_list])
 	doc.save()
