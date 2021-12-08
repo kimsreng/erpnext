@@ -182,7 +182,7 @@ class LandedCostVoucher(Document):
 			if item.is_fixed_asset:
 				receipt_document_type = 'purchase_invoice' if item.receipt_document_type == 'Purchase Invoice' \
 						else 'purchase_receipt'
-				docs = frappe.db.get_all('Asset', filters={ receipt_document_type: item.receipt_document,
+				docs = frappe.get_all_with_user_permissions('Asset', filters={ receipt_document_type: item.receipt_document,
 					'item_code': item.item_code }, fields=['name', 'docstatus'])
 				if not docs or len(docs) != item.qty:
 					frappe.throw(_('There are not enough asset created or linked to {0}. Please create or link {1} Assets with respective document.').format(

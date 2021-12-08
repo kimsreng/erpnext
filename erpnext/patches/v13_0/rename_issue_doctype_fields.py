@@ -9,7 +9,7 @@ from frappe.model.utils.rename_field import rename_field
 
 def execute():
 	if frappe.db.exists('DocType', 'Issue'):
-		issues = frappe.db.get_all('Issue', fields=['name', 'response_by_variance', 'resolution_by_variance', 'mins_to_first_response'],
+		issues = frappe.get_all_with_user_permissions('Issue', fields=['name', 'response_by_variance', 'resolution_by_variance', 'mins_to_first_response'],
 			 order_by='creation desc')
 		frappe.reload_doc('support', 'doctype', 'issue')
 
@@ -38,7 +38,7 @@ def execute():
 				frappe.db.commit()
 
 	if frappe.db.exists('DocType', 'Opportunity'):
-		opportunities = frappe.db.get_all('Opportunity', fields=['name', 'mins_to_first_response'], order_by='creation desc')
+		opportunities = frappe.get_all_with_user_permissions('Opportunity', fields=['name', 'mins_to_first_response'], order_by='creation desc')
 		frappe.reload_doctype('Opportunity', force=True)
 		rename_field('Opportunity', 'mins_to_first_response', 'first_response_time')
 

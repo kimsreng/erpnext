@@ -44,7 +44,7 @@ class ItemVariantsCacheManager:
 		val = frappe.cache().get_value('ordered_attribute_values_map')
 		if val: return val
 
-		all_attribute_values = frappe.db.get_all('Item Attribute Value',
+		all_attribute_values = frappe.get_all_with_user_permissions('Item Attribute Value',
 			['attribute_value', 'idx', 'parent'], order_by='idx asc')
 
 		ordered_attribute_values_map = frappe._dict({})
@@ -57,17 +57,17 @@ class ItemVariantsCacheManager:
 	def build_cache(self):
 		parent_item_code = self.item_code
 
-		attributes = [a.attribute for a in frappe.db.get_all('Item Variant Attribute',
+		attributes = [a.attribute for a in frappe.get_all_with_user_permissions('Item Variant Attribute',
 			{'parent': parent_item_code}, ['attribute'], order_by='idx asc')
 		]
 
-		item_variants_data = frappe.db.get_all('Item Variant Attribute',
+		item_variants_data = frappe.get_all_with_user_permissions('Item Variant Attribute',
 			{'variant_of': parent_item_code}, ['parent', 'attribute', 'attribute_value'],
 			order_by='name',
 			as_list=1
 		)
 
-		unpublished_items = set([i.item_code for i in frappe.db.get_all('Website Item', filters={'published': 0}, fields=["item_code"])])
+		unpublished_items = set([i.item_code for i in frappe.get_all_with_user_permissions('Website Item', filters={'published': 0}, fields=["item_code"])])
 
 		attribute_value_item_map = frappe._dict({})
 		item_attribute_value_map = frappe._dict({})

@@ -38,7 +38,7 @@ def get_data(item):
 	selling_price_map = get_selling_price_map(variant_list)
 	attr_val_map = get_attribute_values_map(variant_list)
 
-	attributes = frappe.db.get_all(
+	attributes = frappe.get_all_with_user_permissions(
 		"Item Variant Attribute",
 		fields=["attribute"],
 		filters={

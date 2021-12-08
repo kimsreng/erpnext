@@ -10,8 +10,8 @@ def execute():
 	# add holiday list and employee group fields in SLA
 	# change response and resolution time in priorities child table
 	if frappe.db.exists('DocType', 'Service Level Agreement'):
-		sla_details = frappe.db.get_all('Service Level Agreement', fields=['name', 'service_level'])
-		priorities = frappe.db.get_all('Service Level Priority', fields=['*'], filters={
+		sla_details = frappe.get_all_with_user_permissions('Service Level Agreement', fields=['name', 'service_level'])
+		priorities = frappe.get_all_with_user_permissions('Service Level Priority', fields=['*'], filters={
 			'parenttype': ('in', ['Service Level Agreement', 'Service Level'])
 		})
 
@@ -49,7 +49,7 @@ def execute():
 		# copy Service Levels to Service Level Agreements
 		sl = [entry.service_level for entry in sla_details]
 		if frappe.db.exists('DocType', 'Service Level'):
-			service_levels = frappe.db.get_all('Service Level', filters={'service_level': ('not in', sl)}, fields=['*'])
+			service_levels = frappe.get_all_with_user_permissions('Service Level', filters={'service_level': ('not in', sl)}, fields=['*'])
 			for entry in service_levels:
 				sla = frappe.new_doc('Service Level Agreement')
 				sla.service_level = entry.service_level

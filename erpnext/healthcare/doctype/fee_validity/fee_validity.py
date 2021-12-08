@@ -45,7 +45,7 @@ def check_is_new_patient(appointment):
 	if validity_exists:
 		return False
 
-	appointment_exists = frappe.db.get_all('Patient Appointment', {
+	appointment_exists = frappe.get_all_with_user_permissions('Patient Appointment', {
 		'name': ('!=', appointment.name),
 		'status': ('!=', 'Cancelled'),
 		'patient': appointment.patient,

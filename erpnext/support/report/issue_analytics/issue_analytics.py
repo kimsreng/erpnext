@@ -149,7 +149,7 @@ class IssueAnalytics(object):
 			'Assigned To': '_assign'
 		}
 
-		self.entries = frappe.db.get_all('Issue',
+		self.entries = frappe.get_all_with_user_permissions('Issue',
 			fields=[self.field_map.get(self.filters.based_on), 'name', 'opening_date'],
 			filters=filters
 		)

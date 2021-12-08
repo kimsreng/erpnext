@@ -77,7 +77,7 @@ def update_bank_transaction(bank_transaction_name, reference_number, party_type=
 	bank_transaction.party_type = party_type
 	bank_transaction.party = party
 	bank_transaction.save()
-	return frappe.db.get_all('Bank Transaction',
+	return frappe.get_all_with_user_permissions('Bank Transaction',
 		filters={
 			'name': bank_transaction_name
 		},

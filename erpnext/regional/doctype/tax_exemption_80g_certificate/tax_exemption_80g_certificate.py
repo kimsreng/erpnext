@@ -81,7 +81,7 @@ class TaxExemption80GCertificate(Document):
 
 		fiscal_year = get_fiscal_year(fiscal_year=self.fiscal_year, as_dict=True)
 
-		memberships = frappe.db.get_all('Membership', {
+		memberships = frappe.get_all_with_user_permissions('Membership', {
 			'member': self.member,
 			'from_date': ['between', (fiscal_year.year_start_date, fiscal_year.year_end_date)],
 			'to_date': ['between', (fiscal_year.year_start_date, fiscal_year.year_end_date)],

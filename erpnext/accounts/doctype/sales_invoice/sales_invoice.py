@@ -1729,7 +1729,7 @@ def set_account_for_mode_of_payment(self):
 
 def get_inter_company_details(doc, doctype):
 	if doctype in ["Sales Invoice", "Sales Order", "Delivery Note"]:
-		parties = frappe.db.get_all("Supplier", fields=["name"], filters={"disabled": 0, "is_internal_supplier": 1, "represents_company": doc.company})
+		parties = frappe.get_all_with_user_permissions("Supplier", fields=["name"], filters={"disabled": 0, "is_internal_supplier": 1, "represents_company": doc.company})
 		company = frappe.get_cached_value("Customer", doc.customer, "represents_company")
 
 		if not parties:
@@ -1737,7 +1737,7 @@ def get_inter_company_details(doc, doctype):
 
 		party = get_internal_party(parties, "Supplier", doc)
 	else:
-		parties = frappe.db.get_all("Customer", fields=["name"], filters={"disabled": 0, "is_internal_customer": 1, "represents_company": doc.company})
+		parties = frappe.get_all_with_user_permissions("Customer", fields=["name"], filters={"disabled": 0, "is_internal_customer": 1, "represents_company": doc.company})
 		company = frappe.get_cached_value("Supplier", doc.supplier, "represents_company")
 
 		if not parties:

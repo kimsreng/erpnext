@@ -53,7 +53,7 @@ def get_warehouse_filter_based_on_permissions(filters):
 		return True, []
 
 def get_warehouse_capacity_data(filters, start):
-	capacity_data = frappe.db.get_all('Putaway Rule',
+	capacity_data = frappe.get_all_with_user_permissions('Putaway Rule',
 		fields=['item_code', 'warehouse','stock_capacity', 'company'],
 		filters=filters,
 		limit_start=start,

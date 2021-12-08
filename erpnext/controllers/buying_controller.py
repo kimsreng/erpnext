@@ -109,7 +109,7 @@ class BuyingController(StockController, Subcontracting):
 			return
 
 		purchase_doc_field = 'purchase_receipt' if self.doctype == 'Purchase Receipt' else 'purchase_invoice'
-		not_cancelled_asset = [d.name for d in frappe.db.get_all("Asset", {
+		not_cancelled_asset = [d.name for d in frappe.get_all_with_user_permissions("Asset", {
 			purchase_doc_field: self.return_against,
 			"docstatus": 1
 		})]
@@ -618,7 +618,7 @@ class BuyingController(StockController, Subcontracting):
 		for d in self.get("items"):
 			if d.is_fixed_asset:
 				is_auto_create_enabled = frappe.db.get_value('Item', d.item_code, 'auto_create_assets')
-				assets = frappe.db.get_all('Asset', filters={ field : self.name, 'item_code' : d.item_code })
+				assets = frappe.get_all_with_user_permissions('Asset', filters={ field : self.name, 'item_code' : d.item_code })
 
 				for asset in assets:
 					asset = frappe.get_doc('Asset', asset.name)

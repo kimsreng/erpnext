@@ -654,7 +654,7 @@ def get_all_subscriptions():
 	"""
 	Returns all `Subscription` documents
 	"""
-	return frappe.db.get_all('Subscription', {'status': ('!=','Cancelled')})
+	return frappe.get_all_with_user_permissions('Subscription', {'status': ('!=','Cancelled')})
 
 
 def process(data):

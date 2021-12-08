@@ -240,7 +240,7 @@ class Customer(TransactionBase):
 			return
 
 		past_credit_limits = [d.credit_limit
-			for d in frappe.db.get_all("Customer Credit Limit", filters={'parent': self.name}, fields=["credit_limit"], order_by="company")]
+			for d in frappe.get_all_with_user_permissions("Customer Credit Limit", filters={'parent': self.name}, fields=["credit_limit"], order_by="company")]
 
 		current_credit_limits = [d.credit_limit for d in sorted(self.credit_limits, key=lambda k: k.company)]
 

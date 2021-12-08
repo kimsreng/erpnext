@@ -172,7 +172,7 @@ def update_total_amount_paid(doc):
 
 def get_total_loan_amount(applicant_type, applicant, company):
 	pending_amount = 0
-	loan_details = frappe.db.get_all("Loan",
+	loan_details = frappe.get_all_with_user_permissions("Loan",
 		filters={"applicant_type": applicant_type, "company": company, "applicant": applicant, "docstatus": 1,
 			"status": ("!=", "Closed")},
 		fields=["status", "total_payment", "disbursed_amount", "total_interest_payable", "total_principal_paid",

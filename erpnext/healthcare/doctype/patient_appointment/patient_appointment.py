@@ -456,7 +456,7 @@ def send_appointment_reminder():
 		reminder_dt = datetime.datetime.now() + datetime.timedelta(
 			hours=remind_before.hour, minutes=remind_before.minute, seconds=remind_before.second)
 
-		appointment_list = frappe.db.get_all('Patient Appointment', {
+		appointment_list = frappe.get_all_with_user_permissions('Patient Appointment', {
 			'appointment_datetime': ['between', (datetime.datetime.now(), reminder_dt)],
 			'reminded': 0,
 			'status': ['!=', 'Cancelled']

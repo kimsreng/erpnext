@@ -114,7 +114,7 @@ def get_dates(args):
 	return dates
 
 def get_active_employees():
-	employees = frappe.db.get_all('Employee',
+	employees = frappe.get_all_with_user_permissions('Employee',
 		fields=['name', 'employee_name', 'date_of_joining', 'company', 'relieving_date'],
 		filters={
 			'docstatus': ['<', 2],

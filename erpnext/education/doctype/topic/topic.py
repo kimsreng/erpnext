@@ -24,7 +24,7 @@ class Topic(Document):
 @frappe.whitelist()
 def get_courses_without_topic(topic):
 	data = []
-	for entry in frappe.db.get_all('Course'):
+	for entry in frappe.get_all_with_user_permissions('Course'):
 		course = frappe.get_doc('Course', entry.name)
 		topics = [t.topic for t in course.topics]
 		if not topics or topic not in topics:

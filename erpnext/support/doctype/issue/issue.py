@@ -104,7 +104,7 @@ class Issue(Document):
 	def handle_hold_time(self, status):
 		if self.service_level_agreement:
 			# set response and resolution variance as None as the issue is on Hold
-			pause_sla_on = frappe.db.get_all("Pause SLA On Status", fields=["status"],
+			pause_sla_on = frappe.get_all_with_user_permissions("Pause SLA On Status", fields=["status"],
 				filters={"parent": self.service_level_agreement})
 			hold_statuses = [entry.status for entry in pause_sla_on]
 			update_values = {}

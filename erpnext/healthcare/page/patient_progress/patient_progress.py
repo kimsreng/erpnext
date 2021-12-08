@@ -44,7 +44,7 @@ def get_patient_heatmap_data(patient, date):
 @frappe.whitelist()
 def get_therapy_sessions_distribution_data(patient, field):
 	if field == 'therapy_type':
-		result = frappe.db.get_all('Therapy Session',
+		result = frappe.get_all_with_user_permissions('Therapy Session',
 			filters = {'patient': patient, 'docstatus': 1},
 			group_by = field,
 			order_by = field,
@@ -52,13 +52,13 @@ def get_therapy_sessions_distribution_data(patient, field):
 			as_list = True)
 
 	elif field == 'exercise_type':
-		data = frappe.db.get_all('Therapy Session',  filters={
+		data = frappe.get_all_with_user_permissions('Therapy Session',  filters={
 			'docstatus': 1,
 			'patient': patient
 		}, as_list=True)
 		therapy_sessions = [entry[0] for entry in data]
 
-		result = frappe.db.get_all('Exercise',
+		result = frappe.get_all_with_user_permissions('Exercise',
 			filters = {
 				'parenttype': 'Therapy Session',
 				'parent': ['in', therapy_sessions],

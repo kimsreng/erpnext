@@ -76,7 +76,7 @@ def create_interview(doc, interview_round):
 
 @frappe.whitelist()
 def get_interview_details(job_applicant):
-	interview_details = frappe.db.get_all("Interview",
+	interview_details = frappe.get_all_with_user_permissions("Interview",
 		filters={"job_applicant":job_applicant, "docstatus": ["!=", 2]},
 		fields=["name", "interview_round", "expected_average_rating", "average_rating", "status"]
 	)

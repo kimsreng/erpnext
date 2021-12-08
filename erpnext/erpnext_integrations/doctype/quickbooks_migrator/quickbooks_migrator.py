@@ -674,7 +674,7 @@ class QuickBooksMigrator(Document):
 					else:
 						tax_code = "NON"
 				if line["SalesItemLineDetail"]["ItemRef"]["value"] != "SHIPPING_ITEM_ID":
-					item = frappe.db.get_all("Item",
+					item = frappe.get_all_with_user_permissions("Item",
 						filters={
 							"quickbooks_id": line["SalesItemLineDetail"]["ItemRef"]["value"],
 							"company": self.company,
@@ -871,7 +871,7 @@ class QuickBooksMigrator(Document):
 						tax_code = purchase_invoice["TxnTaxDetail"]["TxnTaxCodeRef"]["value"]
 					else:
 						tax_code = "NON"
-				item = frappe.db.get_all("Item",
+				item = frappe.get_all_with_user_permissions("Item",
 					filters={
 						"quickbooks_id": line["ItemBasedExpenseLineDetail"]["ItemRef"]["value"],
 						"company": self.company

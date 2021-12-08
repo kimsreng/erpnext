@@ -230,7 +230,7 @@ def get_all_unconsolidated_invoices():
 		'status': ['not in', ['Consolidated']],
 		'docstatus': 1
 	}
-	pos_invoices = frappe.db.get_all('POS Invoice', filters=filters,
+	pos_invoices = frappe.get_all_with_user_permissions('POS Invoice', filters=filters,
 		fields=["name as pos_invoice", 'posting_date', 'grand_total', 'customer'])
 
 	return pos_invoices

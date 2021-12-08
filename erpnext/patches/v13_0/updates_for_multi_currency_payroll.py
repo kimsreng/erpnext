@@ -85,7 +85,7 @@ def execute():
 	frappe.db.sql("update `tabEmployee Advance` set exchange_rate=1")
 
 	# get all companies and it's currency
-	all_companies = frappe.db.get_all("Company", fields=["name", "default_currency", "default_payroll_payable_account"])
+	all_companies = frappe.get_all_with_user_permissions("Company", fields=["name", "default_currency", "default_payroll_payable_account"])
 	for d in all_companies:
 		company = d.name
 		company_currency = d.default_currency

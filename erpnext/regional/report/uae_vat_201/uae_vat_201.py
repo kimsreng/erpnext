@@ -165,7 +165,7 @@ def get_reverse_charge_total(filters):
 	query_filters.append(['reverse_charge', '=', 'Y'])
 	query_filters.append(['docstatus', '=', 1])
 	try:
-		return frappe.db.get_all('Purchase Invoice',
+		return frappe.get_all_with_user_permissions('Purchase Invoice',
 			filters = query_filters,
 			fields = ['sum(total)'],
 			as_list=True,
@@ -197,7 +197,7 @@ def get_reverse_charge_recoverable_total(filters):
 	query_filters.append(['recoverable_reverse_charge', '>', '0'])
 	query_filters.append(['docstatus', '=', 1])
 	try:
-		return frappe.db.get_all('Purchase Invoice',
+		return frappe.get_all_with_user_permissions('Purchase Invoice',
 			filters = query_filters,
 			fields = ['sum(total)'],
 			as_list=True,
@@ -241,7 +241,7 @@ def get_standard_rated_expenses_total(filters):
 	query_filters.append(['recoverable_standard_rated_expenses', '>', 0])
 	query_filters.append(['docstatus', '=', 1])
 	try:
-		return frappe.db.get_all('Purchase Invoice',
+		return frappe.get_all_with_user_permissions('Purchase Invoice',
 			filters = query_filters,
 			fields = ['sum(total)'],
 			as_list=True,
@@ -256,7 +256,7 @@ def get_standard_rated_expenses_tax(filters):
 	query_filters.append(['recoverable_standard_rated_expenses', '>', 0])
 	query_filters.append(['docstatus', '=', 1])
 	try:
-		return frappe.db.get_all('Purchase Invoice',
+		return frappe.get_all_with_user_permissions('Purchase Invoice',
 			filters = query_filters,
 			fields = ['sum(recoverable_standard_rated_expenses)'],
 			as_list=True,
@@ -271,7 +271,7 @@ def get_tourist_tax_return_total(filters):
 	query_filters.append(['tourist_tax_return', '>', 0])
 	query_filters.append(['docstatus', '=', 1])
 	try:
-		return frappe.db.get_all('Sales Invoice',
+		return frappe.get_all_with_user_permissions('Sales Invoice',
 			filters = query_filters,
 			fields = ['sum(total)'],
 			as_list=True,
@@ -286,7 +286,7 @@ def get_tourist_tax_return_tax(filters):
 	query_filters.append(['tourist_tax_return', '>', 0])
 	query_filters.append(['docstatus', '=', 1])
 	try:
-		return frappe.db.get_all('Sales Invoice',
+		return frappe.get_all_with_user_permissions('Sales Invoice',
 			filters = query_filters,
 			fields = ['sum(tourist_tax_return)'],
 			as_list=True,

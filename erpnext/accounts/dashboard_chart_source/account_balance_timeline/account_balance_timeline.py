@@ -95,7 +95,7 @@ def get_gl_entries(account, to_date):
 	child_accounts = get_descendants_of('Account', account, ignore_permissions=True)
 	child_accounts.append(account)
 
-	return frappe.db.get_all('GL Entry',
+	return frappe.get_all_with_user_permissions('GL Entry',
 		fields = ['posting_date', 'debit', 'credit'],
 		filters = [
 			dict(posting_date = ('<', to_date)),

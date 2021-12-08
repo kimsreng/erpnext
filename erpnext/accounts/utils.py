@@ -1055,20 +1055,20 @@ def check_if_stock_and_account_balance_synced(posting_date, company, voucher_typ
 				})
 
 def get_stock_accounts(company, voucher_type=None, voucher_no=None):
-	stock_accounts = [d.name for d in frappe.db.get_all("Account", {
+	stock_accounts = [d.name for d in frappe.get_all_with_user_permissions("Account", {
 		"account_type": "Stock",
 		"company": company,
 		"is_group": 0
 	})]
 	if voucher_type and voucher_no:
 		if voucher_type == "Journal Entry":
-			stock_accounts = [d.account for d in frappe.db.get_all("Journal Entry Account", {
+			stock_accounts = [d.account for d in frappe.get_all_with_user_permissions("Journal Entry Account", {
 				"parent": voucher_no,
 				"account": ["in", stock_accounts]
 			}, "account")]
 
 		else:
-			stock_accounts = [d.account for d in frappe.db.get_all("GL Entry", {
+			stock_accounts = [d.account for d in frappe.get_all_with_user_permissions("GL Entry", {
 				"voucher_type": voucher_type,
 				"voucher_no": voucher_no,
 				"account": ["in", stock_accounts]

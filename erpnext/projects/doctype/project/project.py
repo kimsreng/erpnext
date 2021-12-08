@@ -43,7 +43,7 @@ class Project(Document):
 		'''
 		Copy tasks from template
 		'''
-		if self.project_template and not frappe.db.get_all('Task', dict(project = self.name), limit=1):
+		if self.project_template and not frappe.get_all_with_user_permissions('Task', dict(project = self.name), limit=1):
 
 			# has a template, and no loaded tasks, so lets create
 			if not self.expected_start_date:

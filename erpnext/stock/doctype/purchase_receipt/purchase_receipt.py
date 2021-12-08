@@ -581,7 +581,7 @@ class PurchaseReceipt(BuyingController):
 			item=item)
 
 	def update_assets(self, item, valuation_rate):
-		assets = frappe.db.get_all('Asset',
+		assets = frappe.get_all_with_user_permissions('Asset',
 			filters={ 'purchase_receipt': self.name, 'item_code': item.item_code }
 		)
 

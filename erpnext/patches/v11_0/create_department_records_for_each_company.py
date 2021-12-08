@@ -12,8 +12,8 @@ def execute():
 		frappe.reload_doc("hr", "doctype", doctype)
 	frappe.reload_doc("Payroll", "doctype", 'payroll_entry')
 
-	companies = frappe.db.get_all("Company", fields=["name", "abbr"])
-	departments = frappe.db.get_all("Department")
+	companies = frappe.get_all_with_user_permissions("Company", fields=["name", "abbr"])
+	departments = frappe.get_all_with_user_permissions("Department")
 	comp_dict = {}
 
 	# create a blank list for each company

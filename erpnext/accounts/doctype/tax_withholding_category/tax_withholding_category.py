@@ -275,7 +275,7 @@ def get_deducted_tax(taxable_vouchers, tax_details):
 	}
 	field = "credit"
 
-	entries = frappe.db.get_all('GL Entry', filters, pluck=field)
+	entries = frappe.get_all_with_user_permissions('GL Entry', filters, pluck=field)
 	return sum(entries)
 
 def get_tds_amount(ldc, parties, inv, tax_details, tax_deducted, vouchers):
@@ -347,7 +347,7 @@ def get_tcs_amount(parties, inv, tax_details, vouchers, adv_vouchers):
 	}, 'sum(credit)') or 0.0
 
 	# sum of credit entries made from sales invoice
-	credit_note_amt = sum(frappe.db.get_all('GL Entry', {
+	credit_note_amt = sum(frappe.get_all_with_user_permissions('GL Entry', {
 		'is_cancelled': 0,
 		'credit': ['>', 0],
 		'party': ['in', parties],

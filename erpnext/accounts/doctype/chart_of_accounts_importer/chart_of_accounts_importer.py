@@ -51,7 +51,7 @@ def validate_company(company):
 			frappe.bold('Allow Account Creation Against Child Company'))
 		frappe.throw(msg, title=_('Wrong Company'))
 
-	if frappe.db.get_all('GL Entry', {"company": company}, "name", limit=1):
+	if frappe.get_all_with_user_permissions('GL Entry', {"company": company}, "name", limit=1):
 		return False
 
 @frappe.whitelist()

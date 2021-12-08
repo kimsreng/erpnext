@@ -321,7 +321,7 @@ class WebsiteItem(WebsiteGenerator):
 					values.append(val)
 			else:
 				# get list of values defined (for sequence)
-				for attr_value in frappe.db.get_all("Item Attribute Value",
+				for attr_value in frappe.get_all_with_user_permissions("Item Attribute Value",
 					fields=["attribute_value"],
 					filters={"parent": attr.attribute}, order_by="idx asc"):
 

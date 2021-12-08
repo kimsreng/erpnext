@@ -379,7 +379,7 @@ def make_purchase_order_based_on_supplier(source_name, target_doc=None, args=Non
 
 @frappe.whitelist()
 def get_items_based_on_default_supplier(supplier):
-	supplier_items = [d.parent for d in frappe.db.get_all("Item Default",
+	supplier_items = [d.parent for d in frappe.get_all_with_user_permissions("Item Default",
 		{"default_supplier": supplier, "parenttype": "Item"}, 'parent')]
 
 	return supplier_items

@@ -127,7 +127,7 @@ class Analytics(object):
 	def get_appointments_based_on_healthcare_practitioner(self):
 		filters = self.get_common_filters()
 
-		self.entries = frappe.db.get_all('Patient Appointment',
+		self.entries = frappe.get_all_with_user_permissions('Patient Appointment',
 			fields=['appointment_date', 'name', 'patient', 'practitioner'],
 			filters=filters
 		)
@@ -137,7 +137,7 @@ class Analytics(object):
 		if not filters.get('department'):
 			filters['department'] = ('!=', '')
 
-		self.entries = frappe.db.get_all('Patient Appointment',
+		self.entries = frappe.get_all_with_user_permissions('Patient Appointment',
 			fields=['appointment_date', 'name', 'patient', 'practitioner', 'department'],
 			filters=filters
 		)

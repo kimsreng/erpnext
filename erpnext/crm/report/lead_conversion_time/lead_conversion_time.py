@@ -114,6 +114,6 @@ def get_communication_details(filters):
 
 		duration = flt(date_diff(invoice[0][0], first_contact))
 
-		support_tickets = len(frappe.db.get_all('Issue', {'raised_by': d.contact_email}))
+		support_tickets = len(frappe.get_all_with_user_permissions('Issue', {'raised_by': d.contact_email}))
 		communication_list.append({'customer': d.customer_name, 'interactions': communication_count, 'duration': duration, 'support_tickets': support_tickets})
 	return communication_list

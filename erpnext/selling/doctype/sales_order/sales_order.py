@@ -1130,7 +1130,7 @@ def create_pick_list(source_name, target_doc=None):
 
 def update_produced_qty_in_so_item(sales_order, sales_order_item):
 	#for multiple work orders against same sales order item
-	linked_wo_with_so_item = frappe.db.get_all('Work Order', ['produced_qty'], {
+	linked_wo_with_so_item = frappe.get_all_with_user_permissions('Work Order', ['produced_qty'], {
 		'sales_order_item': sales_order_item,
 		'sales_order': sales_order,
 		'docstatus': 1

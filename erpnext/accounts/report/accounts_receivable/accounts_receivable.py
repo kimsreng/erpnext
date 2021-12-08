@@ -308,8 +308,8 @@ class ReceivablePayableReport(object):
 			si_list = frappe.db.sql("""
 				select name, due_date, po_no
 				from `tabSales Invoice`
-				where posting_date <= %s
-			""",self.filters.report_date, as_dict=1)
+				where posting_date <= %s {permission_cond}
+			""".format(permission_cond=get_match_cond_for_reports("Sales Invoice")),self.filters.report_date, as_dict=1)
 			for d in si_list:
 				self.invoice_details.setdefault(d.name, d)
 
@@ -318,8 +318,8 @@ class ReceivablePayableReport(object):
 				sales_team = frappe.db.sql("""
 					select parent, sales_person
 					from `tabSales Team`
-					where parenttype = 'Sales Invoice'
-				""", as_dict=1)
+					where parenttype = 'Sales Invoice' {permission_cond}
+				""".format(permission_cond=get_match_cond_for_reports("Sales Team")), as_dict=1)
 				for d in sales_team:
 					self.invoice_details.setdefault(d.parent, {})\
 						.setdefault('sales_team', []).append(d.sales_person)
@@ -328,16 +328,16 @@ class ReceivablePayableReport(object):
 			for pi in frappe.db.sql("""
 				select name, due_date, bill_no, bill_date
 				from `tabPurchase Invoice`
-				where posting_date <= %s
-			""", self.filters.report_date, as_dict=1):
+				where posting_date <= %s {permission_cond}
+			""".format(permission_cond=get_match_cond_for_reports("Purchase Invoice")), self.filters.report_date, as_dict=1):
 				self.invoice_details.setdefault(pi.name, pi)
 
 		# Invoices booked via Journal Entries
 		journal_entries = frappe.db.sql("""
 			select name, due_date, bill_no, bill_date
 			from `tabJournal Entry`
-			where posting_date <= %s
-		""", self.filters.report_date, as_dict=1)
+			where posting_date <= %s {permission_cond}
+		""".format(permission_cond=get_match_cond_for_reports("Journal Entry")), self.filters.report_date, as_dict=1)
 
 		for je in journal_entries:
 			if je.bill_no:
@@ -461,7 +461,8 @@ class ReceivablePayableReport(object):
 				payment_entry.docstatus < 2
 				and payment_entry.posting_date > %s
 				and payment_entry.party_type = %s
-			""", (self.filters.report_date, self.party_type), as_dict=1)
+				{permission_cond}
+			""".format(permission_cond=get_match_cond_for_reports("Payment Entry", "payment_entry")), (self.filters.report_date, self.party_type), as_dict=1)
 
 	def get_future_payments_from_journal_entry(self):
 		if self.filters.get('party'):
@@ -487,9 +488,10 @@ class ReceivablePayableReport(object):
 				and je.posting_date > %s
 				and jea.party_type = %s
 				and jea.reference_name is not null and jea.reference_name != ''
+				{permission_cond}
 			group by je.name, jea.reference_name
 			having future_amount > 0
-			""".format(amount_field), (self.filters.report_date, self.party_type), as_dict=1)
+			""".format(amount_field, permission_cond=get_match_cond_for_reports("Journal Entry", "je")), (self.filters.report_date, self.party_type), as_dict=1)
 
 	def allocate_future_payments(self, row):
 		# future payments are captured in additional columns

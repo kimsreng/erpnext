@@ -110,7 +110,7 @@ class SalarySlip(TransactionBase):
 		self.update_payment_status_for_gratuity()
 
 	def update_payment_status_for_gratuity(self):
-		add_salary = frappe.db.get_all("Additional Salary",
+		add_salary = frappe.get_all_with_user_permissions("Additional Salary",
 			filters = {
 				"payroll_date": ("BETWEEN", [self.start_date, self.end_date]),
 				"employee": self.employee,

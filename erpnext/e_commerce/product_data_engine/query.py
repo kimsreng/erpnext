@@ -88,7 +88,7 @@ class ProductQuery:
 		# MySQL does not support offset without limit,
 		# frappe does not accept two parameters for limit
 		# https://dev.mysql.com/doc/refman/8.0/en/select.html#id4651989
-		count_items = frappe.db.get_all(
+		count_items = frappe.get_all_with_user_permissions(
 			"Website Item",
 			filters=self.filters,
 			or_filters=self.or_filters,
@@ -103,7 +103,7 @@ class ProductQuery:
 		# Discounts are fetched on computing Pricing Rules so we cannot query them directly.
 		page_length = 184467440737095516 if self.filter_with_discount else self.page_length
 
-		items = frappe.db.get_all(
+		items = frappe.get_all_with_user_permissions(
 			"Website Item",
 			fields=self.fields,
 			filters=self.filters,
@@ -123,7 +123,7 @@ class ProductQuery:
 				values = [values]
 
 			# get items that have selected attribute & value
-			item_code_list = frappe.db.get_all(
+			item_code_list = frappe.get_all_with_user_permissions(
 				"Item",
 				fields=["item_code"],
 				filters=[
@@ -194,7 +194,7 @@ class ProductQuery:
 	def get_website_item_group_results(self, item_group, website_item_groups):
 		"""Get Web Items for Item Group Page via Website Item Groups."""
 		if item_group:
-			website_item_groups = frappe.db.get_all(
+			website_item_groups = frappe.get_all_with_user_permissions(
 				"Website Item",
 				fields=self.fields + ["`tabWebsite Item Group`.parent as wig_parent"],
 				filters=[["Website Item Group", "item_group", "=", item_group]]

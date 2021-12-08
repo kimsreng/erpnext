@@ -269,7 +269,7 @@ def validate_frozen_account(account, adv_adj=None):
 			frappe.throw(_("Not authorized to edit frozen Account {0}").format(account))
 
 def update_against_account(voucher_type, voucher_no):
-	entries = frappe.db.get_all("GL Entry",
+	entries = frappe.get_all_with_user_permissions("GL Entry",
 		filters={"voucher_type": voucher_type, "voucher_no": voucher_no},
 		fields=["name", "party", "against", "debit", "credit", "account", "company"])
 

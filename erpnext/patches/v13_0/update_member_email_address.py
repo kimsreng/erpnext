@@ -12,7 +12,7 @@ def execute():
 
 	if frappe.db.has_column("Member", "email"):
 		# Get all members
-		for member in frappe.db.get_all("Member", pluck="name"):
+		for member in frappe.get_all_with_user_permissions("Member", pluck="name"):
 			# Check if email_id already exists
 			if not frappe.db.get_value("Member", member, "email_id"):
 				# fetch email id from the user linked field email

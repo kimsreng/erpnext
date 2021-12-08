@@ -66,7 +66,7 @@ def get_queried_reviews(web_item, start=0, end=10, data=None):
 	if not data:
 		data = frappe._dict()
 
-	data.reviews = frappe.db.get_all(
+	data.reviews = frappe.get_all_with_user_permissions(
 		"Item Review",
 		filters={"website_item": web_item},
 		fields=["*"],
@@ -74,7 +74,7 @@ def get_queried_reviews(web_item, start=0, end=10, data=None):
 		limit_page_length=end
 	)
 
-	rating_data = frappe.db.get_all(
+	rating_data = frappe.get_all_with_user_permissions(
 		"Item Review",
 		filters={"website_item": web_item},
 		fields=["avg(rating) as average, count(*) as total"]
@@ -86,7 +86,7 @@ def get_queried_reviews(web_item, start=0, end=10, data=None):
 	# get % of reviews per rating
 	reviews_per_rating = []
 	for i in range(1,6):
-		count = frappe.db.get_all(
+		count = frappe.get_all_with_user_permissions(
 			"Item Review",
 			filters={"website_item": web_item, "rating": i},
 			fields=["count(*) as count"]

@@ -13,7 +13,7 @@ def execute():
 	if not frappe.db.count('E Invoice User'):
 		return
 
-	for creds in frappe.db.get_all('E Invoice User', fields=['name', 'gstin']):
+	for creds in frappe.get_all_with_user_permissions('E Invoice User', fields=['name', 'gstin']):
 		company_name = frappe.db.sql("""
 			select dl.link_name from `tabAddress` a, `tabDynamic Link` dl
 			where a.gstin = %s and dl.parent = a.name and dl.link_doctype = 'Company'

@@ -42,7 +42,7 @@ def send_advance_holiday_reminders(frequency):
 	else:
 		return
 
-	employees = frappe.db.get_all('Employee', pluck='name')
+	employees = frappe.get_all_with_user_permissions('Employee', pluck='name')
 	for employee in employees:
 		holidays = get_holidays_for_employee(
 			employee,

@@ -183,7 +183,7 @@ def get_employee_shift(employee, for_date=None, consider_default_shift=False, ne
 		else:
 			direction = '<' if next_shift_direction == 'reverse' else '>'
 			sort_order = 'desc' if next_shift_direction == 'reverse' else 'asc'
-			dates = frappe.db.get_all('Shift Assignment',
+			dates = frappe.get_all_with_user_permissions('Shift Assignment',
 				['start_date', 'end_date'],
 				{'employee':employee, 'start_date':(direction, for_date), 'docstatus': '1', "status": "Active"},
 				as_list=True,

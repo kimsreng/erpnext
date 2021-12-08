@@ -287,7 +287,7 @@ def get_therapy_plans_to_invoice(patient, company):
 
 def get_therapy_sessions_to_invoice(patient, company):
 	therapy_sessions_to_invoice = []
-	therapy_plans = frappe.db.get_all('Therapy Plan', {'therapy_plan_template': ('!=', '')})
+	therapy_plans = frappe.get_all_with_user_permissions('Therapy Plan', {'therapy_plan_template': ('!=', '')})
 	therapy_plans_created_from_template = []
 	for entry in therapy_plans:
 		therapy_plans_created_from_template.append(entry.name)
@@ -591,7 +591,7 @@ def get_children(doctype, parent=None, company=None, is_root=False):
 def get_patient_vitals(patient, from_date=None, to_date=None):
 	if not patient: return
 
-	vitals = frappe.db.get_all('Vital Signs', filters={
+	vitals = frappe.get_all_with_user_permissions('Vital Signs', filters={
 			'docstatus': 1,
 			'patient': patient
 		}, order_by='signs_date, signs_time', fields=['*'])

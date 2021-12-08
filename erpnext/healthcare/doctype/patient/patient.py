@@ -93,7 +93,7 @@ class Patient(Document):
 			self.language = frappe.db.get_single_value('System Settings', 'language')
 
 	def create_website_user(self):
-		users = frappe.db.get_all('User', fields=['email', 'mobile_no'], or_filters={'email': self.email, 'mobile_no': self.mobile})
+		users = frappe.get_all_with_user_permissions('User', fields=['email', 'mobile_no'], or_filters={'email': self.email, 'mobile_no': self.mobile})
 		if users and users[0]:
 			frappe.throw(_("User exists with Email {}, Mobile {}<br>Please check email / mobile or disable 'Invite as User' to skip creating User")
 				.format(frappe.bold(users[0].email), frappe.bold(users[0].mobile_no)), frappe.DuplicateEntryError)

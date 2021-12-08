@@ -469,7 +469,7 @@ def get_item_uoms(doctype, txt, searchfield, start, page_len, filters):
 	items = [filters.get('value')]
 	if filters.get('apply_on') != 'Item Code':
 		field = frappe.scrub(filters.get('apply_on'))
-		items = [d.name for d in frappe.db.get_all("Item", filters={field: filters.get('value')})]
+		items = [d.name for d in frappe.get_all_with_user_permissions("Item", filters={field: filters.get('value')})]
 
 	return frappe.get_all_with_user_permissions('UOM Conversion Detail', filters={
 			'parent': ('in', items),

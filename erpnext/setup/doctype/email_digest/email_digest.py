@@ -298,7 +298,7 @@ class EmailDigest(Document):
 		"""Get income for given period"""
 		income, past_income, count = self.get_period_amounts(self.get_roots("income"),'income')
 
-		income_account = frappe.db.get_all('Account',
+		income_account = frappe.get_all_with_user_permissions('Account',
 			fields=["name"],
 			filters={
 				"root_type":"Income",
@@ -373,7 +373,7 @@ class EmailDigest(Document):
 	def get_expenses_booked(self):
 		expenses, past_expenses, count = self.get_period_amounts(self.get_roots("expense"), 'expenses_booked')
 
-		expense_account = frappe.db.get_all('Account',
+		expense_account = frappe.get_all_with_user_permissions('Account',
 			fields=["name"],
 			filters={
 				"root_type": "Expense",
@@ -512,11 +512,11 @@ class EmailDigest(Document):
 
 		if root_type:
 			accounts = [d.name for d in \
-				frappe.db.get_all("Account", filters={"account_type": account_type,
+				frappe.get_all_with_user_permissions("Account", filters={"account_type": account_type,
 				"company": self.company, "is_group": 0, "root_type": root_type})]
 		else:
 			accounts = [d.name for d in \
-				frappe.db.get_all("Account", filters={"account_type": account_type,
+				frappe.get_all_with_user_permissions("Account", filters={"account_type": account_type,
 				"company": self.company, "is_group": 0})]
 
 		balance = prev_balance = 0.0
@@ -574,14 +574,14 @@ class EmailDigest(Document):
 			}
 
 	def get_roots(self, root_type):
-		return [d.name for d in frappe.db.get_all("Account",
+		return [d.name for d in frappe.get_all_with_user_permissions("Account",
 			filters={"root_type": root_type.title(), "company": self.company,
 				"is_group": 1, "parent_account": ["in", ("", None)]})]
 
 	def get_root_type_accounts(self, root_type):
 		if not root_type in self._accounts:
 			self._accounts[root_type] = [d.name for d in \
-				frappe.db.get_all("Account", filters={"root_type": root_type.title(),
+				frappe.get_all_with_user_permissions("Account", filters={"root_type": root_type.title(),
 					"company": self.company, "is_group": 0})]
 		return self._accounts[root_type]
 

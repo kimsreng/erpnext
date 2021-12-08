@@ -178,7 +178,7 @@ def unpublish_item(item_code, hub_item_name):
 def get_unregistered_users():
 	settings = frappe.get_single('Marketplace Settings')
 	registered_users = [user.user for user in settings.users] + ['Administrator', 'Guest']
-	all_users = [user.name for user in frappe.db.get_all('User', filters={'enabled': 1})]
+	all_users = [user.name for user in frappe.get_all_with_user_permissions('User', filters={'enabled': 1})]
 	unregistered_users = [user for user in all_users if user not in registered_users]
 	return unregistered_users
 

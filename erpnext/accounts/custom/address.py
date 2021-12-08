@@ -35,7 +35,7 @@ class ERPNextAddress(Address):
 			"customer_primary_address": self.name
 		}
 
-		customers = frappe.db.get_all("Customer", filters=filters, as_list=True)
+		customers = frappe.get_all_with_user_permissions("Customer", filters=filters, as_list=True)
 		for customer_name in customers:
 			frappe.db.set_value("Customer", customer_name[0], "primary_address", address_display)
 

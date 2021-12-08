@@ -211,7 +211,7 @@ def get_customer_details():
 	return customer_details
 
 def get_item_details():
-	details = frappe.db.get_all("Item",
+	details = frappe.get_all_with_user_permissions("Item",
 		fields=["item_code", "item_name", "item_group"])
 	item_details = {}
 	for d in details:

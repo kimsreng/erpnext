@@ -187,7 +187,7 @@ def set_stock_items(doc, stock_detail_parent, parenttype):
 
 
 def get_items(table, parent, parenttype):
-	items = frappe.db.get_all(table, filters={
+	items = frappe.get_all_with_user_permissions(table, filters={
 		'parent': parent,
 		'parenttype': parenttype
 	}, fields=['*'])

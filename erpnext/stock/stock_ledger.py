@@ -188,7 +188,7 @@ def get_items_to_be_repost(voucher_type, voucher_no, doc=None):
 	if doc and doc.items_to_be_repost:
 		return json.loads(doc.items_to_be_repost) or []
 
-	return frappe.db.get_all("Stock Ledger Entry",
+	return frappe.get_all_with_user_permissions("Stock Ledger Entry",
 		filters={"voucher_type": voucher_type, "voucher_no": voucher_no},
 		fields=["item_code", "warehouse", "posting_date", "posting_time", "creation"],
 		order_by="creation asc",

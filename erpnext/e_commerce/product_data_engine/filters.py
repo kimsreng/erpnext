@@ -116,7 +116,7 @@ class ProductFiltersBuilder:
 						["Website Item Group", "item_group", "=", self.item_group]
 					])
 
-				if frappe.db.get_all("Item", filters, or_filters=or_filters, limit=1):
+				if frappe.get_all_with_user_permissions("Item", filters, or_filters=or_filters, limit=1):
 					selected_attributes.append(attr)
 
 			if selected_attributes:

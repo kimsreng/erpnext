@@ -38,7 +38,7 @@ def execute():
 		# most likely a fresh installation that doesnt need this patch
 		return
 
-	items = frappe.db.get_all(
+	items = frappe.get_all_with_user_permissions(
 		"Item",
 		fields=item_fields,
 		or_filters=or_filters

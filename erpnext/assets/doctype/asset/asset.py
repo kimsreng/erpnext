@@ -643,7 +643,7 @@ def update_maintenance_status():
 
 def make_post_gl_entry():
 
-	asset_categories = frappe.db.get_all('Asset Category', fields = ['name', 'enable_cwip_accounting'])
+	asset_categories = frappe.get_all_with_user_permissions('Asset Category', fields = ['name', 'enable_cwip_accounting'])
 
 	for asset_category in asset_categories:
 		if cint(asset_category.enable_cwip_accounting):

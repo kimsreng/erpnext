@@ -56,7 +56,7 @@ def get_item_details(args=None):
 	if not isinstance(args, dict):
 		args = json.loads(args)
 
-	item = frappe.db.get_all('Item',
+	item = frappe.get_all_with_user_permissions('Item',
 		filters={
 			'disabled': 0,
 			'name': args.get('item_code')

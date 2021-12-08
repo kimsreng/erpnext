@@ -202,7 +202,7 @@ def item_group_query(doctype, txt, searchfield, start, page_len, filters):
 
 @frappe.whitelist()
 def check_opening_entry(user):
-	open_vouchers = frappe.db.get_all("POS Opening Entry",
+	open_vouchers = frappe.get_all_with_user_permissions("POS Opening Entry",
 		filters = {
 			"user": user,
 			"pos_closing_entry": ["in", ["", None]],

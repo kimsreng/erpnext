@@ -30,7 +30,7 @@ def validate_service_stop_date(doc):
 		if doc.doctype=="Sales Invoice" else "enable_deferred_expense"
 
 	old_stop_dates = {}
-	old_doc = frappe.db.get_all("{0} Item".format(doc.doctype),
+	old_doc = frappe.get_all_with_user_permissions("{0} Item".format(doc.doctype),
 		{"parent": doc.name}, ["name", "service_stop_date"])
 
 	for d in old_doc:

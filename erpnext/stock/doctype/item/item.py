@@ -208,7 +208,7 @@ class Item(Document):
 				frappe.throw(_("Cannot be a fixed asset item as Stock Ledger is created."))
 
 		if not self.is_fixed_asset:
-			asset = frappe.db.get_all("Asset", filters={"item_code": self.name, "docstatus": 1}, limit=1)
+			asset = frappe.get_all_with_user_permissions("Asset", filters={"item_code": self.name, "docstatus": 1}, limit=1)
 			if asset:
 				frappe.throw(_('"Is Fixed Asset" cannot be unchecked, as Asset record exists against the item'))
 
@@ -585,7 +585,7 @@ class Item(Document):
 						frappe.get_single_value('Item Variant Settings', 'do_not_update_variants'):
 			return
 		if self.has_variants:
-			variants = frappe.db.get_all("Item", fields=["item_code"], filters={"variant_of": self.name})
+			variants = frappe.get_all_with_user_permissions("Item", fields=["item_code"], filters={"variant_of": self.name})
 			if variants:
 				if len(variants) <= 30:
 					update_variants(variants, self, publish_progress=False)
@@ -691,7 +691,7 @@ class Item(Document):
 		if not self.is_new():
 			check_stock_uom_with_bin(self.name, self.stock_uom)
 		if self.has_variants:
-			for d in frappe.db.get_all("Item", filters={"variant_of": self.name}):
+			for d in frappe.get_all_with_user_permissions("Item", filters={"variant_of": self.name}):
 				check_stock_uom_with_bin(d.name, self.stock_uom)
 		if self.variant_of:
 			template_uom = frappe.db.get_value("Item", self.variant_of, "stock_uom")
