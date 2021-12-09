@@ -204,7 +204,7 @@ def get_or_create_account(company_name, account):
 	default_root_type = 'Liability'
 	root_type = account.get('root_type', default_root_type)
 
-	existing_accounts = frappe.get_all_with_user_permissions('Account',
+	existing_accounts = frappe.get_all('Account',
 		filters={
 			'company': company_name,
 			'root_type': root_type
