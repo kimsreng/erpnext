@@ -54,7 +54,7 @@ def get_items(start, page_length, price_list, pos_profile, item_group="", search
 			return result
 
 	if not frappe.db.exists('Item Group', item_group):
-		item_group = get_root_of('Item Group')
+		item_group = get_root_of('Item Group', apply_user_permission=True)
 
 	condition = get_conditions(search_term)
 	condition += get_item_group_condition(pos_profile)
