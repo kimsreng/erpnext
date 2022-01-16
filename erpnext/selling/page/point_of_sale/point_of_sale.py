@@ -91,7 +91,7 @@ def get_items(start, page_length, price_list, pos_profile, item_group="", search
 		LIMIT
 			{start}, {page_length}"""
 		.format(
-			permission_conditions=get_match_cond("Item").replace("tabItem", "item"),
+			permission_conditions=get_match_cond("Item", "item"),
 			start=start,
 			page_length=page_length,
 			lft=lft,
