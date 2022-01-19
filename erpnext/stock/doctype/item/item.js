@@ -89,29 +89,6 @@ frappe.ui.form.on("Item", {
 			erpnext.toggle_naming_series();
 		}
 
-		if (!frm.doc.published_in_website) {
-			frm.add_custom_button(__("Publish in Website"), function() {
-				frappe.call({
-					method: "erpnext.e_commerce.doctype.website_item.website_item.make_website_item",
-					args: {doc: frm.doc},
-					freeze: true,
-					freeze_message: __("Publishing Item ..."),
-					callback: function(result) {
-						frappe.msgprint({
-							message: __("Website Item {0} has been created.",
-								[repl('<a href="/app/website-item/%(item_encoded)s" class="strong">%(item)s</a>', {
-									item_encoded: encodeURIComponent(result.message[0]),
-									item: result.message[1]
-								})]
-							),
-							title: __("Published"),
-							indicator: "green"
-						});
-					}
-				});
-			}, __('Actions'));
-		}
-
 		erpnext.item.edit_prices_button(frm);
 		erpnext.item.toggle_attributes(frm);
 
