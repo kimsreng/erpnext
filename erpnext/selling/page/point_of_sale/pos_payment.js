@@ -213,7 +213,7 @@ erpnext.PointOfSale.Payment = class {
 		frappe.ui.form.on("Sales Invoice Payment", "amount", (frm, cdt, cdn) => {
 			// for setting correct amount after loyalty points are redeemed
 			const default_mop = locals[cdt][cdn];
-			const mode = default_mop.mode_of_payment.replace(/ +/g, "_").toLowerCase();
+			const mode = frappe.remove_abbr(default_mop.mode_of_payment).replace(/ +/g, "_").toLowerCase();
 			if (this[`${mode}_control`] && this[`${mode}_control`].get_value() != default_mop.amount) {
 				this[`${mode}_control`].set_value(default_mop.amount);
 			}
@@ -340,8 +340,8 @@ erpnext.PointOfSale.Payment = class {
 		const currency = doc.currency;
 
 		this.$payment_modes.html(`${
-			payments.map((p, i) => {
-				const mode = p.mode_of_payment.replace(/ +/g, "_").toLowerCase();
+			payments.map((p, i) => {	
+				const mode = frappe.remove_abbr(p.mode_of_payment).replace(/ +/g, "_").toLowerCase();
 				const payment_type = p.type;
 				const margin = i % 2 === 0 ? 'pr-2' : 'pl-2';
 				const amount = p.amount > 0 ? format_currency(p.amount, currency) : '';
@@ -359,7 +359,7 @@ erpnext.PointOfSale.Payment = class {
 		}`);
 
 		payments.forEach(p => {
-			const mode = p.mode_of_payment.replace(/ +/g, "_").toLowerCase();
+			const mode = frappe.remove_abbr(p.mode_of_payment).replace(/ +/g, "_").toLowerCase();
 			const me = this;
 			this[`${mode}_control`] = frappe.ui.form.make_control({
 				df: {
@@ -394,7 +394,7 @@ erpnext.PointOfSale.Payment = class {
 		const doc = this.events.get_frm().doc;
 		const payments = doc.payments;
 		payments.forEach(p => {
-			const mode = p.mode_of_payment.replace(/ +/g, "_").toLowerCase();
+			const mode = frappe.remove_abbr(p.mode_of_payment).replace(/ +/g, "_").toLowerCase();
 			if (p.default) {
 				setTimeout(() => {
 					this.$payment_modes.find(`.${mode}.mode-of-payment-control`).parent().click();
