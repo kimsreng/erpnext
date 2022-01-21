@@ -108,7 +108,7 @@ erpnext.PointOfSale.Payment = class {
 
 		highlight_numpad_btn($btn);
 		this.numpad_value = button_value === 'delete' ? this.numpad_value.slice(0, -1) : this.numpad_value + button_value;
-		this.selected_mode.$input.get(0).focus();
+		// this.selected_mode.$input.get(0).focus();
 		this.selected_mode.set_value(this.numpad_value);
 
 		function highlight_numpad_btn($btn) {
