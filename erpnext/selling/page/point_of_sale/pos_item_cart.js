@@ -422,17 +422,17 @@ erpnext.PointOfSale.ItemCart = class {
 	update_customer_section() {
 		const me = this;
 		const { customer, email_id='', mobile_no='', image } = this.customer_info || {};
-
-		if (customer) {
+		const cleaned_customer = frappe.remove_abbr(customer);
+		if (cleaned_customer) {
 			this.$customer_section.html(
 				`<div class="customer-details">
 					<div class="customer-display">
 						${this.get_customer_image()}
 						<div class="customer-name-desc">
-							<div class="customer-name">${customer}</div>
+							<div class="customer-name">${cleaned_customer}</div>
 							${get_customer_description()}
 						</div>
-						<div class="reset-customer-btn" data-customer="${escape(customer)}">
+						<div class="reset-customer-btn" data-customer="${escape(cleaned_customer)}">
 							<svg width="32" height="32" viewBox="0 0 14 14" fill="none">
 								<path d="M4.93764 4.93759L7.00003 6.99998M9.06243 9.06238L7.00003 6.99998M7.00003 6.99998L4.93764 9.06238L9.06243 4.93759" stroke="#8D99A6"/>
 							</svg>
