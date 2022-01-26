@@ -495,7 +495,7 @@ erpnext.PointOfSale.Controller = class {
 	}
 
 	set_pos_profile_status() {
-		this.page.set_indicator(this.pos_profile, "blue");
+		this.page.set_indicator(frappe.remove_abbr(this.pos_profile), "blue");
 	}
 
 	async on_cart_update(args) {
