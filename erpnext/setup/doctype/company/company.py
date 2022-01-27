@@ -289,7 +289,8 @@ class Company(NestedSet):
 			self.db_set(fieldname, account)
 
 	def set_mode_of_payment_account(self):
-		cash = frappe.db.get_value('Mode of Payment', {'type': 'Cash'}, 'name')
+		cash = frappe.get_all_with_user_permissions('Mode of Payment', filters={'type': 'Cash'})
+		cash = None if not cash else cash[0].name
 		if cash and self.default_cash_account \
 			and not frappe.db.get_value('Mode of Payment Account', {'company': self.name, 'parent': cash}):
 			mode_of_payment = frappe.get_doc('Mode of Payment', cash, for_update=True)
