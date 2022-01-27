@@ -238,11 +238,11 @@ class Company(NestedSet):
 
 		if not self.default_income_account:
 			income_account = frappe.db.get_value("Account",
-				{"account_name": _("Sales"), "company": self.name, "is_group": 0})
+				{"account_name": "Sales", "company": self.name, "is_group": 0})
 
 			if not income_account:
 				income_account = frappe.db.get_value("Account",
-					{"account_name": _("Sales Account"), "company": self.name})
+					{"account_name": "Sales Account", "company": self.name})
 
 			self.db_set("default_income_account", income_account)
 
@@ -251,31 +251,31 @@ class Company(NestedSet):
 
 		if not self.default_payroll_payable_account:
 			payroll_payable_account = frappe.db.get_value("Account",
-				{"account_name": _("Payroll Payable"), "company": self.name, "is_group": 0})
+				{"account_name": "Payroll Payable", "company": self.name, "is_group": 0})
 
 			self.db_set("default_payroll_payable_account", payroll_payable_account)
 
 		if not self.default_employee_advance_account:
 			employe_advance_account = frappe.db.get_value("Account",
-				{"account_name": _("Employee Advances"), "company": self.name, "is_group": 0})
+				{"account_name": "Employee Advances", "company": self.name, "is_group": 0})
 
 			self.db_set("default_employee_advance_account", employe_advance_account)
 
 		if not self.write_off_account:
 			write_off_acct = frappe.db.get_value("Account",
-				{"account_name": _("Write Off"), "company": self.name, "is_group": 0})
+				{"account_name": "Write Off", "company": self.name, "is_group": 0})
 
 			self.db_set("write_off_account", write_off_acct)
 
 		if not self.exchange_gain_loss_account:
 			exchange_gain_loss_acct = frappe.db.get_value("Account",
-				{"account_name": _("Exchange Gain/Loss"), "company": self.name, "is_group": 0})
+				{"account_name": "Exchange Gain/Loss", "company": self.name, "is_group": 0})
 
 			self.db_set("exchange_gain_loss_account", exchange_gain_loss_acct)
 
 		if not self.disposal_account:
 			disposal_acct = frappe.db.get_value("Account",
-				{"account_name": _("Gain/Loss on Asset Disposal"), "company": self.name, "is_group": 0})
+				{"account_name": "Gain/Loss on Asset Disposal", "company": self.name, "is_group": 0})
 
 			self.db_set("disposal_account", disposal_acct)
 
