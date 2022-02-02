@@ -2,12 +2,12 @@
 	<div class="dashboard-list-item">
 		<div class="row">
 			<div class="col-sm-3" style="margin-top: 8px;">
-				<a data-type="warehouse" data-name="{{ d.warehouse }}">{{ d.warehouse }}</a>
+				<a data-type="warehouse" data-name="{{ d.warehouse }}">{{ frappe.remove_abbr(d.warehouse) }}</a>
 			</div>
 			<div class="col-sm-3" style="margin-top: 8px;">
 				{% if show_item %}
 					<a data-type="item"
-						data-name="{{ d.item_code }}">{{ d.item_code }}
+						data-name="{{ d.item_code }}">{{ frappe.remove_abbr(d.item_code) }}
 						{% if d.item_name != d.item_code %}({{ d.item_name }}){% endif %}
 					</a>
 				{% endif %}
