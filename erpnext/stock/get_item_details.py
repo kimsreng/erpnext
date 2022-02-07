@@ -181,15 +181,15 @@ def process_string_args(args):
 @frappe.whitelist()
 def get_item_code(barcode=None, serial_no=None):
 	if barcode:
-		item_code = frappe.db.get_value("Item Barcode", {"barcode": barcode}, fieldname=["parent"])
+		item_code = frappe.get_all_with_user_permissions("Item Barcode", {"barcode": barcode}, pluck="parent")
 		if not item_code:
 			frappe.throw(_("No Item with Barcode {0}").format(barcode))
 	elif serial_no:
-		item_code = frappe.db.get_value("Serial No", serial_no, "item_code")
+		item_code = frappe.get_all_with_user_permissions("Serial No", {"name": serial_no}, pluck="item_code")
 		if not item_code:
 			frappe.throw(_("No Item with Serial No {0}").format(serial_no))
 
-	return item_code
+	return item_code[0]
 
 
 def validate_item_details(args, item):
