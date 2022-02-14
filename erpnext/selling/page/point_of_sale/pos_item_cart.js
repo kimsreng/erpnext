@@ -816,7 +816,7 @@ erpnext.PointOfSale.ItemCart = class {
 				<div class="customer-display">
 					${this.get_customer_image()}
 					<div class="customer-name-desc">
-						<div class="customer-name">${customer}</div>
+						<div class="customer-name">${frappe.remove_abbr(customer)}</div>
 						<div class="customer-desc"></div>
 					</div>
 				</div>
