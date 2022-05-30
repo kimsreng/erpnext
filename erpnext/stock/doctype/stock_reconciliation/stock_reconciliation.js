@@ -74,6 +74,7 @@ frappe.ui.form.on("Stock Reconciliation", {
 			{
 				label: "Item Code",
 				fieldname: "item_code",
+				translation_context: "Product",
 				fieldtype: "Link",
 				options: "Item",
 				"get_query": function() {
@@ -117,7 +118,7 @@ frappe.ui.form.on("Stock Reconciliation", {
 					frm.refresh_field("items");
 				}
 			});
-		}, __("Get Items"), __("Update"));
+		}, __("Get Items", null, "Product"), __("Update"));
 	},
 
 	posting_date: function(frm) {
