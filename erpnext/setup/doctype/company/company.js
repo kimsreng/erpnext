@@ -230,7 +230,7 @@ cur_frm.cscript.change_abbr = function() {
 					frappe.msgprint(__("There were errors."));
 					return;
 				} else {
-					cur_frm.set_value("abbr", args.new_abbr);
+					cur_frm.set_value("abbr", r.message.new_abbr);
 				}
 				dialog.hide();
 				cur_frm.refresh();
