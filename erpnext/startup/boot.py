@@ -28,7 +28,7 @@ def boot_session(bootinfo):
 			'default_valid_till'))
 
 		# if no company, show a dialog box to create a new company
-		bootinfo.customer_count = frappe.db.sql("""SELECT count(*) FROM `tabCustomer` where 1=1 {0}""".format(get_match_cond("Customer")))[0][0]
+		bootinfo.customer_count = frappe.db.sql("""SELECT count(*) FROM `tabCustomer` where 1=1 {0}""".format(get_match_cond("Customer")))[0][0] if frappe.has_permission("Customer") else 0
 
 		if not bootinfo.customer_count:
 			bootinfo.setup_complete = frappe.db.sql("""SELECT `name`
@@ -37,7 +37,7 @@ def boot_session(bootinfo):
 
 		bootinfo.docs += frappe.db.sql("""select name, default_currency, cost_center, default_selling_terms, default_buying_terms,
 			default_letter_head, default_bank_account, enable_perpetual_inventory, country from `tabCompany` where 1=1 {0}""".format(get_match_cond("Company")),
-			as_dict=1, update={"doctype":":Company"})
+			as_dict=1, update={"doctype":":Company"}) if frappe.has_permission("Company") else []
 
 		party_account_types = frappe.db.sql(""" select name, ifnull(account_type, '') from `tabParty Type`""")
 		bootinfo.party_account_types = frappe._dict(party_account_types)
