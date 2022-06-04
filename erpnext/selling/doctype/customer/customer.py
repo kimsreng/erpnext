@@ -152,7 +152,19 @@ class Customer(TransactionBase):
 	def create_primary_contact(self):
 		if not self.customer_primary_contact and not self.lead_name:
 			if self.mobile_no or self.email_id:
-				contact = make_contact(self)
+				names = self.customer_name.split(" ")
+				first_name = ""
+				last_name = ""
+				middle_name = ""
+				if len(names) >= 1:
+					first_name = names[0]
+				if len(names) == 2:
+					last_name = names[1]
+				if len(names) >= 3:
+					middle_name = names[1]
+					last_name = names[2]
+
+				contact = make_contact(self, first_name, middle_name, last_name)
 				self.db_set('customer_primary_contact', contact.name)
 				self.db_set('mobile_no', self.mobile_no)
 				self.db_set('email_id', self.email_id)
@@ -579,10 +591,12 @@ def get_credit_limit(customer, company):
 
 	return flt(credit_limit)
 
-def make_contact(args, is_primary_contact=1):
+def make_contact(args, first_name="", middle_name="", last_name="", is_primary_contact=1):
 	contact = frappe.get_doc({
 		'doctype': 'Contact',
-		'first_name': args.get('name'),
+		'first_name': first_name or args.get('name'),
+		'middle_name': middle_name,
+		'last_name': last_name,
 		'is_primary_contact': is_primary_contact,
 		'links': [{
 			'link_doctype': args.get('doctype'),

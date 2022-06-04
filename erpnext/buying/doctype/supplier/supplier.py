@@ -93,7 +93,18 @@ class Supplier(TransactionBase):
 
 		if not self.supplier_primary_contact:
 			if self.mobile_no or self.email_id:
-				contact = make_contact(self)
+				names = self.supplier_name.split(" ")
+				first_name = ""
+				last_name = ""
+				middle_name = ""
+				if len(names) >= 1:
+					first_name = names[0]
+				if len(names) == 2:
+					last_name = names[1]
+				if len(names) >= 3:
+					middle_name = names[1]
+					last_name = names[2]
+				contact = make_contact(self, first_name, middle_name, last_name)
 				self.db_set('supplier_primary_contact', contact.name)
 				self.db_set('mobile_no', self.mobile_no)
 				self.db_set('email_id', self.email_id)
