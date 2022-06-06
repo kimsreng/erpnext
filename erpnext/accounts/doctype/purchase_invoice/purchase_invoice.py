@@ -8,6 +8,7 @@ import frappe
 from frappe import _, throw
 from frappe.model.mapper import get_mapped_doc
 from frappe.utils import cint, cstr, flt, formatdate, get_link_to_form, getdate, nowdate
+from frappe.core.doctype.agent.agent import remove_abbr
 from six import iteritems
 
 import erpnext
@@ -223,7 +224,7 @@ class PurchaseInvoice(BuyingController):
 			for d in self.get('items'):
 				if not d.warehouse:
 					frappe.throw(_("Warehouse required at Row No {0}, please set default warehouse for the item {1} for the company {2}").
-						format(d.idx, d.item_code, self.company))
+						format(d.idx, remove_abbr(d.item_code) , remove_abbr(self.company) ))
 
 		super(PurchaseInvoice, self).validate_warehouse()
 
@@ -264,7 +265,7 @@ class PurchaseInvoice(BuyingController):
 				if self.update_stock and (not item.from_warehouse):
 					if for_validate and item.expense_account and item.expense_account != warehouse_account[item.warehouse]["account"]:
 						msg = _("Row {0}: Expense Head changed to {1} because account {2} is not linked to warehouse {3} or it is not the default inventory account").format(
-							item.idx, frappe.bold(warehouse_account[item.warehouse]["account"]), frappe.bold(item.expense_account), frappe.bold(item.warehouse))
+							item.idx, frappe.bold(remove_abbr(warehouse_account[item.warehouse]["account"])), frappe.bold(remove_abbr(item.expense_account)), frappe.bold(remove_abbr(item.warehouse)))
 						frappe.msgprint(msg, title=_("Expense Head Changed"))
 					item.expense_account = warehouse_account[item.warehouse]["account"]
 				else:
@@ -277,7 +278,7 @@ class PurchaseInvoice(BuyingController):
 						if negative_expense_booked_in_pr:
 							if for_validate and item.expense_account and item.expense_account != stock_not_billed_account:
 								msg = _("Row {0}: Expense Head changed to {1} because expense is booked against this account in Purchase Receipt {2}").format(
-									item.idx, frappe.bold(stock_not_billed_account), frappe.bold(item.purchase_receipt))
+									item.idx, frappe.bold(remove_abbr(stock_not_billed_account)), frappe.bold(remove_abbr(item.purchase_receipt)))
 								frappe.msgprint(msg, title=_("Expense Head Changed"))
 
 							item.expense_account = stock_not_billed_account
@@ -286,7 +287,7 @@ class PurchaseInvoice(BuyingController):
 						# This is done in cases when Purchase Invoice is created before Purchase Receipt
 						if for_validate and item.expense_account and item.expense_account != stock_not_billed_account:
 							msg = _("Row {0}: Expense Head changed to {1} as no Purchase Receipt is created against Item {2}.").format(
-								item.idx, frappe.bold(stock_not_billed_account), frappe.bold(item.item_code))
+								item.idx, frappe.bold(remove_abbr(stock_not_billed_account)), frappe.bold(remove_abbr(item.item_code)))
 							msg += "<br>"
 							msg += _("This is done to handle accounting for cases when Purchase Receipt is created after Purchase Invoice")
 							frappe.msgprint(msg, title=_("Expense Head Changed"))
@@ -299,7 +300,7 @@ class PurchaseInvoice(BuyingController):
 			elif item.is_fixed_asset and item.pr_detail:
 				item.expense_account = asset_received_but_not_billed
 			elif not item.expense_account and for_validate:
-				throw(_("Expense account is mandatory for item {0}").format(item.item_code or item.item_name))
+				throw(_("Expense account is mandatory for item {0}").format(remove_abbr(item.item_code) or remove_abbr(item.item_name)))
 
 	def set_against_expense_account(self):
 		against_accounts = []
@@ -317,7 +318,7 @@ class PurchaseInvoice(BuyingController):
 
 			for d in self.get('items'):
 				if not d.purchase_order:
-					msg = _("Purchase Order Required for item {}").format(frappe.bold(d.item_code))
+					msg = _("Purchase Order Required for item {}").format(frappe.bold(remove_abbr(d.item_code)))
 					msg += "<br><br>"
 					msg += _("To submit the invoice without purchase order please set {0} as {1} in {2}").format(
 						frappe.bold(_('Purchase Order Required')), frappe.bold('No'), get_link_to_form('Buying Settings', 'Buying Settings', 'Buying Settings'))
