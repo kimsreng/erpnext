@@ -974,9 +974,8 @@ def set_item_default(item_code, company, fieldname, value):
 			return
 
 	# no row found, add a new row for the company
-	d = item.append('item_defaults', {fieldname: value, "company": company})
-	d.db_insert()
-	item.clear_cache()
+	item.append('item_defaults', {fieldname: value, "company": company})
+	item.save()
 
 @frappe.whitelist()
 def get_item_details(item_code, company=None):
