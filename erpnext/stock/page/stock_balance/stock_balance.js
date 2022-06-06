@@ -19,7 +19,7 @@ frappe.pages['stock-balance'].on_page_load = function(wrapper) {
 
 	page.item_field = page.add_field({
 		fieldname: 'item_code',
-		label: __('Item'),
+		label: __('Item', null, "Product"),
 		fieldtype:'Link',
 		options:'Item',
 		change: function() {
