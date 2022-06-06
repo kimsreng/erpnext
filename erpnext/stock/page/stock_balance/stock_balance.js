@@ -39,6 +39,8 @@ frappe.pages['stock-balance'].on_page_load = function(wrapper) {
 		}
 	});
 
+	page.add_menu_item(__("Refresh"), ()=> page.item_dashboard.refresh());
+
 	page.sort_selector = new frappe.ui.SortSelector({
 		parent: page.wrapper.find('.page-form'),
 		args: {
