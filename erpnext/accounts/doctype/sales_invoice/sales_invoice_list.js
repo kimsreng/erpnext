@@ -19,7 +19,9 @@ frappe.listview_settings['Sales Invoice'] = {
 			"Partly Paid": "yellow",
 			"Internal Transfer": "darkgrey"
 		};
-		return [__(doc.status), status_colors[doc.status], "status,=,"+doc.status];
+		var field = frappe.meta.get_field(doctype, "status", doc.name);
+		var context = field ? field.translation_context: null;
+		return [__(doc.status, null, context), status_colors[doc.status], "status,=,"+doc.status];
 	},
 	right_column: "grand_total"
 };

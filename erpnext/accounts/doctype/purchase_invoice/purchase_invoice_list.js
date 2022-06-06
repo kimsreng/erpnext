@@ -49,8 +49,10 @@ frappe.listview_settings["Purchase Invoice"] = {
 		};
 
 		if (status_colors[doc.status]) {
+			var field = frappe.meta.get_field(doctype, "status", doc.name);
+			var context = field ? field.translation_context: null;
 			return [
-				__(doc.status),
+				__(doc.status, null, context),
 				status_colors[doc.status],
 				"status,=," + doc.status,
 			];
