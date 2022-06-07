@@ -243,8 +243,8 @@ def prepare_data(accounts, filters, total_row, parent_children_map, company_curr
 			"from_date": filters.from_date,
 			"to_date": filters.to_date,
 			"currency": company_currency,
-			"account_name": ('{} - {}'.format(d.account_number, d.account_name)
-				if d.account_number else d.account_name)
+			"account_name": ('{} - {}'.format(d.account_number, _(d.account_name))
+				if d.account_number else _(d.account_name))
 		}
 
 		for key in value_fields:
