@@ -437,6 +437,7 @@ $.extend(erpnext.item, {
 					fields.push({fieldtype: 'Section Break'});
 				}
 				fields.push({fieldtype: 'Column Break', label: __(frappe.remove_abbr(name), null, "Item Attribute")});
+				fields.push({fieldtype: "Data", fieldname: name, value: name, hidden: 1, label: name })
 				attr_dict[name].forEach(value => {
 					fields.push({
 						fieldtype: 'Check',
@@ -523,7 +524,7 @@ $.extend(erpnext.item, {
 			let selected_attributes = {};
 			me.multiple_variant_dialog.$wrapper.find('.form-column').each((i, col) => {
 				if(i===0) return;
-				let attribute_name = $(col).find('label').html();
+				let attribute_name = $(col).find('div[data-fieldtype="Data"]').attr("data-fieldname");
 				selected_attributes[attribute_name] = [];
 				let checked_opts = $(col).find('.checkbox input');
 				checked_opts.each((i, opt) => {
