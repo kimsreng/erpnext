@@ -5,13 +5,13 @@ frappe.listview_settings['Item'] = {
 
 	get_indicator: function(doc) {
 		if (doc.disabled) {
-			return [__("Disabled"), "grey", "disabled,=,Yes"];
+			return [__("Disabled", null, "Item"), "grey", "disabled,=,Yes"];
 		} else if (doc.end_of_life && doc.end_of_life < frappe.datetime.get_today()) {
-			return [__("Expired"), "grey", "end_of_life,<,Today"];
+			return [__("Expired", null, "Item"), "grey", "end_of_life,<,Today"];
 		} else if (doc.has_variants) {
-			return [__("Template"), "orange", "has_variants,=,Yes"];
+			return [__("Template", null, "Item"), "orange", "has_variants,=,Yes"];
 		} else if (doc.variant_of) {
-			return [__("Variant"), "green", "variant_of,=," + doc.variant_of];
+			return [__("Variant", null, "Item"), "green", "variant_of,=," + doc.variant_of];
 		}
 	},
 
