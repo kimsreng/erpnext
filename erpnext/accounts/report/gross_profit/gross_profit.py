@@ -7,7 +7,7 @@ import frappe
 from frappe import _, scrub
 from frappe.utils import cint, flt
 
-from erpnext.controllers.queries import get_match_cond_for_reports
+from frappe.desk.reportview import get_match_cond_for_reports
 from erpnext.stock.utils import get_incoming_rate
 
 
