@@ -39,7 +39,7 @@ def boot_session(bootinfo):
 			default_letter_head, default_bank_account, enable_perpetual_inventory, country from `tabCompany` where 1=1 {0}""".format(get_match_cond("Company")),
 			as_dict=1, update={"doctype":":Company"}) if frappe.has_permission("Company") else []
 
-		party_account_types = frappe.db.sql(""" select name, ifnull(account_type, '') from `tabParty Type`""")
+		party_account_types = frappe.db.sql(""" select name, ifnull(account_type, '') from `tabParty Type` where 1=1 {0}""".format(get_match_cond("Party Type")))
 		bootinfo.party_account_types = frappe._dict(party_account_types)
 
 def load_country_and_currency(bootinfo):
