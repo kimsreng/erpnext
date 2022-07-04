@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.core.doctype.agent.agent import remove_abbr
 from frappe.desk.reportview import get_match_cond
 from frappe.utils import getdate
 
@@ -153,8 +154,8 @@ def period_wise_columns_query(filters, trans):
 			get_period_wise_columns(dt, filters.get("period"), pwc)
 			query_details = get_period_wise_query(dt, trans_date, query_details)
 	else:
-		pwc = [_(filters.get("fiscal_year")) + " ("+_("Qty") + "):Float:120",
-			_(filters.get("fiscal_year")) + " ("+ _("Amt") + "):Currency:120"]
+		pwc = [_(remove_abbr(filters.get("fiscal_year"))) + " ("+_("Qty") + "):Float:120",
+			_(remove_abbr(filters.get("fiscal_year"))) + " ("+ _("Amt") + "):Currency:120"]
 		query_details = " SUM(t2.stock_qty), SUM(t2.base_net_amount),"
 
 	query_details += 'SUM(t2.stock_qty), SUM(t2.base_net_amount)'
