@@ -39,7 +39,7 @@ frappe.query_reports["Stock Ledger"] = {
 		},
 		{
 			"fieldname":"item_code",
-			"label": __("Item"),
+			"label": __("Item", null, "Product"),
 			"fieldtype": "Link",
 			"options": "Item",
 			"get_query": function() {
@@ -50,7 +50,7 @@ frappe.query_reports["Stock Ledger"] = {
 		},
 		{
 			"fieldname":"item_group",
-			"label": __("Item Group"),
+			"label": __("Item Group", null, "Product"),
 			"fieldtype": "Link",
 			"options": "Item Group"
 		},
