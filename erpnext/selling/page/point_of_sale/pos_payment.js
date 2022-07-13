@@ -349,7 +349,7 @@ erpnext.PointOfSale.Payment = class {
 				return (`
 					<div class="payment-mode-wrapper">
 						<div class="mode-of-payment" data-mode="${mode}" data-payment-type="${payment_type}">
-							${__(p.mode_of_payment)}
+							${__(frappe.remove_abbr(p.mode_of_payment))}
 							<div class="${mode}-amount pay-amount">${amount}</div>
 							<div class="${mode} mode-of-payment-control"></div>
 						</div>
