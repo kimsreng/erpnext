@@ -492,11 +492,11 @@ erpnext.PointOfSale.ItemCart = class {
 	render_grand_total(value) {
 		const currency = this.events.get_frm().doc.currency;
 		this.$totals_section.find('.grand-total-container').html(
-			`<div>${__("Net Total")}</div><div>${format_currency(value, currency)}</div>`
+			`<div>${__("Grand Total")}</div><div>${format_currency(value, currency)}</div>`
 		)
 
 		this.$numpad_section.find('.numpad-grand-total').html(
-			`<div>${__("Net Total")}: <span>${format_currency(value, currency)}</span></div>`
+			`<div>${__("Grand Total")}: <span>${format_currency(value, currency)}</span></div>`
 		);
 	}
 
