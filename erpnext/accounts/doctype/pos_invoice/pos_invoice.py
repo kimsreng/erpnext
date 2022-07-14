@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from frappe.core.doctype.agent.agent import remove_abbr
 from frappe.utils import cint, flt, get_link_to_form, getdate, nowdate
 from six import iteritems
 
@@ -161,10 +162,10 @@ class POSInvoice(SalesInvoice):
 				item_code, warehouse, qty = frappe.bold(d.item_code), frappe.bold(d.warehouse), frappe.bold(d.qty)
 				if flt(available_stock) <= 0:
 					frappe.throw(_('Row #{}: Item Code: {} is not available under warehouse {}.')
-								.format(d.idx, item_code, warehouse), title=_("Item Unavailable"))
+								.format(d.idx, remove_abbr(item_code), remove_abbr(warehouse)), title=_("Item Unavailable"))
 				elif flt(available_stock) < flt(d.qty):
 					frappe.throw(_('Row #{}: Stock quantity not enough for Item Code: {} under warehouse {}. Available quantity {}.')
-								.format(d.idx, item_code, warehouse, available_stock), title=_("Item Unavailable"))
+								.format(d.idx, remove_abbr(item_code), remove_abbr(warehouse), available_stock), title=_("Item Unavailable"))
 
 	def validate_serialised_or_batched_item(self):
 		error_msg = []
@@ -187,7 +188,7 @@ class POSInvoice(SalesInvoice):
 				msg = (_('Row #{}: No batch selected against item: {}. Please select a batch or remove it to complete transaction.')
 							.format(d.idx, item_code))
 			elif serialized and not no_serial_selected and len(serial_nos) != d.qty:
-				msg = (_("Row #{}: You must select {} serial numbers for item {}.").format(d.idx, frappe.bold(cint(d.qty)), item_code))
+				msg = (_("Row #{}: You must select {} serial numbers for item {}.").format(d.idx, frappe.bold(cint(d.qty)), remove_abbr(item_code)))
 
 			if msg:
 				error_msg.append(msg)
