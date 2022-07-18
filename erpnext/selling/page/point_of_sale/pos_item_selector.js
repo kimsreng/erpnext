@@ -96,6 +96,7 @@ erpnext.PointOfSale.ItemSelector = class {
 						</div>
 						<div class="flex items-center justify-center h-32 border-b-grey text-6xl text-grey-100">
 							<img
+								loading="lazy"
 								onerror="cur_pos.item_selector.handle_broken_image(this)"
 								class="h-full" src="${item_image}"
 								alt="${frappe.get_abbr(item.item_name)}"
