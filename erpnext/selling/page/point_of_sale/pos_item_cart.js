@@ -806,7 +806,7 @@ erpnext.PointOfSale.ItemCart = class {
 			});
 			this.$customer_section.find('.customer-details').html(
 				`<div class="header">
-					<div class="label">Contact Details</div>
+					<div class="label">${__("Contact Details")}</div>
 					<div class="close-details-btn">
 						<svg width="32" height="32" viewBox="0 0 14 14" fill="none">
 							<path d="M4.93764 4.93759L7.00003 6.99998M9.06243 9.06238L7.00003 6.99998M7.00003 6.99998L4.93764 9.06238L9.06243 4.93759" stroke="#8D99A6"/>
@@ -826,7 +826,7 @@ erpnext.PointOfSale.ItemCart = class {
 					<div class="loyalty_program-field"></div>
 					<div class="loyalty_points-field"></div>
 				</div>
-				<div class="transactions-label">Recent Transactions</div>`
+				<div class="transactions-label">${__("Recent Transactions")}</div>`
 			);
 			// transactions need to be in diff div from sticky elem for scrolling
 			this.$customer_section.append(`<div class="customer-transactions"></div>`);
@@ -881,8 +881,8 @@ erpnext.PointOfSale.ItemCart = class {
 				parent: $customer_form.find(`.${df.fieldname}-field`),
 				render_input: true,
 			});
-			this[`customer_${df.fieldname}_field`].set_value(this.customer_info[df.fieldname]);
-		})
+			this[`customer_${df.fieldname}_field`].set_value(this.customer_info[df.fieldname] || "");
+		});
 
 		function handle_customer_field_change() {
 			const current_value = me.customer_info[this.df.fieldname];
@@ -921,13 +921,13 @@ erpnext.PointOfSale.ItemCart = class {
 
 			if (!res.length) {
 				transaction_container.html(
-					`<div class="no-transactions-placeholder">No recent transactions found</div>`
-				)
+					`<div class="no-transactions-placeholder">${__("No recent transactions found")}</div>`
+				);
 				return;
 			};
 
 			const elapsed_time = moment(res[0].posting_date+" "+res[0].posting_time).fromNow();
-			this.$customer_section.find('.customer-desc').html(`Last transacted ${elapsed_time}`);
+			this.$customer_section.find('.customer-desc').html(`${__("Last transacted {0}",[elapsed_time])}`);
 
 			res.forEach(invoice => {
 				const posting_datetime = moment(invoice.posting_date+" "+invoice.posting_time).format("Do MMMM, h:mma");
@@ -950,7 +950,7 @@ erpnext.PointOfSale.ItemCart = class {
 							</div>
 							<div class="invoice-status">
 								<span class="indicator-pill whitespace-nowrap ${indicator_color[invoice.status]}">
-									<span>${invoice.status}</span>
+									<span>${__(invoice.status, null, "InvoiceStatus")}</span>
 								</span>
 							</div>
 						</div>

@@ -80,14 +80,14 @@ erpnext.PointOfSale.PastOrderSummary = class {
 		status === 'Return' && (indicator_color = 'grey');
 
 		return `<div class="left-section">
-					<div class="customer-name">${doc.customer}</div>
+					<div class="customer-name">${frappe.remove_abbr(doc.customer)}</div>
 					<div class="customer-email">${this.customer_email}</div>
 					<div class="cashier">${__("Sold by")}: ${doc.owner}</div>
 				</div>
 				<div class="right-section">
 					<div class="paid-amount">${format_currency(doc.paid_amount, doc.currency)}</div>
-					<div class="invoice-name">${doc.name}</div>
-					<span class="indicator-pill whitespace-nowrap ${indicator_color}"><span>${__(doc.status)}</span></span>
+					<div class="invoice-name">${frappe.remove_abbr(doc.name)}</div>
+					<span class="indicator-pill whitespace-nowrap ${indicator_color}"><span>${__(doc.status, null, "InvoiceStatus")}</span></span>
 				</div>`;
 	}
 
@@ -151,7 +151,7 @@ erpnext.PointOfSale.PastOrderSummary = class {
 
 	get_payment_html(doc, payment) {
 		return `<div class="summary-row-wrapper payments">
-					<div>${__(payment.mode_of_payment)}</div>
+					<div>${__(frappe.remove_abbr(payment.mode_of_payment))}</div>
 					<div>${format_currency(payment.amount, doc.currency)}</div>
 				</div>`;
 	}
