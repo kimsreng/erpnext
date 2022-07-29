@@ -244,8 +244,8 @@ erpnext.PointOfSale.ItemDetails = class {
 							})
 						} else if (available_qty === 0) {
 							me.warehouse_control.set_value('');
-							const bold_item_code = me.item_row.item_code.bold();
-							const bold_warehouse = this.value.bold();
+							const bold_item_code = frappe.remove_abbr(me.item_row.item_code).bold();
+							const bold_warehouse = frappe.remove_abbr(this.value).bold();
 							frappe.throw(
 								__('Item Code: {0} is not available under warehouse {1}.', [bold_item_code, bold_warehouse])
 							);
