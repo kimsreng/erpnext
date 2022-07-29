@@ -36,14 +36,14 @@ class Patient(Document):
 		self.set_missing_customer_details()
 
 	def after_insert(self):
-		if frappe.db.get_single_value('Healthcare Settings', 'collect_registration_fee'):
+		if frappe.get_single_value('Healthcare Settings', 'collect_registration_fee'):
 			frappe.db.set_value('Patient', self.name, 'status', 'Disabled')
 		else:
 			send_registration_sms(self)
 		self.reload()
 
 	def on_update(self):
-		if frappe.db.get_single_value('Healthcare Settings', 'link_customer_to_patient'):
+		if frappe.get_single_value('Healthcare Settings', 'link_customer_to_patient'):
 			if self.customer:
 				customer = frappe.get_doc('Customer', self.customer)
 				if self.customer_group:
@@ -116,7 +116,7 @@ class Patient(Document):
 		self.db_set('user_id', user.name)
 
 	def autoname(self):
-		patient_name_by = frappe.db.get_single_value('Healthcare Settings', 'patient_name_by')
+		patient_name_by = frappe.get_single_value('Healthcare Settings', 'patient_name_by')
 		if patient_name_by == 'Patient Name':
 			self.name = self.get_patient_name()
 		else:
@@ -150,7 +150,7 @@ class Patient(Document):
 
 	@frappe.whitelist()
 	def invoice_patient_registration(self):
-		if frappe.db.get_single_value('Healthcare Settings', 'registration_fee'):
+		if frappe.get_single_value('Healthcare Settings', 'registration_fee'):
 			company = frappe.defaults.get_user_default('company')
 			if not company:
 				company = frappe.db.get_single_value('Global Defaults', 'default_company')
@@ -256,7 +256,7 @@ def make_invoice(patient, company):
 	item_line.uom = uom
 	item_line.conversion_factor = 1
 	item_line.income_account = get_income_account(None, company)
-	item_line.rate = frappe.db.get_single_value('Healthcare Settings', 'registration_fee')
+	item_line.rate = frappe.get_single_value('Healthcare Settings', 'registration_fee')
 	item_line.amount = item_line.rate
 	sales_invoice.set_missing_values()
 	return sales_invoice

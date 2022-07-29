@@ -128,14 +128,14 @@ class PatientAppointment(Document):
 		self.appointment_datetime = "%s %s" % (self.appointment_date, self.appointment_time or "00:00:00")
 
 	def set_payment_details(self):
-		if frappe.db.get_single_value('Healthcare Settings', 'automate_appointment_invoicing'):
+		if frappe.get_single_value('Healthcare Settings', 'automate_appointment_invoicing'):
 			details = get_service_item_and_practitioner_charge(self)
 			self.db_set('billing_item', details.get('service_item'))
 			if not self.paid_amount:
 				self.db_set('paid_amount', details.get('practitioner_charge'))
 
 	def validate_customer_created(self):
-		if frappe.db.get_single_value('Healthcare Settings', 'automate_appointment_invoicing'):
+		if frappe.get_single_value('Healthcare Settings', 'automate_appointment_invoicing'):
 			if not frappe.db.get_value('Patient', self.patient, 'customer'):
 				msg = _("Please set a Customer linked to the Patient")
 				msg +=  " <b><a href='/app/Form/Patient/{0}'>{0}</a></b>".format(self.patient)
@@ -150,7 +150,7 @@ class PatientAppointment(Document):
 					frappe.db.set_value('Patient Appointment', self.name, 'notes', comments)
 
 	def update_fee_validity(self):
-		if not frappe.db.get_single_value('Healthcare Settings', 'enable_free_follow_ups'):
+		if not frappe.get_single_value('Healthcare Settings', 'enable_free_follow_ups'):
 			return
 
 		fee_validity = manage_fee_validity(self)
@@ -173,8 +173,8 @@ class PatientAppointment(Document):
 
 @frappe.whitelist()
 def check_payment_fields_reqd(patient):
-	automate_invoicing = frappe.db.get_single_value('Healthcare Settings', 'automate_appointment_invoicing')
-	free_follow_ups = frappe.db.get_single_value('Healthcare Settings', 'enable_free_follow_ups')
+	automate_invoicing = frappe.get_single_value('Healthcare Settings', 'automate_appointment_invoicing')
+	free_follow_ups = frappe.get_single_value('Healthcare Settings', 'enable_free_follow_ups')
 	if automate_invoicing:
 		if free_follow_ups:
 			fee_validity = frappe.db.exists('Fee Validity', {'patient': patient, 'status': 'Pending'})
@@ -184,9 +184,9 @@ def check_payment_fields_reqd(patient):
 	return False
 
 def invoice_appointment(appointment_doc):
-	automate_invoicing = frappe.db.get_single_value('Healthcare Settings', 'automate_appointment_invoicing')
-	appointment_invoiced = frappe.db.get_value('Patient Appointment', appointment_doc.name, 'invoiced')
-	enable_free_follow_ups = frappe.db.get_single_value('Healthcare Settings', 'enable_free_follow_ups')
+	automate_invoicing = frappe.get_single_value('Healthcare Settings', 'automate_appointment_invoicing')
+	appointment_invoiced = frappe.get_value('Patient Appointment', appointment_doc.name, 'invoiced')
+	enable_free_follow_ups = frappe.get_single_value('Healthcare Settings', 'enable_free_follow_ups')
 	if enable_free_follow_ups:
 		fee_validity = check_fee_validity(appointment_doc)
 		if fee_validity and fee_validity.status == 'Completed':
@@ -273,7 +273,7 @@ def cancel_appointment(appointment_id):
 
 
 def cancel_sales_invoice(sales_invoice):
-	if frappe.db.get_single_value('Healthcare Settings', 'automate_appointment_invoicing'):
+	if frappe.get_single_value('Healthcare Settings', 'automate_appointment_invoicing'):
 		if len(sales_invoice.items) == 1:
 			sales_invoice.cancel()
 			return True
@@ -422,8 +422,8 @@ def update_status(appointment_id, status):
 
 
 def send_confirmation_msg(doc):
-	if frappe.db.get_single_value('Healthcare Settings', 'send_appointment_confirmation'):
-		message = frappe.db.get_single_value('Healthcare Settings', 'appointment_confirmation_msg')
+	if frappe.get_single_value('Healthcare Settings', 'send_appointment_confirmation'):
+		message = frappe.get_single_value('Healthcare Settings', 'appointment_confirmation_msg')
 		try:
 			send_message(doc, message)
 		except Exception:
@@ -451,8 +451,8 @@ def make_encounter(source_name, target_doc=None):
 
 
 def send_appointment_reminder():
-	if frappe.db.get_single_value('Healthcare Settings', 'send_appointment_reminder'):
-		remind_before = datetime.datetime.strptime(frappe.db.get_single_value('Healthcare Settings', 'remind_before'), '%H:%M:%S')
+	if frappe.get_single_value('Healthcare Settings', 'send_appointment_reminder'):
+		remind_before = datetime.datetime.strptime(frappe.get_single_value('Healthcare Settings', 'remind_before'), '%H:%M:%S')
 		reminder_dt = datetime.datetime.now() + datetime.timedelta(
 			hours=remind_before.hour, minutes=remind_before.minute, seconds=remind_before.second)
 
@@ -464,7 +464,7 @@ def send_appointment_reminder():
 
 		for appointment in appointment_list:
 			doc = frappe.get_doc('Patient Appointment', appointment.name)
-			message = frappe.db.get_single_value('Healthcare Settings', 'appointment_reminder_msg')
+			message = frappe.get_single_value('Healthcare Settings', 'appointment_reminder_msg')
 			send_message(doc, message)
 			frappe.db.set_value('Patient Appointment', doc.name, 'reminded', 1)
 

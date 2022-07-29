@@ -62,7 +62,7 @@ def get_appointments_to_invoice(patient, company):
 				})
 		# Consultation Appointments, should check fee validity
 		else:
-			if frappe.db.get_single_value('Healthcare Settings', 'enable_free_follow_ups') and \
+			if frappe.get_single_value('Healthcare Settings', 'enable_free_follow_ups') and \
 				frappe.db.exists('Fee Validity Reference', {'appointment': appointment.name}):
 					continue # Skip invoicing, fee validty present
 			practitioner_charge = 0
@@ -101,7 +101,7 @@ def get_encounters_to_invoice(patient, company):
 				service_item = None
 				if encounter.practitioner:
 					if encounter.inpatient_record and \
-						frappe.db.get_single_value('Healthcare Settings', 'do_not_bill_inpatient_encounters'):
+						frappe.get_single_value('Healthcare Settings', 'do_not_bill_inpatient_encounters'):
 						continue
 
 					details = get_service_item_and_practitioner_charge(encounter)
@@ -182,7 +182,7 @@ def get_clinical_procedures_to_invoice(patient, company):
 		if procedure.invoice_separately_as_consumables and procedure.consume_stock \
 			and procedure.status == 'Completed' and not procedure.consumption_invoiced:
 
-			service_item = frappe.db.get_single_value('Healthcare Settings', 'clinical_procedure_consumable_item')
+			service_item = frappe.get_single_value('Healthcare Settings', 'clinical_procedure_consumable_item')
 			if not service_item:
 				frappe.throw(_('Please configure Clinical Procedure Consumable Item in {0}').format(
 					frappe.utils.get_link_to_form('Healthcare Settings', 'Healthcare Settings')),
@@ -398,9 +398,9 @@ def get_healthcare_service_item(is_inpatient):
 	service_item = None
 
 	if is_inpatient:
-		service_item = frappe.db.get_single_value('Healthcare Settings', 'inpatient_visit_charge_item')
+		service_item = frappe.get_single_value('Healthcare Settings', 'inpatient_visit_charge_item')
 	else:
-		service_item = frappe.db.get_single_value('Healthcare Settings', 'op_consulting_charge_item')
+		service_item = frappe.get_single_value('Healthcare Settings', 'op_consulting_charge_item')
 
 	return service_item
 
@@ -422,7 +422,7 @@ def manage_invoice_submit_cancel(doc, method):
 				if frappe.get_meta(item.reference_dt).has_field('invoiced'):
 					set_invoiced(item, method, doc.name)
 
-	if method=='on_submit' and frappe.db.get_single_value('Healthcare Settings', 'create_lab_test_on_si_submit'):
+	if method=='on_submit' and frappe.get_single_value('Healthcare Settings', 'create_lab_test_on_si_submit'):
 		create_multiple('Sales Invoice', doc.name)
 
 
@@ -433,7 +433,7 @@ def set_invoiced(item, method, ref_invoice=None):
 		invoiced = True
 
 	if item.reference_dt == 'Clinical Procedure':
-		service_item = frappe.db.get_single_value('Healthcare Settings', 'clinical_procedure_consumable_item')
+		service_item = frappe.get_single_value('Healthcare Settings', 'clinical_procedure_consumable_item')
 		if service_item == item.item_code:
 			frappe.db.set_value(item.reference_dt, item.reference_dn, 'consumption_invoiced', invoiced)
 		else:
@@ -457,7 +457,7 @@ def set_invoiced(item, method, ref_invoice=None):
 
 def validate_invoiced_on_submit(item):
 	if item.reference_dt == 'Clinical Procedure' and \
-		frappe.db.get_single_value('Healthcare Settings', 'clinical_procedure_consumable_item') == item.item_code:
+		frappe.get_single_value('Healthcare Settings', 'clinical_procedure_consumable_item') == item.item_code:
 		is_invoiced = frappe.db.get_value(item.reference_dt, item.reference_dn, 'consumption_invoiced')
 	else:
 		is_invoiced = frappe.db.get_value(item.reference_dt, item.reference_dn, 'invoiced')
@@ -475,7 +475,7 @@ def manage_prescriptions(invoiced, ref_dt, ref_dn, dt, created_check_field):
 
 
 def check_fee_validity(appointment):
-	if not frappe.db.get_single_value('Healthcare Settings', 'enable_free_follow_ups'):
+	if not frappe.get_single_value('Healthcare Settings', 'enable_free_follow_ups'):
 		return
 
 	validity = frappe.db.exists('Fee Validity', {
